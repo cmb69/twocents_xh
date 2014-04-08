@@ -66,7 +66,7 @@ class Twocents_Persister
         if (!is_readable($this->_filename)) {
             return new Twocents_Model();
         }
-        $stream = fopen($this->_filename, 'r');
+        $stream = fopen($this->_filename, 'rb');
         $contents = $this->_readFromStream($stream);
         $subject = unserialize($contents);
         if ($subject) {
@@ -101,7 +101,7 @@ class Twocents_Persister
      */
     public function open()
     {
-        $this->_stream = fopen($this->_filename, 'a+');
+        $this->_stream = fopen($this->_filename, 'ab+');
         flock($this->_stream, LOCK_EX);
         $contents = stream_get_contents($this->_stream);
         $this->_subject = unserialize($contents);

@@ -12,7 +12,7 @@ require_once './classes/DataSource.php';
 
 runkit_function_redefine('ftruncate', '$stream, $pos', '');
 
-class PersiterTest extends PHPUnit_Framework_TestCase
+class PersisterTest extends PHPUnit_Framework_TestCase
 {
     private $_filename;
 
@@ -37,10 +37,16 @@ class PersiterTest extends PHPUnit_Framework_TestCase
     public function testLoadStored()
     {
         $model = $this->_subject->open();
-        $model->addComment('foo', 'cmb', 'lorem ipsum');
+        $model->addComment('foo', time(), 'cmb', 'lorem ipsum');
         $this->_subject->close();
         $this->assertFileExists($this->_filename);
         $this->assertEquals($model, $this->_subject->load());
+    }
+
+    public function testLoadCorruptFile()
+    {
+        file_put_contents($this->_filename, '');
+        $this->assertEquals(new Twocents_Model(), $this->_subject->load());
     }
 }
 

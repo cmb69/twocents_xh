@@ -25,6 +25,15 @@ class ModelTest extends PHPUnit_Framework_TestCase
         $this->assertEmpty($this->_subject->getTopics());
     }
 
+    public function testGetLatestComments()
+    {
+        $this->_addFooComment();
+        $this->_subject->addComment('bar', 0, 'cmb', 'lorem ipsum');
+        $comments = $this->_subject->getLatestComments();
+        $this->assertCount(2, $comments);
+        $this->assertEquals(self::TOPIC_NAME, $comments[0]->getTopicName());
+    }
+
     public function testAddTopicIncreasesTopicCount()
     {
         $before = count($this->_subject->getTopics());
@@ -71,7 +80,9 @@ class ModelTest extends PHPUnit_Framework_TestCase
 
     private function _addFooComment()
     {
-        $this->_subject->addComment(self::TOPIC_NAME, 'cmb', 'lorem ipsum');
+        $this->_subject->addComment(
+            self::TOPIC_NAME, time(), 'cmb', 'lorem ipsum'
+        );
     }
 }
 

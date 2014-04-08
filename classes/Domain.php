@@ -71,6 +71,21 @@ class Twocents_Model
     }
 
     /**
+     * Returns the latest comments.
+     *
+     * @return array
+     */
+    public function getLatestComments()
+    {
+        $result = array();
+        foreach ($this->_topics as $topic) {
+            $result += $topic->getComments();
+        }
+        usort($result, array('Twocents_Comment', 'compare'));
+        return $result;
+    }
+
+    /**
      * Adds a new topic.
      *
      * @param string $name A topic name.
@@ -84,7 +99,7 @@ class Twocents_Model
         if ($this->hasTopic($name)) {
             throw new InvalidArgumentException();
         }
-        $this->_topics[$name] = new Twocents_Topic();
+        $this->_topics[$name] = new Twocents_Topic($name);
     }
 
     /**
@@ -103,18 +118,19 @@ class Twocents_Model
      * Adds a new comment.
      *
      * @param string $topicName A topic name.
+     * @param int    $timestamp A UNIX timestamp.
      * @param string $user      A user name.
      * @param string $message   A message.
      *
      * @return void
      */
-    public function addComment($topicName, $user, $message)
+    public function addComment($topicName, $timestamp, $user, $message)
     {
         if (!$this->hasTopic($topicName)) {
             $topic = $this->addTopic($topicName);
         }
         $topic = $this->_topics[$topicName];
-        $topic->addComment(++$this->_commentId, $user, $message);
+        $topic->addComment(++$this->_commentId, $timestamp, $user, $message);
     }
 }
 
@@ -130,6 +146,13 @@ class Twocents_Model
 class Twocents_Topic
 {
     /**
+     * The topic name.
+     *
+     * @var string
+     */
+    private $_name;
+
+    /**
      * The comments.
      *
      * @var array<int, Twocents_Comment>
@@ -138,10 +161,23 @@ class Twocents_Topic
 
     /**
      * Initializes a new instance.
+     *
+     * @param string $name A topic name.
      */
-    public function __construct()
+    public function __construct($name)
     {
+        $this->_name = $name;
         $this->_comments = array();
+    }
+
+    /**
+     * Returns the topic name.
+     *
+     * @return string
+     */
+    public function getName()
+    {
+        return $this->_name;
     }
 
     /**
@@ -169,20 +205,24 @@ class Twocents_Topic
     /**
      * Adds a new comment.
      *
-     * @param int    $id      A comment ID.
-     * @param string $user    A user name.
-     * @param string $message A message.
+     * @param int    $id        A comment ID.
+     * @param int    $timestamp A UNIX timestamp.
+     * @param string $user      A user name.
+     * @param string $message   A message.
      *
      * @return void
      *
      * @throws InvalidArgumentException
      */
-    public function addComment($id, $user, $message)
+    public function addComment($id, $timestamp, $user, $message)
     {
         if ($this->_hasComment($id)) {
             throw new InvalidArgumentException();
         }
-        $this->_comments[$id] = new Twocents_Comment(time(), $user, $message);
+        $comment = new Twocents_Comment($id, $this, $timestamp);
+        $comment->setUser($user);
+        $comment->setMessage($message);
+        $this->_comments[$id] = $comment;
     }
 
     /**
@@ -210,6 +250,20 @@ class Twocents_Topic
 class Twocents_Comment
 {
     /**
+     * The ID.
+     *
+     * @var int
+     */
+    private $_id;
+
+    /**
+     * The topic.
+     *
+     * @var Twocents_Topic
+     */
+    private $_topic;
+
+    /**
      * The UNIX timestamp.
      *
      * @var int
@@ -231,17 +285,60 @@ class Twocents_Comment
     private $_message;
 
     /**
+     * Compares the timestamps of comments.
+     *
+     * @param Twocents_Comment $a A comment.
+     * @param Twocents_Comment $b Another comment.
+     *
+     * @return int
+     */
+    public static function compare(Twocents_Comment $a, Twocents_Comment $b)
+    {
+        return $b->_timestamp - $a->_timestamp;
+    }
+
+    /**
      * Initializes a new instance.
      *
-     * @param int    $timestamp A UNIX timestamp.
-     * @param string $user      A user name.
-     * @param string $message   A message.
+     * @param int            $id        An ID.
+     * @param Twocents_Topic $topic     A topic.
+     * @param int            $timestamp A UNIX timestamp.
      */
-    public function __construct($timestamp, $user, $message)
+    public function __construct($id, Twocents_Topic $topic, $timestamp)
     {
+        $this->_id = $id;
+        $this->_topic = $topic;
         $this->_timestamp = (int) $timestamp;
-        $this->_user = $user;
-        $this->_message = $message;
+    }
+
+    /**
+     * Returns the ID.
+     *
+     * @return int
+     */
+    public function getId()
+    {
+        return $this->_id;
+    }
+
+    /**
+     * Returns the topic.
+     *
+     * @return Twocents_Topic
+     */
+    public function getTopic()
+    {
+        return $this->_topic;
+    }
+
+    /**
+     * Returns the name of the topic.
+     *
+     * @return string
+     */
+    public function getTopicName()
+    {
+        return $this->_topic->getName();
     }
 
     /**
@@ -255,7 +352,7 @@ class Twocents_Comment
     }
 
     /**
-     * Returns the user.
+     * Returns the user name.
      *
      * @return string
      */
@@ -272,6 +369,30 @@ class Twocents_Comment
     public function getMessage()
     {
         return $this->_message;
+    }
+
+    /**
+     * Sets the user name.
+     *
+     * @param string $user A user name.
+     *
+     * @return void
+     */
+    public function setUser($user)
+    {
+        $this->_user = $user;
+    }
+
+    /**
+     * Sets the message.
+     *
+     * @param string $message A message.
+     *
+     * @return void
+     */
+    public function setMessage($message)
+    {
+        $this->_message = $message;
     }
 }
 

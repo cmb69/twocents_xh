@@ -8,7 +8,15 @@ require_once './classes/Domain.php';
 
 class TopicTest extends PHPUnit_Framework_TestCase
 {
+    const NAME = 'foo';
+
     const COMMENT_ID = 12345;
+
+    const TIMESTAMP = 333;
+
+    const USER = 'cmb';
+
+    const MESSAGE = 'lorem ipsum';
 
     /**
      * @var Twocents_Topic
@@ -17,7 +25,12 @@ class TopicTest extends PHPUnit_Framework_TestCase
 
     public function setUp()
     {
-        $this->_subject = new Twocents_Topic();
+        $this->_subject = new Twocents_Topic(self::NAME);
+    }
+
+    public function testNewTopicHasGivenName()
+    {
+        $this->assertEquals(self::NAME, $this->_subject->getName());
     }
 
     public function testNewTopicHasNoComments()
@@ -31,6 +44,15 @@ class TopicTest extends PHPUnit_Framework_TestCase
         $this->_addFooComment();
         $after = count($this->_subject->getComments());
         $this->assertEquals(1, $after - $before);
+    }
+
+    public function testAddCommentSetUserAndMessage()
+    {
+        $this->_addFooComment();
+        $comments = $this->_subject->getComments();
+        $comment = reset($comments);
+        $this->assertEquals(self::USER, $comment->getUser());
+        $this->assertEquals(self::MESSAGE, $comment->getMessage());
     }
 
     /**
@@ -53,7 +75,9 @@ class TopicTest extends PHPUnit_Framework_TestCase
 
     private function _addFooComment()
     {
-        $this->_subject->addComment(self::COMMENT_ID, 'cmb', 'lorem ipsum');
+        $this->_subject->addComment(
+            self::COMMENT_ID, self::TIMESTAMP, self::USER, self::MESSAGE
+        );
     }
 }
 
