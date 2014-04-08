@@ -1,9 +1,15 @@
 <?php
 
-require_once './classes/Model.php';
+/**
+ * @version SVN: $Id$
+ */
+
+require_once './classes/Domain.php';
 
 class TopicTest extends PHPUnit_Framework_TestCase
 {
+    const COMMENT_ID = 12345;
+
     /**
      * @var Twocents_Topic
      */
@@ -40,14 +46,14 @@ class TopicTest extends PHPUnit_Framework_TestCase
     {
         $before = $this->_subject->getComments();
         $this->_addFooComment();
-        $this->_subject->removeComment(12345);
+        $this->_subject->removeComment(self::COMMENT_ID);
         $after = $this->_subject->getComments();
         $this->assertEquals($before, $after);
     }
 
     private function _addFooComment()
     {
-        $this->_subject->addComment(12345, 'cmb', 'lorem ipsum');
+        $this->_subject->addComment(self::COMMENT_ID, 'cmb', 'lorem ipsum');
     }
 }
 

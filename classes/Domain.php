@@ -1,11 +1,11 @@
 <?php
 
+/**
+ * @version SVN: $Id$
+ */
+
 class Twocents_Model
 {
-    private $_filename;
-
-    private $_stream;
-
     /**
      * @var array<string, Twocents_Topic>
      */
@@ -13,50 +13,8 @@ class Twocents_Model
 
     private $_commentId;
 
-    public static function load()
+    public function __construct()
     {
-        global $pth;
-
-        $filename = $pth['folder']['content'] . 'twocents.dat';
-        if ($result = self::_load($filename)) {
-            return $result;
-        } else {
-            return new Twocents_Model($filename);
-        }
-    }
-
-    private static function _load($filename)
-    {
-        if (!is_readable($filename)) {
-            return false;
-        }
-        $stream = fopen($filename, 'r');
-        flock($stream, LOCK_SH);
-        $contents = stream_get_contents($stream);
-        flock($stream, LOCK_UN);
-        fclose($stream);
-        return unserialize($contents);
-    }
-
-    public static function open()
-    {
-        global $pth;
-
-        $filename = $pth['folder']['content'] . 'twocents.dat';
-        $stream = fopen($filename, 'a+');
-        flock($stream, LOCK_EX);
-        $contents = stream_get_contents($stream);
-        $result = unserialize($contents);
-        if (!$result) {
-            $result = new Twocents_Model($filename);
-        }
-        $result->_stream = $stream;
-        return $result;
-    }
-
-    private function __construct($filename)
-    {
-        $this->_filename = $filename;
         $this->_topics = array();
         $this->_commentId = 0;
     }
@@ -91,18 +49,6 @@ class Twocents_Model
         }
         $topic = $this->_topics[$topicName];
         $topic->addComment(++$this->_commentId, $user, $message);
-    }
-
-    public function close()
-    {
-        //file_put_contents($this->_filename, serialize($this));
-
-        fseek($this->_stream, 0);
-        $bytes = fwrite($this->_stream, serialize($this));
-        ftruncate($this->_stream, $bytes);
-        flock($this->_stream, LOCK_UN);
-        fclose($this->_stream);
-        $this->_stream = null;
     }
 }
 

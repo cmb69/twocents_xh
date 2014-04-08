@@ -1,43 +1,44 @@
 <?php
 
-require_once './classes/Model.php';
+/**
+ * @version SVN: $Id$
+ */
+
+require_once './classes/Domain.php';
 
 class CommentTest extends PHPUnit_Framework_TestCase
 {
+    const ID = 12345;
+
+    const USER = 'cmb';
+
+    const MESSAGE = 'lorem ipsum';
+
     /**
      * @var Twocents_Comment
      */
     private $_subject;
 
-    private $_fooId;
-
-    private $_fooUser;
-
-    private $_fooMessage;
-
     public function setUp()
     {
-        $this->_fooId = 12345;
-        $this->_fooUser = 'cmb';
-        $this->_fooMessage = 'lorem ipsum';
         $this->_subject = new Twocents_Comment(
-            $this->_fooId, $this->_fooUser, $this->_fooMessage
+            self::ID, self::USER, self::MESSAGE
         );
     }
 
     public function testNewCommentHasGivenTimestamp()
     {
-        $this->assertEquals($this->_fooId, $this->_subject->getTimestamp());
+        $this->assertEquals(self::ID, $this->_subject->getTimestamp());
     }
 
     public function testNewCommentHasGivenUser()
     {
-        $this->assertEquals($this->_fooUser, $this->_subject->getUser());
+        $this->assertEquals(self::USER, $this->_subject->getUser());
     }
 
     public function testNewCommentHasGivenMessage()
     {
-        $this->assertEquals($this->_fooMessage, $this->_subject->getMessage());
+        $this->assertEquals(self::MESSAGE, $this->_subject->getMessage());
     }
 }
 
