@@ -1,28 +1,66 @@
 <?php
 
 /**
- * @version SVN: $Id$
+ * The data source layer.
+ *
+ * PHP version 5
+ *
+ * @category  CMSimple_XH
+ * @package   Twocents
+ * @author    Christoph M. Becker <cmbecker69@gmx.de>
+ * @copyright 2014 Christoph M. Becker <http://3-magi.net>
+ * @license   http://www.gnu.org/licenses/gpl-3.0.en.html GNU GPLv3
+ * @version   SVN: $Id$
+ * @link      http://3-magi.net/?CMSimple_XH/Twocents_XH
  */
 
+/**
+ * Save and load model objects from a file.
+ *
+ * @category CMSimple_XH
+ * @package  Twocents
+ * @author   Christoph M. Becker <cmbecker69@gmx.de>
+ * @license  http://www.gnu.org/licenses/gpl-3.0.en.html GNU GPLv3
+ * @link     http://3-magi.net/?CMSimple_XH/Twocents_XH
+ */
 class Twocents_Persister
 {
     /**
+     * The filename.
+     *
      * @var string
      */
     private $_filename;
 
     /**
+     * The retrieved model object.
+     *
      * @var Twocents_Model
      */
     private $_subject;
 
+    /**
+     * The stream for later writing the model object to.
+     *
+     * @var resource
+     */
     private $_stream;
 
+    /**
+     * Initializes a new instance.
+     *
+     * @param string $filename A filename.
+     */
     public function __construct($filename)
     {
         $this->_filename = $filename;
     }
 
+    /**
+     * Loads and returns a model object.
+     *
+     * @return Twocents_Model
+     */
     public function load()
     {
         if (!is_readable($this->_filename)) {
@@ -39,6 +77,10 @@ class Twocents_Persister
     }
 
     /**
+     * Reads the remaining contents of a stream and closes the stream.
+     *
+     * @param resource $stream A stream.
+     *
      * @return string
      */
     private function _readFromStream($stream)
@@ -50,12 +92,16 @@ class Twocents_Persister
         return $contents;
     }
 
+    /**
+     * Loads and returns a model object.
+     *
+     * Keeps a lock on the stream.
+     *
+     * @return Twocents_Model
+     */
     public function open()
     {
         $this->_stream = fopen($this->_filename, 'a+');
-        //if ($this->_stream === false) {
-        //    throw new RuntimeException();
-        //}
         flock($this->_stream, LOCK_EX);
         $contents = stream_get_contents($this->_stream);
         $this->_subject = unserialize($contents);
@@ -65,6 +111,11 @@ class Twocents_Persister
         return $this->_subject;
     }
 
+    /**
+     * Saves the model object and closes the stream.
+     *
+     * @return void
+     */
     public function close()
     {
         fseek($this->_stream, 0);
