@@ -6,11 +6,16 @@
     list-style: none;
     padding-left: 0;
 }
+.twocents_comments {
+    overflow: hidden;
+    margin-left: 0;
+}
 .twocents_admin_tools {
     float: right;
 }
 .twocents_admin_tools form {
     display: inline-block;
+    margin-left: 0.5em;
 }
 .twocents_form {
     margin: 2em 0;
