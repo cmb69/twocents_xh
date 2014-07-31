@@ -523,14 +523,15 @@ class Twocents_CommentsView
     {
         global $plugin_tx;
 
+        $ptx = $plugin_tx['twocents'];
         $action = $comment->getId() ? 'update' : 'add';
         $html = '<button name="twocents_action" value="' . $action . '_comment">'
-            . $plugin_tx['twocents']['label_' . $action] . '</button>';
+            . $ptx['label_' . $action] . '</button>';
         if ($comment->getId()) {
-            $html .= '<a href="' . $this->_getUrl() . '">Cancel</a>';
+            $html .= '<a href="' . $this->_getUrl() . '">'
+                . $ptx['label_cancel'] . '</a>';
         }
-        $html .= '<button type="reset">' . $plugin_tx['twocents']['label_reset']
-            . '</button>';
+        $html .= '<button type="reset">' . $ptx['label_reset'] . '</button>';
         return $html;
     }
 
