@@ -26,6 +26,13 @@
 class Twocents_Db
 {
     /**
+     * The lock file handle.
+     *
+     * @var resource
+     */
+    private static $_lockFile;
+
+    /**
      * Returns the path of the data folder.
      *
      * @return string
@@ -40,10 +47,43 @@ class Twocents_Db
         if (!file_exists($foldername)) {
             mkdir($foldername, 0777, true);
         }
-        if (!file_exists($foldername . '.lock')) {
-            touch($foldername . '.lock');
+        $lockFilename = $foldername . '.lock';
+        if (!file_exists($lockFilename)) {
+            touch($lockFilename);
         }
         return $foldername;
+    }
+
+    /**
+     * (Un)locks the database.
+     *
+     * @param int $operation A lock operation (LOCK_SH, LOCK_EX or LOCK_UN).
+     *
+     * @return void
+     */
+    public static function lock($operation)
+    {
+        switch ($operation) {
+        case LOCK_SH:
+        case LOCK_EX:
+            self::$_lockFile = fopen(self::_getLockFilename(), 'r');
+            flock(self::$_lockFile, $operation);
+            break;
+        case LOCK_UN:
+            flock(self::$_lockFile, $operation);
+            fclose(self::$_lockFile);
+            break;
+        }
+    }
+
+    /**
+     * Returns the path of the lock file.
+     *
+     * @return string
+     */
+    private static function _getLockFilename()
+    {
+        return self::getFoldername() . '.lock';
     }
 
 }
@@ -67,6 +107,7 @@ class Twocents_Topic
     public static function findAll()
     {
         $topics = array();
+        Twocents_Db::lock(LOCK_SH);
         if ($dir = opendir(Twocents_Db::getFoldername())) {
             while (($entry = readdir($dir)) !== false) {
                 if (pathinfo($entry, PATHINFO_EXTENSION) == 'csv') {
@@ -75,6 +116,7 @@ class Twocents_Topic
             }
         }
         closedir($dir);
+        Twocents_Db::lock(LOCK_UN);
         return $topics;
     }
 
@@ -143,7 +185,9 @@ class Twocents_Topic
      */
     public function insert()
     {
+        Twocents_Db::lock(LOCK_EX);
         touch(Twocents_Db::getFoldername() . $this->_name . '.csv');
+        Twocents_Db::lock(LOCK_UN);
     }
 
     /**
@@ -153,7 +197,9 @@ class Twocents_Topic
      */
     public function delete()
     {
+        Twocents_Db::lock(LOCK_EX);
         unlink(Twocents_Db::getFoldername() . $this->_name . '.csv');
+        Twocents_Db::lock(LOCK_UN);
     }
 }
 
@@ -178,6 +224,7 @@ class Twocents_Comment
     public static function findByTopicname($name)
     {
         $comments = array();
+        Twocents_Db::lock(LOCK_SH);
         $filename = Twocents_Db::getFoldername() . $name . '.csv';
         if (is_readable($filename) && ($file = fopen($filename, 'r'))) {
             while (($record = fgetcsv($file)) !== false) {
@@ -185,6 +232,7 @@ class Twocents_Comment
             }
             fclose($file);
         }
+        Twocents_Db::lock(LOCK_UN);
         return $comments;
     }
 
@@ -399,11 +447,13 @@ class Twocents_Comment
     public function insert()
     {
         $this->_id = uniqid();
+        Twocents_Db::lock(LOCK_EX);
         $file = fopen(
             Twocents_Db::getFoldername() . $this->_topicname . '.csv', 'a'
         );
         fputcsv($file, $this->_toRecord());
         fclose($file);
+        Twocents_Db::lock(LOCK_UN);
     }
 
     /**
@@ -413,6 +463,7 @@ class Twocents_Comment
      */
     public function update()
     {
+        Twocents_Db::lock(LOCK_EX);
         $file = fopen(
             Twocents_Db::getFoldername() . $this->_topicname . '.csv', 'r+'
         );
@@ -430,6 +481,7 @@ class Twocents_Comment
         stream_copy_to_stream($temp, $file);
         fclose($file);
         fclose($temp);
+        Twocents_Db::lock(LOCK_UN);
     }
 
     /**
@@ -439,6 +491,7 @@ class Twocents_Comment
      */
     public function delete()
     {
+        Twocents_Db::lock(LOCK_EX);
         $file = fopen(
             Twocents_Db::getFoldername() . $this->_topicname . '.csv', 'r+'
         );
@@ -454,6 +507,7 @@ class Twocents_Comment
         stream_copy_to_stream($temp, $file);
         fclose($file);
         fclose($temp);
+        Twocents_Db::lock(LOCK_UN);
     }
 
     /**
