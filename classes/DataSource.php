@@ -15,6 +15,40 @@
  */
 
 /**
+ * The data base.
+ *
+ * @category CMSimple_XH
+ * @package  Twocents
+ * @author   Christoph M. Becker <cmbecker69@gmx.de>
+ * @license  http://www.gnu.org/licenses/gpl-3.0.en.html GNU GPLv3
+ * @link     http://3-magi.net/?CMSimple_XH/Twocents_XH
+ */
+class Twocents_Db
+{
+    /**
+     * Returns the path of the data folder.
+     *
+     * @return string
+     *
+     * @global array The paths of system files and folders.
+     */
+    public static function getFoldername()
+    {
+        global $pth;
+
+        $foldername = $pth['folder']['content'] . 'twocents/';
+        if (!file_exists($foldername)) {
+            mkdir($foldername, 0777, true);
+        }
+        if (!file_exists($foldername . '.lock')) {
+            touch($foldername . '.lock');
+        }
+        return $foldername;
+    }
+
+}
+
+/**
  * The topics.
  *
  * @category CMSimple_XH
@@ -33,7 +67,7 @@ class Twocents_Topic
     public static function findAll()
     {
         $topics = array();
-        if ($dir = opendir(self::_getFoldername())) {
+        if ($dir = opendir(Twocents_Db::getFoldername())) {
             while (($entry = readdir($dir)) !== false) {
                 if (pathinfo($entry, PATHINFO_EXTENSION) == 'csv') {
                     $topics[] = self::_load(basename($entry, '.csv'));
@@ -54,29 +88,11 @@ class Twocents_Topic
      */
     public static function findByName($name)
     {
-        if (file_exists(self::_getFoldername() . $name . '.csv')) {
+        if (file_exists(Twocents_Db::getFoldername() . $name . '.csv')) {
             return self::_load($name);
         } else {
             return null;
         }
-    }
-
-    /**
-     * Returns the path of the data folder.
-     *
-     * @return string
-     *
-     * @global array The paths of system files and folders.
-     */
-    private static function _getFoldername()
-    {
-        global $pth;
-
-        $foldername = $pth['folder']['content'] . 'twocents/';
-        if (!file_exists($foldername)) {
-            mkdir($foldername, 0777, true);
-        }
-        return $foldername;
     }
 
     /**
@@ -127,7 +143,7 @@ class Twocents_Topic
      */
     public function insert()
     {
-        touch(self::_getFoldername() . $this->_name . '.csv');
+        touch(Twocents_Db::getFoldername() . $this->_name . '.csv');
     }
 
     /**
@@ -137,7 +153,7 @@ class Twocents_Topic
      */
     public function delete()
     {
-        unlink(self::_getFoldername() . $this->_name . '.csv');
+        unlink(Twocents_Db::getFoldername() . $this->_name . '.csv');
     }
 }
 
@@ -162,7 +178,7 @@ class Twocents_Comment
     public static function findByTopicname($name)
     {
         $comments = array();
-        $filename = self::_getFoldername() . $name . '.csv';
+        $filename = Twocents_Db::getFoldername() . $name . '.csv';
         if (is_readable($filename) && ($file = fopen($filename, 'r'))) {
             while (($record = fgetcsv($file)) !== false) {
                 $comments[] = self::_load($name, $record);
@@ -190,24 +206,6 @@ class Twocents_Comment
             }
         }
         return null;
-    }
-
-    /**
-     * Returns the path of the data folder.
-     *
-     * @return string
-     *
-     * @global array The paths of system files and folders.
-     */
-    private static function _getFoldername()
-    {
-        global $pth;
-
-        $foldername = $pth['folder']['content'] . 'twocents/';
-        if (!file_exists($foldername)) {
-            mkdir($foldername, 0777, true);
-        }
-        return $foldername;
     }
 
     /**
@@ -401,7 +399,9 @@ class Twocents_Comment
     public function insert()
     {
         $this->_id = uniqid();
-        $file = fopen(self::_getFoldername() . $this->_topicname . '.csv', 'a');
+        $file = fopen(
+            Twocents_Db::getFoldername() . $this->_topicname . '.csv', 'a'
+        );
         fputcsv($file, $this->_toRecord());
         fclose($file);
     }
@@ -413,7 +413,9 @@ class Twocents_Comment
      */
     public function update()
     {
-        $file = fopen(self::_getFoldername() . $this->_topicname . '.csv', 'r+');
+        $file = fopen(
+            Twocents_Db::getFoldername() . $this->_topicname . '.csv', 'r+'
+        );
         $temp = fopen('php://temp', 'w+');
         while (($record = fgetcsv($file)) !== false) {
             if ($record[0] != $this->_id) {
@@ -437,7 +439,9 @@ class Twocents_Comment
      */
     public function delete()
     {
-        $file = fopen(self::_getFoldername() . $this->_topicname . '.csv', 'r+');
+        $file = fopen(
+            Twocents_Db::getFoldername() . $this->_topicname . '.csv', 'r+'
+        );
         $temp = fopen('php://temp', 'w+');
         while (($record = fgetcsv($file)) !== false) {
             if ($record[0] != $this->_id) {
