@@ -12,6 +12,7 @@ $plugin_tx['twocents']['label_add']="Add Comment";
 $plugin_tx['twocents']['label_update']="Update Comment";
 $plugin_tx['twocents']['label_cancel']="Cancel";
 $plugin_tx['twocents']['label_reset']="Reset";
+$plugin_tx['twocents']['error_topicname']="A topicname may only contain letters (a-z), digits (0-9) and minus signs (-)!";
 $plugin_tx['twocents']['error_user']="Invalid name!";
 $plugin_tx['twocents']['error_email']="Invalid email address!";
 $plugin_tx['twocents']['error_message']="Invalid comment!";

@@ -46,6 +46,13 @@ class ControllerTest extends PHPUnit_Framework_TestCase
     private $_findByTopicnameMock;
 
     /**
+     * The comments view mock.
+     *
+     * @var Twocents_CommentsView
+     */
+    private $_viewMock;
+
+    /**
      * Sets up the test fixture.
      *
      * @return void
@@ -61,13 +68,14 @@ class ControllerTest extends PHPUnit_Framework_TestCase
         $this->_findByTopicnameMock = new PHPUnit_Extensions_MockStaticMethod(
             'Twocents_Comment::findByTopicname', $this->_subject
         );
-        $viewSpy = $this->getMockBuilder('Twocents_CommentsView')
+        $this->_viewMock = $this->getMockBuilder('Twocents_CommentsView')
             ->disableOriginalConstructor()->getMock();
-        $viewSpy->expects($this->once())->method('render');
         $viewMakeStub = new PHPUnit_Extensions_MockStaticMethod(
             'Twocents_CommentsView::make', $this->_subject
         );
-        $viewMakeStub->expects($this->any())->will($this->returnValue($viewSpy));
+        $viewMakeStub->expects($this->any())->will(
+            $this->returnValue($this->_viewMock)
+        );
         $_XH_csrfProtection = $this->getMockBuilder('XH_CSRFProtection')
             ->disableOriginalConstructor()->getMock();
     }
@@ -79,8 +87,24 @@ class ControllerTest extends PHPUnit_Framework_TestCase
      */
     public function testRenderComments()
     {
+        $this->_viewMock->expects($this->once())->method('render');
         $this->_findByTopicnameMock->expects($this->once())->with('foo');
         $this->_subject->renderComments('foo');
+    }
+
+    /**
+     * Tests that an error is rendered for an invalid topicname.
+     *
+     * @return void
+     */
+    public function testRendersErrorForInvalidTopicName()
+    {
+        $this->assertTag(
+            array(
+                'tag' => 'p'
+            ),
+            $this->_subject->renderComments('foo bar')
+        );
     }
 
     /**
