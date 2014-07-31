@@ -1,0 +1,33 @@
+.twocents_comments {
+    list-style: none;
+    padding-left: 0;
+}
+.twocents_admin_tools {
+    float: right;
+}
+.twocents_admin_tools form {
+    display: inline-block;
+}
+.twocents_form {
+    margin: 2em 0;
+}
+.twocents_form label {
+    display: block;
+    margin: 1em 0;
+}
+.twocents_form label span {
+    display: block;
+}
+.twocents_form label input, .twocents_form textarea {
+    width: 99%;
+}
+.twocents_form textarea {
+    height: 12em;
+}
+.twocents_form div {
+    width: 99%;
+    text-align: center;
+}
+.twocents_form button {
+    margin: 0 0.5em;
+}
