@@ -1,11 +1,13 @@
+* prevent direct access
 * CSRF protection
+* German localization
+* manuals
+* file locking
+* delete confirmation
+
 * email notification
 * markup for comments
 * admin area
 * moderated comments
-* German localization
-* manuals
 * Ajax form submission
-* delete confirmation
 * multiple comments on a single page (requires topicname to be sent)
-* file locking
