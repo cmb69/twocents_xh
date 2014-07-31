@@ -469,18 +469,39 @@ class Twocents_CommentsView
      *
      * @return string (X)HTML.
      *
-     * @global array             The localization of the plugins.
-     * @global XH_CSRFProtection The CSRF protector.
+     * @global array The localization of the plugins.
      */
     private function _renderCommentForm(Twocents_Comment $comment = null)
     {
-        global $plugin_tx, $_XH_csrfProtection;
+        global $plugin_tx;
 
         if (!isset($comment)) {
             $comment = Twocents_Comment::make(null, null);
         }
-        $html = '<form class="twocents_form" method="post" action="'
-            . XH_hsc($this->_getUrl()) . '">';
+        $url = XH_hsc($this->_getUrl());
+        return '<form class="twocents_form" method="post" action="' . $url . '">'
+            . $this->_renderHiddenFormFields($comment)
+            . $this->_renderUserInput($comment)
+            . $this->_renderEmailInput($comment)
+            . $this->_renderMessageTextarea($comment)
+            . $this->_renderButtons($comment)
+            . '</form>';
+    }
+
+    /**
+     * Renders the hidden form fields.
+     *
+     * @param Twocents_Comment $comment A comment.
+     *
+     * @return string (X)HTML.
+     *
+     * @global XH_CSRFProtection The CSRF protector.
+     */
+    private function _renderHiddenFormFields(Twocents_Comment $comment)
+    {
+        global $_XH_csrfProtection;
+
+        $html = '';
         if ($comment->getId()) {
             $html .= $_XH_csrfProtection->tokenInput();
         }
@@ -488,26 +509,68 @@ class Twocents_CommentsView
             'input type="hidden" name="twocents_id" value="'
             . XH_hsc($comment->getId()) . '"'
         );
-        $html .= '<label><span>' . $plugin_tx['twocents']['label_user'] . '</span>'
+        return $html;
+    }
+
+    /**
+     * Renders the user input field.
+     *
+     * @param Twocents_Comment $comment A comment.
+     *
+     * @return string (X)HTML.
+     *
+     * @global array The localization of the plugins.
+     */
+    private function _renderUserInput(Twocents_Comment $comment)
+    {
+        global $plugin_tx;
+
+        return '<label><span>' . $plugin_tx['twocents']['label_user'] . '</span>'
             . tag(
                 'input type="text" name="twocents_user" value="'
-                . XH_hsc($comment->getUser()) . '"'
+                . XH_hsc($comment->getUser()) . '" required="required"'
             )
-            . '</label>'
-            . '<label><span>' . $plugin_tx['twocents']['label_email'] . '</span>'
+            . '</label>';
+    }
+
+    /**
+     * Renders the email input field.
+     *
+     * @param Twocents_Comment $comment A comment.
+     *
+     * @return string (X)HTML.
+     *
+     * @global array The localization of the plugins.
+     */
+    private function _renderEmailInput(Twocents_Comment $comment)
+    {
+        global $plugin_tx;
+
+        return '<label><span>' . $plugin_tx['twocents']['label_email'] . '</span>'
             . tag(
-                'input type="text" name="twocents_email" value="'
-                . XH_hsc($comment->getEmail()) . '"'
+                'input type="email" name="twocents_email" value="'
+                . XH_hsc($comment->getEmail()) . '" required="required"'
             )
-            . '</label>'
-            . '<label><span>' . $plugin_tx['twocents']['label_message']. '</span>'
-            . '<textarea name="twocents_message">'
-            . XH_hsc($comment->getMessage())
-            . '</textarea></label>'
-            . '<div class="twocents_form_buttons">'
-            . $this->_renderButtons($comment) . '</div>'
-            . '</form>';
-        return $html;
+            . '</label>';
+    }
+
+    /**
+     * Renders the message textarea.
+     *
+     * @param Twocents_Comment $comment A comment.
+     *
+     * @return string
+     *
+     * @global array The localization of the plugins.
+     */
+    private function _renderMessageTextarea(Twocents_Comment $comment)
+    {
+        global $plugin_tx;
+
+        return '<label><span>' . $plugin_tx['twocents']['label_message']
+            . '</span>'
+            . '<textarea name="twocents_message" required="required">'
+            . XH_hsc($comment->getMessage()) . '</textarea></label>';
     }
 
     /**
@@ -525,13 +588,15 @@ class Twocents_CommentsView
 
         $ptx = $plugin_tx['twocents'];
         $action = $comment->getId() ? 'update' : 'add';
-        $html = '<button name="twocents_action" value="' . $action . '_comment">'
+        $html = '<div class="twocents_form_buttons">'
+            . '<button name="twocents_action" value="' . $action . '_comment">'
             . $ptx['label_' . $action] . '</button>';
         if ($comment->getId()) {
             $html .= '<a href="' . $this->_getUrl() . '">'
                 . $ptx['label_cancel'] . '</a>';
         }
-        $html .= '<button type="reset">' . $ptx['label_reset'] . '</button>';
+        $html .= '<button type="reset">' . $ptx['label_reset'] . '</button>'
+            . '</div>';
         return $html;
     }
 

@@ -345,6 +345,7 @@ class CommentsViewTest extends PHPUnit_Framework_TestCase
                     'attributes' => array(
                         'type' => 'text',
                         'name' => 'twocents_user',
+                        'required' => 'required'
                         //'value' => ''
                     ),
                 )
@@ -387,8 +388,9 @@ class CommentsViewTest extends PHPUnit_Framework_TestCase
                 'child' => array(
                     'tag' => 'input',
                     'attributes' => array(
-                        'type' => 'text',
+                        'type' => 'email',
                         'name' => 'twocents_email',
+                        'required' => 'required'
                         //'value' => ''
                     ),
                 )
@@ -430,7 +432,10 @@ class CommentsViewTest extends PHPUnit_Framework_TestCase
                 'content' => 'Message',
                 'child' => array(
                     'tag' => 'textarea',
-                    'attributes' => array('name' => 'twocents_message'),
+                    'attributes' => array(
+                        'name' => 'twocents_message',
+                        'required' => 'required'
+                    )
                     //'content' => ''
                 )
             ),

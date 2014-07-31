@@ -1,9 +1,10 @@
 * manuals
 * delete confirmation
-* client side form validation
 * file error handling
+* check and document limitation: invalid HTML 4.01/XHTML 1.0
 
 * email notification
+* better server side email verification
 * markup for comments
 * admin area
 * moderated comments
