@@ -51,5 +51,6 @@ function twocents($topicname)
  * @var Twocents_Controller
  */
 $_Twocents_controller = new Twocents_Controller();
+$_Twocents_controller->dispatch();
 
 ?>

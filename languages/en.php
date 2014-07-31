@@ -14,5 +14,6 @@ $plugin_tx['twocents']['label_reset']="Reset";
 $plugin_tx['twocents']['error_user']="Invalid username!";
 $plugin_tx['twocents']['error_email']="Invalid email address!";
 $plugin_tx['twocents']['error_message']="Invalid comment!";
+$plugin_tx['twocents']['alt_icon']="empty speech bubble";
 
 ?>

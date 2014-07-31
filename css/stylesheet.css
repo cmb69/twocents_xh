@@ -1,3 +1,7 @@
+/*
+ * Front-end.
+ */
+
 .twocents_comments {
     list-style: none;
     padding-left: 0;
@@ -30,4 +34,16 @@
 }
 .twocents_form button {
     margin: 0 0.5em;
+}
+
+/*
+ * Back-end.
+ */
+
+.twocents_icon {
+    float: left;
+    margin: 0 16px 0 0;
+}
+.twocents_license {
+    text-align: justify;
 }
