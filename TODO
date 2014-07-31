@@ -1,4 +1,3 @@
-* prevent direct access
 * CSRF protection
 * German localization
 * manuals
