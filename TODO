@@ -1,7 +1,6 @@
 * manuals
-* file error handling
 * check and document limitation: invalid HTML 4.01/XHTML 1.0
-* fix double deletion bug
+* file error handling
 
 * Ajax form submission
 

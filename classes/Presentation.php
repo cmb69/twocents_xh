@@ -246,7 +246,9 @@ EOT;
         $comment = Twocents_Comment::find(
             stsl($_POST['twocents_id']), $topicname
         );
-        $comment->delete();
+        if (isset($comment)) {
+            $comment->delete();
+        }
     }
 
     /**
