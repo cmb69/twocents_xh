@@ -151,9 +151,13 @@ EOT;
      * @param string $topicname A topicname.
      *
      * @return string (X)HTML.
+     *
+     * @global XH_CSRFProtection The CSRF protector.
      */
     public function renderComments($topicname)
     {
+        global $_XH_csrfProtection;
+
         $action = isset($_POST['twocents_action'])
             ? stsl($_POST['twocents_action']) : '';
         $html = '';
@@ -163,11 +167,13 @@ EOT;
             break;
         case 'update_comment':
             if (XH_ADM) {
+                $_XH_csrfProtection->check();
                 $html .= $this->_updateComment($topicname);
             }
             break;
         case 'remove_comment':
             if (XH_ADM) {
+                $_XH_csrfProtection->check();
                 $this->_deleteComment($topicname);
             }
             break;
@@ -394,13 +400,15 @@ class Twocents_CommentsView
      *
      * @return string (X)HTML.
      *
-     * @global array The localization of the plugins.
+     * @global array             The localization of the plugins.
+     * @global XH_CSRFProtection The CSRF protector.
      */
     private function _renderDeleteForm(Twocents_Comment $comment)
     {
-        global $plugin_tx;
+        global $plugin_tx, $_XH_csrfProtection;
 
         return '<form method="post" action="' . XH_hsc($this->_getUrl()) . '">'
+            . $_XH_csrfProtection->tokenInput()
             . tag(
                 'input type="hidden" name="twocents_id" value="'
                 . $comment->getId() . '"'
@@ -461,22 +469,26 @@ class Twocents_CommentsView
      *
      * @return string (X)HTML.
      *
-     * @global array The localization of the plugins.
+     * @global array             The localization of the plugins.
+     * @global XH_CSRFProtection The CSRF protector.
      */
     private function _renderCommentForm(Twocents_Comment $comment = null)
     {
-        global $plugin_tx;
+        global $plugin_tx, $_XH_csrfProtection;
 
         if (!isset($comment)) {
             $comment = Twocents_Comment::make(null, null);
         }
-        return '<form class="twocents_form" method="post" action="'
-            . XH_hsc($this->_getUrl()) . '">'
-            . tag(
-                'input type="hidden" name="twocents_id" value="'
-                . XH_hsc($comment->getId()) . '"'
-            )
-            . '<label><span>' . $plugin_tx['twocents']['label_user'] . '</span>'
+        $html = '<form class="twocents_form" method="post" action="'
+            . XH_hsc($this->_getUrl()) . '">';
+        if ($comment->getId()) {
+            $html .= $_XH_csrfProtection->tokenInput();
+        }
+        $html .= tag(
+            'input type="hidden" name="twocents_id" value="'
+            . XH_hsc($comment->getId()) . '"'
+        );
+        $html .= '<label><span>' . $plugin_tx['twocents']['label_user'] . '</span>'
             . tag(
                 'input type="text" name="twocents_user" value="'
                 . XH_hsc($comment->getUser()) . '"'
@@ -495,6 +507,7 @@ class Twocents_CommentsView
             . '<div class="twocents_form_buttons">'
             . $this->_renderButtons($comment) . '</div>'
             . '</form>';
+        return $html;
     }
 
     /**

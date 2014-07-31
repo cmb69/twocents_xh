@@ -14,8 +14,9 @@
  * @link      http://3-magi.net/?CMSimple_XH/Twocents_XH
  */
 
-require_once '../../cmsimple/functions.php';
 require_once './vendor/autoload.php';
+require_once '../../cmsimple/classes/CSRFProtection.php';
+require_once '../../cmsimple/functions.php';
 require_once './classes/DataSource.php';
 require_once './classes/Presentation.php';
 
@@ -48,9 +49,13 @@ class ControllerTest extends PHPUnit_Framework_TestCase
      * Sets up the test fixture.
      *
      * @return void
+     *
+     * @global XH_CSRFProtection The CSRF protection mock.
      */
     public function setUp()
     {
+        global $_XH_csrfProtection;
+
         $this->_defineConstant('XH_ADM', false);
         $this->_subject = new Twocents_Controller();
         $this->_findByTopicnameMock = new PHPUnit_Extensions_MockStaticMethod(
@@ -63,6 +68,8 @@ class ControllerTest extends PHPUnit_Framework_TestCase
             'Twocents_CommentsView::make', $this->_subject
         );
         $viewMakeStub->expects($this->any())->will($this->returnValue($viewSpy));
+        $_XH_csrfProtection = $this->getMockBuilder('XH_CSRFProtection')
+            ->disableOriginalConstructor()->getMock();
     }
 
     /**
