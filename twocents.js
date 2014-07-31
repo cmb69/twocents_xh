@@ -5,11 +5,14 @@
  * @license   http://www.gnu.org/licenses/gpl-3.0.en.html GNU GPLv3
  * @version   $Id$
  */
+
+/*global TWOCENTS */
+
 (function () {
     "use strict";
 
     function convertAsToButtons() {
-        var divs, i, a;
+        var divs, i, as;
 
         function convertAToButton(a) {
             var button;
@@ -27,11 +30,30 @@
         for (i = 0; i < divs.length; i += 1) {
             if (divs[i].className === "twocents_admin_tools" ||
                     divs[i].className === "twocents_form_buttons") {
-                a = divs[i].getElementsByTagName("a")[0];
-                convertAToButton(a);
+                as = divs[i].getElementsByTagName("a");
+                if (as.length === 1) {
+                    convertAToButton(as[0]);
+                }
+            }
+        }
+    }
+
+    function addDeleteConfirmation() {
+        var divs, i, form;
+
+        function confirmDeletion() {
+            return window.confirm(TWOCENTS.deleteMessage);
+        }
+
+        divs = document.getElementsByTagName("div");
+        for (i = 0; i < divs.length; i += 1) {
+            if (divs[i].className === "twocents_admin_tools") {
+                form = divs[i].getElementsByTagName("form")[0];
+                form.onsubmit = confirmDeletion;
             }
         }
     }
 
     convertAsToButtons();
+    addDeleteConfirmation();
 }());

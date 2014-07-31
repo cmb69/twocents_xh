@@ -330,16 +330,10 @@ class Twocents_CommentsView
      * Renders the view.
      *
      * @return string (X)HTML.
-     *
-     * @global array  The paths of system files and folders.
-     * @global string The (X)HTML fragment to insert at the bottom of the body.
      */
     public function render()
     {
-        global $pth, $bjs;
-
-        $bjs .= '<script type="text/javascript" src="' . $pth['folder']['plugins']
-            . 'twocents/twocents.js"></script>';
+        $this->_writeScriptsToBjs();
         $html = '<ul class="twocents_comments">';
         foreach ($this->_comments as $comment) {
             $html .= $this->_renderComment($comment);
@@ -351,6 +345,28 @@ class Twocents_CommentsView
             $html .= $this->_renderCommentForm($this->_currentComment);
         }
         return $html;
+    }
+
+    /**
+     * Writes the scripts to $bjs.
+     *
+     * @return void
+     *
+     * @global array  The paths of system files and folders.
+     * @global string The (X)HTML fragment to insert at the bottom of the body.
+     */
+    private function _writeScriptsToBjs()
+    {
+        global $pth, $bjs, $plugin_tx;
+
+        $message = addcslashes($plugin_tx['twocents']['message_delete'], "\"\r\n");
+        $bjs .= <<<EOT
+<script type="text/javascript">/* <[CDATA[ */
+TWOCENTS = {deleteMessage: "$message"};
+/* ]]> */</script>
+<script type="text/javascript"
+        src="{$pth['folder']['plugins']}twocents/twocents.js"></script>
+EOT;
     }
 
     /**

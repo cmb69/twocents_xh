@@ -15,6 +15,7 @@ $plugin_tx['twocents']['label_reset']="Zurücksetzen";
 $plugin_tx['twocents']['error_user']="Ungültiger Name!";
 $plugin_tx['twocents']['error_email']="Ungültige E-Mail-Adresse!";
 $plugin_tx['twocents']['error_message']="Ungültige Kommentar!";
+$plugin_tx['twocents']['message_delete']="Dieser Kommentar wird gelöscht.";
 $plugin_tx['twocents']['alt_icon']="leere Sprechblase";
 
 ?>

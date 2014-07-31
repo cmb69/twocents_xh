@@ -91,7 +91,8 @@ class CommentsViewTest extends PHPUnit_Framework_TestCase
                 'label_message' => 'Message',
                 'label_reset' => 'Reset',
                 'label_update' => 'Update Comment',
-                'label_user' => 'Username'
+                'label_user' => 'Username',
+                'message_delete' => 'Delete?'
             )
         );
         $commentStub = $this->getMockBuilder('Twocents_Comment')
@@ -116,6 +117,52 @@ class CommentsViewTest extends PHPUnit_Framework_TestCase
         );
         $_XH_csrfProtection = $this->getMockBuilder('XH_CSRFProtection')
             ->disableOriginalConstructor()->getMock();
+    }
+
+    /**
+     * Tests that a script is rendered to $bjs.
+     *
+     * @return void
+     *
+     * @global string The (X)HTML fragment to be inserted into the body element.
+     */
+    public function testRendersMainScriptToBjs()
+    {
+        global $bjs;
+
+        $this->_subject->render();
+        $this->assertTag(
+            array(
+                'tag' => 'script',
+                'attributes' => array(
+                    'type' => 'text/javascript',
+                    'src' => 'twocents/twocents.js'
+                )
+            ),
+            $bjs
+        );
+    }
+
+    /**
+     * Tests that the configuration script is rendered to $bjs.
+     *
+     * @return void
+     *
+     * @global string The (X)HTML fragment to be inserted into the body element.
+     */
+    public function testRendersConfigScriptToBjs()
+    {
+        global $bjs;
+
+        $this->_subject->render();
+        $this->assertTag(
+            array(
+                'tag' => 'script',
+                'attributes' => array('type' => 'text/javascript'),
+                'content' => 'TWOCENTS = {'
+            ),
+            $bjs
+        );
     }
 
     /**

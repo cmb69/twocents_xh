@@ -1,12 +1,13 @@
 * manuals
-* delete confirmation
 * file error handling
 * check and document limitation: invalid HTML 4.01/XHTML 1.0
+* fix double deletion bug
+
+* Ajax form submission
 
 * email notification
 * better server side email verification
 * markup for comments
 * admin area
 * moderated comments
-* Ajax form submission
 * multiple comments on a single page (requires topicname to be sent)
