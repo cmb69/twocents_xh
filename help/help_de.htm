@@ -12,15 +12,22 @@
 <h1>Twocents_XH - ein CMSimple_XH Plugin</h1>
 <img src="../twocents.png" style="float: left; margin: 0 16px 0 0" alt="leere
 Sprechblase">
-<p></p>
+<p>Twocents_XH erlaubt Ihren Besuchern Ihren Senf abzugeben (engl. to put in
+one's two cents). ;) Sie können es als allgemeine Kommentarmöglichkeit auf
+mehreren Seiten, oder als Gästebuch auf einer einzigen Seite, oder als beides
+verwenden.</p>
 
 <ul id="nav">
 <li><a href="#notice">Wichtiger Hinweis</a></li>
 <li><a href="#requirements">Voraussetzungen</a></li>
 <li><a href="#installation">Installation</a></li>
 <li><a href="#settings">Einstellungen</a></li>
-<li><a href="#usage">Verwendung</a></li>
-<!--<li><a href="#limitations">Beschränkungen</a></li>-->
+<li><a href="#usage">Verwendung</a>
+<ul>
+<li><a href="#usage-admin">Administration</a></li>
+</ul>
+</li>
+<li><a href="#limitations">Beschränkungen</a></li>
 <li><a href="#license">Lizenz</a></li>
 <li><a href="#credits">Danksagung</a></li>
 </ul>
@@ -31,9 +38,9 @@ Sprechblase">
 stoßen!</strong></p>
 
 <h2 id="notice">Wichtiger Hinweis</h2>
-<p><strong>Twocents_XH konnte bisher noch nicht in diversen Umgebungen getestet
-werden. Es handelt sich um eine so genannte Beta Version. Vorsicht bei der
-Verwendung!</strong></p>
+<p><strong>Twocents_XH ist lediglich ein Entwurf &ndash; viele Features fehlen
+noch, und die bestehenden könnten sich ändern. Es handelt sich um eine so
+genannte Alpha Version. Äußerste Vorsicht bei der Verwendung!</strong></p>
 <div class="toplink"><a href="#">zum Seitenanfang</a></div>
 
 <h2 id="requirements">Voraussetzungen</h2>
@@ -72,10 +79,34 @@ anpassen.</p>
 <div class="toplink"><a href="#">zum Seitenanfang</a></div>
 
 <h2 id="usage">Verwendung</h2>
+<p>Um eine Kommentargelegenheit auf einer Seite zu platzieren, schreiben
+Sie:</p>
+<pre>{{{twocents('%THEMENNAME%');}}}</pre>
+<p>%THEMENNAME% kann ein beliebiger Name sein, aber er darf nur Buchstaben
+(a-z), Ziffern (0-9) und Minuszeichen (-) enthalten. Der Themenname steht nicht
+notwendigerweise in Beziehung zur Seitenüberschrift; vielmehr ist es nur der
+Name einer Datei, die im Unterordner twocents/ von CMSimple_XHs Content-Ordner
+gespeichert wird. Wenn Sie möchten, können Sie die Kommentare zum selben Thema
+auf verschiedenen Seiten anzeigen.</p>
+<p>Ein paar Beispiele:</p>
+<pre>{{{twocents('gaestebuch');}}}
+{{{twocents('artikel-1');}}}</pre>
+<p>Beachten Sie, dass höchstens ein Aufruf von twocents auf einer einzelnen Seite
+erfolgen darf.</p>
+<div class="toplink"><a href="#">back to top</a></div>
+
+<h3 id="usage-admin">Administration</h2>
+<p>Die Administration der Kommentare erfolgt auf den Seiten, auf denen die
+Kommentare angezeigt werden. Wenn Sie als Adminstrator angemeldet sind, dann
+sehen Sie Schalter zum Bearbeiten und Löschen der einzelnen Kommentare.</p>
 <div class="toplink"><a href="#">zum Seitenanfang</a></div>
 
-<!--<h2><a name="limitations">Beschränkungen</a></h2>-->
-<!--<div class="toplink"><a href="#">zum Seitenanfang</a></div>-->
+<h2><a name="limitations">Beschränkungen</a></h2>
+<p>Twocents_XH verwendet HTML5 Formularvalidierungs-Features. Diese werden von
+Validatoren für HTML 4.01 und XHTML 1.0 Templates beanstanded. Darüberhinaus
+verursachen Sie keine Probleme; alte Browser werden sie einfach ignorieren, und
+zeitgemäße Browser werden sie trotzdem beachten.</p>
+<div class="toplink"><a href="#">zum Seitenanfang</a></div>
 
 <h2 id="license">Lizenz</h2>
 <p>Twocents_XH kann unter Einhaltung der <a

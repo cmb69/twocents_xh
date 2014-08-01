@@ -12,15 +12,21 @@
 <h1>Twocents_XH – a CMSimple_XH Plugin</h1>
 <img src="../twocents.png" style="float: left; margin: 0 16px 0 0" alt="empty
 speech bubble">
-<p></p>
+<p>Twocents_XH allows your visitors to add their two cents. ;) You can use it as
+a general commenting possibility on multiple pages, or as a guestbook on a
+single page, or both.</p>
 
 <ul id="nav">
 <li><a href="#notice">Important Notice</a></li>
 <li><a href="#requirements">Requirements</a></li>
 <li><a href="#installation">Installation</a></li>
 <li><a href="#settings">Settings</a></li>
-<li><a href="#usage">Usage</a></li>
-<!--<li><a href="#limitations">Limitations</a></li>-->
+<li><a href="#usage">Usage</a>
+<ul>
+<li><a href="#usage-admin">Administration</a></li>
+</ul>
+</li>
+<li><a href="#limitations">Limitations</a></li>
 <li><a href="#license">License</a></li>
 <li><a href="#credits">Credits</a></li>
 </ul>
@@ -31,8 +37,9 @@ speech bubble">
 problems!</strong></p>
 
 <h2 id="notice">Important Notice</h2>
-<p><strong>Twocents_XH couldn't be tested so far in various environments. It is
-a so called beta version. Use with caution!</strong></p>
+<p><strong>Twocents_XH is merely a draft&mdash;many features are missing yet,
+and what is there might change. It is a so called alpha version. Use with utmost
+caution!</strong></p>
 <div class="toplink"><a href="#">back to top</a></div>
 
 <h2 id="requirements">Requirements</h2>
@@ -69,10 +76,31 @@ available), or customize them according to your needs.</p>
 <div class="toplink"><a href="#">back to top</a></div>
 
 <h2 id="usage">Usage</h2>
+<p>To place a comment facility on a page, write:</p>
+<pre>{{{twocents('%TOPICNAME%');}}}</pre>
+<p>%TOPICNAME% can be an arbitrary name, but it may contain only letters (a-z),
+digits (0-9) and minus signs (-). The topicname is not necessarily related to
+the page heading; in fact it is just the name of a file that is stored in the
+subfolder twocents/ of CMSimple_XH's content folder. If you like you can display
+the comments for the same topic on different pages.</p>
+<p>Some examples:</p>
+<pre>{{{twocents('guestbook');}}}
+{{{twocents('article-1');}}}</pre>
+<p>Note that there must be at most one call of twocents on a single page.</p>
 <div class="toplink"><a href="#">back to top</a></div>
 
-<!--<h2 id="limitations">Limitations</h2>
-<div class="toplink"><a href="#">back to top</a></div>-->
+<h3 id="usage-admin">Administration</h2>
+<p>The administration of the comments happens on the pages where the comments
+are displayed. When you're logged in as administrator, you'll see buttons to
+edit and delete each comment.</p>
+<div class="toplink"><a href="#">back to top</a></div>
+
+<h2 id="limitations">Limitations</h2>
+<p>Twocents_XH uses HTML5 form validation features. These will be critized by
+validators for HTML 4.01 and XHTML 1.0 templates. Other than that they cause no
+harm; old browsers will simply ignore them, and contemporary browsers will
+heed them nonetheless.</p>
+<div class="toplink"><a href="#">back to top</a></div>
 
 <h2 id="license">License</h2>
 <p>Twocents_XH is licensed under <a
