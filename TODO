@@ -1,8 +1,19 @@
-* file error handling
-* Ajax form submission
 * email notification
 * better server side email verification
+* moderated comments
+* CAPTCHA
+* nl2br
+* order of comments
+* restrict length of input data (sugg. by stoa
+  <http://cmsimpleforum.com/viewtopic.php?f=16&t=7933#p43084>)
+* set ID for individual comments
+* set max-width for input fields (sugg. by Der Zwerch
+  <http://cmsimpleforum.com/viewtopic.php?f=16&t=7933#p43081>)
+
+* button to toggle comments form (sugg by Der Zwerch
+  <http://cmsimpleforum.com/viewtopic.php?f=16&t=7933#p43083>)
+* Ajax form submission
+* file error handling
 * markup for comments
 * admin area
-* moderated comments
 * multiple comments on a single page (requires topicname to be sent)
