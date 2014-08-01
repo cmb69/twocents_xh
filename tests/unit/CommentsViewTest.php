@@ -197,6 +197,7 @@ class CommentsViewTest extends PHPUnit_Framework_TestCase
         $this->assertTag(
             array(
                 'tag' => 'li',
+                'id' => 'twocents_comment_' . self::ID,
                 'child' => array(
                     'tag' => 'p',
                     'content' => 'On 7/29/2014 at 2:55pm >cmb< wrote'

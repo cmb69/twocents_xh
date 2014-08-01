@@ -244,9 +244,11 @@ EOT;
         $email = $plugin_cf['twocents']['email_address'];
         if (!XH_ADM && $email != '') {
             $ptx = $plugin_tx['twocents'];
-            $message = $this->_getUrl() . PHP_EOL . PHP_EOL
+            $message = '<' . $this->_getUrl() . '#twocents_comment_'
+                . $this->_comment->getId() . '>' . PHP_EOL . PHP_EOL
                 . $ptx['label_user'] . ': ' . $this->_comment->getUser() . PHP_EOL
-                . $ptx['label_email'] . ': ' . $this->_comment->getEmail() . PHP_EOL
+                . $ptx['label_email'] . ': <' . $this->_comment->getEmail()
+                . '>' . PHP_EOL
                 . $ptx['label_message'] . ':' . PHP_EOL . PHP_EOL
                 . $this->_comment->getMessage() . PHP_EOL;
             $mailer = Twocents_Mailer::make();
@@ -435,12 +437,12 @@ EOT;
      */
     private function _renderComment(Twocents_Comment $comment)
     {
-        $html = '<li>';
         if (isset($this->_currentComment)
             && $this->_currentComment->getId() == $comment->getId()
         ) {
-            $html .= $this->_renderCommentForm($this->_currentComment);
+            $html = '<li>' . $this->_renderCommentForm($this->_currentComment);
         } else {
+            $html = '<li id="twocents_comment_' . $comment->getId() . '">';
             if (XH_ADM) {
                 $html .= $this->_renderAdminTools($comment);
             }
