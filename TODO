@@ -1,1 +1,8 @@
-* improve error handling in Twocents_Persister
+* file error handling
+* Ajax form submission
+* email notification
+* better server side email verification
+* markup for comments
+* admin area
+* moderated comments
+* multiple comments on a single page (requires topicname to be sent)
