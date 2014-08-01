@@ -18,6 +18,8 @@
     margin-left: 0.5em;
 }
 .twocents_form {
+    width: 30em;
+    max-width: 99%;
     margin: 2em 0;
 }
 .twocents_form label {
