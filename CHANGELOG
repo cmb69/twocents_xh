@@ -1,2 +1,11 @@
+Version 1.0alpha2 -- released 2014-08-02
+* restricted width of input fields (sugg. by Der Zwerch)
+* added optional email notification about new comments
+* added support for CAPTCHA plugins (insp. by stoa)
+* added configurable sort order (sugg. by oldnema)
+* added most minimalistic markup (linebreaks are converted to <br>)
+* added further restrictions on valid comment input (sugg. by stoa)
+* added IDs for individual comments for direct linking
+
 Version 1.0alpha1 -- released 2014-08-01
 * initial release
