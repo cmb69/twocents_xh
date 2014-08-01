@@ -13,6 +13,8 @@
         <exclude id="twocents">
             <directory name="test"/>
             <directory name="vendor"/>
+            <constant name="INTL_IDNA_VARIANT_UTS46"/>
+            <function name="idn_to_ascii"/>
         </exclude>
     </excludes>
 </phpcompatinfo>
