@@ -1,8 +1,5 @@
-* check and document limitation: invalid HTML 4.01/XHTML 1.0
 * file error handling
-
 * Ajax form submission
-
 * email notification
 * better server side email verification
 * markup for comments
