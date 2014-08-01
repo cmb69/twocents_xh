@@ -56,7 +56,7 @@ class CommentsViewTest extends PHPUnit_Framework_TestCase
     /**
      * The comment message.
      */
-    const MESSAGE = 'blah < blah';
+    const MESSAGE = "blah < blah\nblah";
 
     /**
      * The test subject.
@@ -219,7 +219,8 @@ class CommentsViewTest extends PHPUnit_Framework_TestCase
                 'tag' => 'li',
                 'child' => array(
                     'tag' => 'blockquote',
-                    'content' => self::MESSAGE
+                    'content' => 'blah < blah',
+                    'child' => array('tag' => 'br')
                 )
             ),
             $this->_subject->render()

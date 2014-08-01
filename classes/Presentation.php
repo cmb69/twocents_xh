@@ -447,7 +447,8 @@ EOT;
                 $html .= $this->_renderAdminTools($comment);
             }
             $html .= '<p>' . $this->_renderHeading($comment) . '</p>'
-                . '<blockquote>' . XH_hsc($comment->getMessage()) . '</blockquote>';
+                . '<blockquote>' . $this->_renderMessage($comment)
+                . '</blockquote>';
         }
         $html .= '</li>';
         return $html;
@@ -534,6 +535,20 @@ EOT;
                 '{TIME}' => $time,
                 '{USER}' => XH_hsc($comment->getUser())
             )
+        );
+    }
+
+    /**
+     * Renders the comment message.
+     *
+     * @param Twocents_Comment $comment A comment.
+     *
+     * @return string (X)HTML.
+     */
+    private function _renderMessage(Twocents_Comment $comment)
+    {
+        return preg_replace(
+            '/(?:\r\n|\r|\n)/', tag('br'), XH_hsc($comment->getMessage())
         );
     }
 
