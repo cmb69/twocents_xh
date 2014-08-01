@@ -12,11 +12,13 @@ $plugin_tx['twocents']['label_add']="Kommentar hinzufügen";
 $plugin_tx['twocents']['label_update']="Kommentar aktualisieren";
 $plugin_tx['twocents']['label_cancel']="Abbrechen";
 $plugin_tx['twocents']['label_reset']="Zurücksetzen";
+$plugin_tx['twocents']['email_subject']="Ein neuer Kommentar wurde gepostet";
 $plugin_tx['twocents']['error_topicname']="Ein Themenname darf nur Buchstaben (a-z), Ziffern (0-9) and Minus-Zeichen (-) enthalten!";
 $plugin_tx['twocents']['error_user']="Ungültiger Name!";
 $plugin_tx['twocents']['error_email']="Ungültige E-Mail-Adresse!";
 $plugin_tx['twocents']['error_message']="Ungültige Kommentar!";
 $plugin_tx['twocents']['message_delete']="Dieser Kommentar wird gelöscht.";
 $plugin_tx['twocents']['alt_icon']="leere Sprechblase";
+$plugin_tx['twocents']['cf_email_address']="Eine E-Mail-Adresse, an die Benachrichtigungen über neue Kommentare gesendet werden. Leer lassen, wenn Sie nicht benachrichtigt werden wollen.";
 
 ?>

@@ -17,6 +17,7 @@
 require_once './vendor/autoload.php';
 require_once '../../cmsimple/classes/CSRFProtection.php';
 require_once '../../cmsimple/functions.php';
+require_once './classes/Service.php';
 require_once './classes/DataSource.php';
 require_once './classes/Presentation.php';
 
@@ -53,16 +54,28 @@ class ControllerTest extends PHPUnit_Framework_TestCase
     private $_viewMock;
 
     /**
+     * The mailer mock.
+     *
+     * @var Twocents_Mailer
+     */
+    private $_mailerMock;
+
+    /**
      * Sets up the test fixture.
      *
      * @return void
      *
+     * @global array             The configuration of the plugins.
      * @global XH_CSRFProtection The CSRF protection mock.
      */
     public function setUp()
     {
-        global $_XH_csrfProtection;
+        global $plugin_cf, $_XH_csrfProtection;
 
+        $this->_defineConstant('CMSIMPLE_URL', 'http://localhost/xh/');
+        $plugin_cf = array(
+            'twocents' => array('email_address' => 'cmbecker69@gmx.de')
+        );
         $this->_defineConstant('XH_ADM', false);
         $this->_subject = new Twocents_Controller();
         $this->_findByTopicnameMock = new PHPUnit_Extensions_MockStaticMethod(
@@ -78,6 +91,14 @@ class ControllerTest extends PHPUnit_Framework_TestCase
         );
         $_XH_csrfProtection = $this->getMockBuilder('XH_CSRFProtection')
             ->disableOriginalConstructor()->getMock();
+        $this->_mailerMock = $this->getMockBuilder('Twocents_Mailer')
+            ->disableOriginalConstructor()->getMock();
+        $mailerMakeMock = new PHPUnit_Extensions_MockStaticMethod(
+            'Twocents_Mailer::make', $this->_subject
+        );
+        $mailerMakeMock->expects($this->any())->will(
+            $this->returnValue($this->_mailerMock)
+        );
     }
 
     /**
@@ -198,6 +219,24 @@ class ControllerTest extends PHPUnit_Framework_TestCase
             'Twocents_Comment::make', $this->_subject
         );
         $makeMock->expects($this->once())->will($this->returnValue($commentSpy));
+        $this->_subject->renderComments('foo');
+    }
+
+    /**
+     * Tests that adding a comment sends an email notification.
+     *
+     * @return void
+     */
+    public function testAddingCommentSendsEmailNotification()
+    {
+        $_POST = array(
+            'twocents_action' => 'add_comment',
+            'twocents_user' => 'cmb',
+            'twocents_email' => 'me@example.com',
+            'twocents_message' => 'blah blah'
+        );
+        $_SERVER['QUERY_STRING'] = 'Page';
+        $this->_mailerMock->expects($this->once())->method('send');
         $this->_subject->renderComments('foo');
     }
 

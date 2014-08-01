@@ -31,6 +31,11 @@ EOT
 }
 
 /**
+ * The service layer.
+ */
+require_once $pth['folder']['plugin_classes'] . 'Service.php';
+
+/**
  * The data source layer.
  */
 require_once $pth['folder']['plugin_classes'] . 'DataSource.php';

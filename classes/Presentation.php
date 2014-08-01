@@ -222,9 +222,48 @@ EOT;
         $html = $this->_renderErrorMessages();
         if (!$html) {
             $this->_comment->insert();
+            $this->_sendNotificationEmail();
             $this->_comment = null;
         }
         return $html;
+    }
+
+    /**
+     * Sends an email notification if an address is configured and we're not in
+     * admin mode.
+     *
+     * @return void
+     *
+     * @global array The configuration of the plugins.
+     * @global array The localization of the plugins.
+     */
+    private function _sendNotificationEmail()
+    {
+        global $plugin_cf, $plugin_tx;
+
+        $email = $plugin_cf['twocents']['email_address'];
+        if (!XH_ADM && $email != '') {
+            $ptx = $plugin_tx['twocents'];
+            $message = $this->_getUrl() . PHP_EOL . PHP_EOL
+                . $ptx['label_user'] . ': ' . $this->_comment->getUser() . PHP_EOL
+                . $ptx['label_email'] . ': ' . $this->_comment->getEmail() . PHP_EOL
+                . $ptx['label_message'] . ':' . PHP_EOL . PHP_EOL
+                . $this->_comment->getMessage() . PHP_EOL;
+            $mailer = Twocents_Mailer::make();
+            $mailer->send(
+                $email, $ptx['email_subject'], $message, 'From: ' . $email
+            );
+        }
+    }
+
+    /**
+     * Returns the URL that the new comment was posted to.
+     *
+     * @return string
+     */
+    private function _getUrl()
+    {
+        return CMSIMPLE_URL . '?' . $_SERVER['QUERY_STRING'];
     }
 
     /**
