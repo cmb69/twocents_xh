@@ -75,7 +75,10 @@ class ControllerTest extends PHPUnit_Framework_TestCase
 
         $this->_defineConstant('CMSIMPLE_URL', 'http://localhost/xh/');
         $plugin_cf = array(
-            'twocents' => array('email_address' => 'cmbecker69@gmx.de')
+            'twocents' => array(
+                'email_address' => 'cmbecker69@gmx.de',
+                'email_linebreak' => 'CRLF'
+            )
         );
         $this->_defineConstant('XH_ADM', false);
         $this->_subject = new Twocents_Controller();
@@ -242,6 +245,14 @@ class ControllerTest extends PHPUnit_Framework_TestCase
         $this->_mailerMock->expects($this->any())->method('isValidAddress')
             ->will($this->returnValue(true));
         $this->_mailerMock->expects($this->once())->method('send');
+        $commentSpy = $this->getMockBuilder('Twocents_Comment')
+            ->disableOriginalConstructor()
+            ->setMethods(array('insert'))
+            ->getMock();
+        $makeMock = new PHPUnit_Extensions_MockStaticMethod(
+            'Twocents_Comment::make', $this->_subject
+        );
+        $makeMock->expects($this->once())->will($this->returnValue($commentSpy));
         $this->_subject->renderComments('foo');
     }
 
