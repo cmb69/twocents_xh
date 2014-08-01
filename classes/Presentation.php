@@ -251,7 +251,9 @@ EOT;
                 . '>' . PHP_EOL
                 . $ptx['label_message'] . ':' . PHP_EOL . PHP_EOL
                 . $this->_comment->getMessage() . PHP_EOL;
-            $mailer = Twocents_Mailer::make();
+            $mailer = Twocents_Mailer::make(
+                ($plugin_cf['twocents']['email_linebreak'] == 'LF') ? "\n" : "\r\n"
+            );
             $mailer->send(
                 $email, $ptx['email_subject'], $message, 'From: ' . $email
             );
