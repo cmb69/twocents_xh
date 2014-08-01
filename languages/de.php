@@ -19,6 +19,7 @@ $plugin_tx['twocents']['error_email']="Ungültige E-Mail-Adresse!";
 $plugin_tx['twocents']['error_message']="Ungültige Kommentar!";
 $plugin_tx['twocents']['message_delete']="Dieser Kommentar wird gelöscht.";
 $plugin_tx['twocents']['alt_icon']="leere Sprechblase";
+$plugin_tx['twocents']['cf_order']="Kommentare in aufsteigender (\"ASC\") oder absteigender (\"DESC\") Reihenfolge sortieren?";
 $plugin_tx['twocents']['cf_email_address']="Eine E-Mail-Adresse, an die Benachrichtigungen über neue Kommentare gesendet werden. Leer lassen, wenn Sie nicht benachrichtigt werden wollen.";
 $plugin_tx['twocents']['cf_email_linebreak']="Die Zeilenumbrüche, die für die E-Mails verwendet werden sollen. Schalten Sie auf \"LF\" um, wenn Sie korrupte E-Mails erhalten."
 

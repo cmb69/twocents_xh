@@ -76,6 +76,7 @@ class ControllerTest extends PHPUnit_Framework_TestCase
         $this->_defineConstant('CMSIMPLE_URL', 'http://localhost/xh/');
         $plugin_cf = array(
             'twocents' => array(
+                'order' => 'ASC',
                 'email_address' => 'cmbecker69@gmx.de',
                 'email_linebreak' => 'CRLF'
             )

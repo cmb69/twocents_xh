@@ -152,12 +152,13 @@ EOT;
      *
      * @return string (X)HTML.
      *
+     * @global array             The configuration of the plugins.
      * @global array             The localization of the plugins.
      * @global XH_CSRFProtection The CSRF protector.
      */
     public function renderComments($topicname)
     {
-        global $plugin_tx, $_XH_csrfProtection;
+        global $plugin_cf, $plugin_tx, $_XH_csrfProtection;
 
         if (!$this->_isValidTopicname($topicname)) {
             return XH_message('fail', $plugin_tx['twocents']['error_topicname']);
@@ -188,6 +189,9 @@ EOT;
             );
         }
         $comments = Twocents_Comment::findByTopicname($topicname);
+        if ($plugin_cf['twocents']['order'] == 'DESC') {
+            $comments = array_reverse($comments);
+        }
         $html .= Twocents_CommentsView::make($comments, $this->_comment)->render();
         return $html;
     }
