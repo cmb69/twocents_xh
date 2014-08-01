@@ -320,13 +320,14 @@ EOT;
         global $plugin_tx;
 
         $html = '';
-        if ($this->_comment->getUser() == '') {
+        if (utf8_strlen($this->_comment->getUser()) < 2) {
             $html .= XH_message('fail', $plugin_tx['twocents']['error_user']);
         }
-        if ($this->_comment->getEmail() == '') {
+        $mailer = Twocents_Mailer::make();
+        if (!$mailer->isValidAddress($this->_comment->getEmail())) {
             $html .= XH_message('fail', $plugin_tx['twocents']['error_email']);
         }
-        if ($this->_comment->getMessage() == '') {
+        if (utf8_strlen($this->_comment->getMessage()) < 2) {
             $html .= XH_message('fail', $plugin_tx['twocents']['error_message']);
         }
         return $html;

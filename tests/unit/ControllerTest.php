@@ -17,6 +17,7 @@
 require_once './vendor/autoload.php';
 require_once '../../cmsimple/classes/CSRFProtection.php';
 require_once '../../cmsimple/functions.php';
+require_once '../utf8/utf8.php';
 require_once './classes/Service.php';
 require_once './classes/DataSource.php';
 require_once './classes/Presentation.php';
@@ -142,6 +143,8 @@ class ControllerTest extends PHPUnit_Framework_TestCase
             'twocents_message' => 'blah blah'
         );
         $_SERVER['QUERY_STRING'] = 'Page';
+        $this->_mailerMock->expects($this->any())->method('isValidAddress')
+            ->will($this->returnValue(true));
         $commentSpy = $this->getMockBuilder('Twocents_Comment')
             ->disableOriginalConstructor()
             ->setMethods(array('insert'))
@@ -180,7 +183,7 @@ class ControllerTest extends PHPUnit_Framework_TestCase
         $_POST = array(
             'twocents_action' => 'add_comment',
             'twocents_user' => 'cmb',
-            'twocents_email' => '',
+            'twocents_email' => 'cmb',
             'twocents_message' => 'blah blah'
         );
         $this->_assertDoesNotAddInvalidComment();
@@ -236,6 +239,8 @@ class ControllerTest extends PHPUnit_Framework_TestCase
             'twocents_message' => 'blah blah'
         );
         $_SERVER['QUERY_STRING'] = 'Page';
+        $this->_mailerMock->expects($this->any())->method('isValidAddress')
+            ->will($this->returnValue(true));
         $this->_mailerMock->expects($this->once())->method('send');
         $this->_subject->renderComments('foo');
     }
@@ -256,6 +261,8 @@ class ControllerTest extends PHPUnit_Framework_TestCase
             'twocents_message' => 'blah blah'
         );
         $_SERVER['QUERY_STRING'] = 'Page';
+        $this->_mailerMock->expects($this->any())->method('isValidAddress')
+            ->will($this->returnValue(true));
         $commentSpy = $this->getMockBuilder('Twocents_Comment')
             ->disableOriginalConstructor()
             ->setMethods(array('update'))

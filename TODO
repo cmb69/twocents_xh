@@ -1,6 +1,4 @@
-* better server side email verification
-* restrict length of input data (sugg. by stoa
-  <http://cmsimpleforum.com/viewtopic.php?f=16&t=7933#p43084>)
+* mails: linebreak config option
 * moderated comments
 * CAPTCHA
 * order of comments
