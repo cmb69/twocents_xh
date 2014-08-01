@@ -336,12 +336,37 @@ EOT;
         if (utf8_strlen($this->_comment->getMessage()) < 2) {
             $html .= XH_message('fail', $plugin_tx['twocents']['error_message']);
         }
+        $html .= $this->_renderCaptchaError();
         return $html;
+    }
+
+    /**
+     * Renders the CAPTCHA error message, if any.
+     *
+     * @return string (X)HTML.
+     *
+     * @global array The paths of system files and folders.
+     * @global array The configuration of the plugins.
+     * @global array The localization of the plugins.
+     */
+    private function _renderCaptchaError()
+    {
+        global $pth, $plugin_cf, $plugin_tx;
+
+        $pluginname = $plugin_cf['twocents']['captcha_plugin'];
+        $filename = $pth['folder']['plugins'] . $pluginname . '/captcha.php';
+        if (!XH_ADM && $pluginname && is_readable($filename)) {
+            include_once $filename;
+            if (!call_user_func($pluginname . '_captcha_check')) {
+                return XH_message('fail', $plugin_tx['twocents']['error_captcha']);
+            }
+        }
+        return '';
     }
 }
 
 /**
- * The comments views..
+ * The comments views.
  *
  * @category CMSimple_XH
  * @package  Twocents
@@ -581,6 +606,7 @@ EOT;
             . $this->_renderUserInput($comment)
             . $this->_renderEmailInput($comment)
             . $this->_renderMessageTextarea($comment)
+            . $this->_renderCaptcha()
             . $this->_renderButtons($comment)
             . '</form>';
     }
@@ -671,6 +697,28 @@ EOT;
             . '<textarea name="twocents_message" cols="50" rows="8"'
             . ' required="required">'
             . XH_hsc($comment->getMessage()) . '</textarea></label></div>';
+    }
+
+    /**
+     * Renders the CAPTCHA, if configured and available.
+     *
+     * @return string (X)HTML.
+     *
+     * @global array The paths of system files and folders.
+     * @global array The configuration of the plugins.
+     */
+    private function _renderCaptcha()
+    {
+        global $pth, $plugin_cf;
+
+        $pluginname = $plugin_cf['twocents']['captcha_plugin'];
+        $filename = $pth['folder']['plugins'] . $pluginname . '/captcha.php';
+        if (!XH_ADM && $pluginname && is_readable($filename)) {
+            include_once $filename;
+            return call_user_func($pluginname . '_captcha_display');
+        } else {
+            return '';
+        }
     }
 
     /**

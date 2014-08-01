@@ -17,10 +17,12 @@ $plugin_tx['twocents']['error_topicname']="Ein Themenname darf nur Buchstaben (a
 $plugin_tx['twocents']['error_user']="Ungültiger Name!";
 $plugin_tx['twocents']['error_email']="Ungültige E-Mail-Adresse!";
 $plugin_tx['twocents']['error_message']="Ungültige Kommentar!";
+$plugin_tx['twocents']['error_captcha']="Falscher CAPTCHA Code!";
 $plugin_tx['twocents']['message_delete']="Dieser Kommentar wird gelöscht.";
 $plugin_tx['twocents']['alt_icon']="leere Sprechblase";
 $plugin_tx['twocents']['cf_order']="Kommentare in aufsteigender (\"ASC\") oder absteigender (\"DESC\") Reihenfolge sortieren?";
 $plugin_tx['twocents']['cf_email_address']="Eine E-Mail-Adresse, an die Benachrichtigungen über neue Kommentare gesendet werden. Leer lassen, wenn Sie nicht benachrichtigt werden wollen.";
-$plugin_tx['twocents']['cf_email_linebreak']="Die Zeilenumbrüche, die für die E-Mails verwendet werden sollen. Schalten Sie auf \"LF\" um, wenn Sie korrupte E-Mails erhalten."
+$plugin_tx['twocents']['cf_email_linebreak']="Die Zeilenumbrüche, die für die E-Mails verwendet werden sollen. Schalten Sie auf \"LF\" um, wenn Sie korrupte E-Mails erhalten.";
+$plugin_tx['twocents']['cf_captcha_plugin']="Der (Ordner-)Name eines spezifikationsgerechten CAPTCHA-Plugins. Leer lassen, um auf den CAPTCHA-Test zu verzichten.";
 
 ?>

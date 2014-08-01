@@ -78,7 +78,8 @@ class ControllerTest extends PHPUnit_Framework_TestCase
             'twocents' => array(
                 'order' => 'ASC',
                 'email_address' => 'cmbecker69@gmx.de',
-                'email_linebreak' => 'CRLF'
+                'email_linebreak' => 'CRLF',
+                'captcha_plugin' => ''
             )
         );
         $this->_defineConstant('XH_ADM', false);

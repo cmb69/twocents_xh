@@ -17,10 +17,12 @@ $plugin_tx['twocents']['error_topicname']="A topicname may only contain letters 
 $plugin_tx['twocents']['error_user']="Invalid name!";
 $plugin_tx['twocents']['error_email']="Invalid email address!";
 $plugin_tx['twocents']['error_message']="Invalid comment!";
+$plugin_tx['twocents']['error_captcha']="Wrong CAPTCHA code!";
 $plugin_tx['twocents']['message_delete']="This comment will be deleted.";
 $plugin_tx['twocents']['alt_icon']="empty speech bubble";
 $plugin_tx['twocents']['cf_order']="Sort the comments in ascending (\"ASC\") or descending (\"DESC\") order?";
 $plugin_tx['twocents']['cf_email_address']="An email address where notifications about new comments will be send. Leave empty if you don't want to be notified.";
-$plugin_tx['twocents']['cf_email_linebreak']="The linebreaks to use for the emails. Set to \"LF\" when you receive broken emails."
+$plugin_tx['twocents']['cf_email_linebreak']="The linebreaks to use for the emails. Set to \"LF\" when you receive broken emails.";
+$plugin_tx['twocents']['cf_captcha_plugin']="The (folder)name of a conforming CAPTCHA plugin. Leave empty to eschew the CAPTCHA test.";
 
 ?>
