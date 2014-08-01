@@ -559,12 +559,13 @@ EOT;
     {
         global $plugin_tx;
 
-        return '<label><span>' . $plugin_tx['twocents']['label_user'] . '</span>'
+        return '<div><label><span>' . $plugin_tx['twocents']['label_user']
+            . '</span>'
             . tag(
                 'input type="text" name="twocents_user" value="'
-                . XH_hsc($comment->getUser()) . '" required="required"'
+                . XH_hsc($comment->getUser()) . '" size="20" required="required"'
             )
-            . '</label>';
+            . '</label></div>';
     }
 
     /**
@@ -580,12 +581,13 @@ EOT;
     {
         global $plugin_tx;
 
-        return '<label><span>' . $plugin_tx['twocents']['label_email'] . '</span>'
+        return '<div><label><span>' . $plugin_tx['twocents']['label_email']
+            . '</span>'
             . tag(
                 'input type="email" name="twocents_email" value="'
-                . XH_hsc($comment->getEmail()) . '" required="required"'
+                . XH_hsc($comment->getEmail()) . '" size="20" required="required"'
             )
-            . '</label>';
+            . '</label></div>';
     }
 
     /**
@@ -601,10 +603,11 @@ EOT;
     {
         global $plugin_tx;
 
-        return '<label><span>' . $plugin_tx['twocents']['label_message']
+        return '<div><label><span>' . $plugin_tx['twocents']['label_message']
             . '</span>'
-            . '<textarea name="twocents_message" required="required">'
-            . XH_hsc($comment->getMessage()) . '</textarea></label>';
+            . '<textarea name="twocents_message" cols="50" rows="8"'
+            . ' required="required">'
+            . XH_hsc($comment->getMessage()) . '</textarea></label></div>';
     }
 
     /**

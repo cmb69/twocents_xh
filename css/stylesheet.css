@@ -33,7 +33,7 @@
 .twocents_form textarea {
     height: 12em;
 }
-.twocents_form div {
+.twocents_form_buttons {
     width: 99%;
     text-align: center;
 }
