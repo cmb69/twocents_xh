@@ -171,19 +171,20 @@ class CommentsViewTest extends PHPUnit_Framework_TestCase
     }
 
     /**
-     * Tests that an ul element with 3 children is rendered.
+     * Tests that a div element with 3 children is rendered.
      *
      * @return void
      */
-    public function testRendersUlWith3Children()
+    public function testRendersDivWith3Children()
     {
         $this->assertTag(
             array(
-                'tag' => 'ul',
+                'tag' => 'div',
                 'attributes' => array('class' => 'twocents_comments'),
                 'children' => array(
                     'only' => array(
-                        'tag' => 'li'
+                        'tag' => 'div',
+                        'attributes' => (array('class' => 'twocents_comment'))
                     ),
                     'count' => 3
                 )
@@ -193,16 +194,17 @@ class CommentsViewTest extends PHPUnit_Framework_TestCase
     }
 
     /**
-     * Tests that a li element with the comment heading is rendered.
+     * Tests that the comment heading is rendered.
      *
      * @return void
      */
-    public function testRendersLiWithHeading()
+    public function testRendersCommentHeading()
     {
         $this->assertTag(
             array(
-                'tag' => 'li',
+                'tag' => 'div',
                 'id' => 'twocents_comment_' . self::ID,
+                'attributes' => array('class' => 'twocents_comment'),
                 'child' => array(
                     'tag' => 'p',
                     'content' => 'On 7/29/2014 at 2:55pm >cmb< wrote'
@@ -213,15 +215,16 @@ class CommentsViewTest extends PHPUnit_Framework_TestCase
     }
 
     /**
-     * Tests that a li element with the comment message is rendered.
+     * Tests that the comment message is rendered.
      *
      * @return void
      */
-    public function testRendersLiWithMessage()
+    public function testRendersCommentMessage()
     {
         $this->assertTag(
             array(
-                'tag' => 'li',
+                'tag' => 'div',
+                'attributes' => array('class' => 'twocents_comment'),
                 'child' => array(
                     'tag' => 'blockquote',
                     'content' => 'blah < blah',

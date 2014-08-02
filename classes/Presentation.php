@@ -473,14 +473,14 @@ class Twocents_CommentsView
     public function render()
     {
         $this->_writeScriptsToBjs();
-        $html = '<ul class="twocents_comments">';
+        $html = '<div class="twocents_comments">';
         foreach ($this->_comments as $comment) {
             if ($comment->isVisible() || XH_ADM) {
                 $view = new Twocents_CommentView($comment, $this->_currentComment);
                 $html .= $view->render();
             }
         }
-        $html .= '</ul>';
+        $html .= '</div>';
         if (!isset($this->_currentComment)
             || $this->_currentComment->getId() == null
         ) {
@@ -564,8 +564,8 @@ class Twocents_CommentView
         $id = $this->_isCurrentComment()
             ? ''
             : ' id="twocents_comment_' . $this->_comment->getId() . '"';
-        $class = $this->_comment->isVisible() ? '' : ' class="twocents_hidden"';
-        $html = '<li' . $id . $class . '>';
+        $class = $this->_comment->isVisible() ? '' : ' twocents_hidden';
+        $html = '<div' . $id . ' class="twocents_comment' . $class . '">';
         if ($this->_isCurrentComment()) {
             $view = new Twocents_CommentFormView($this->_currentComment);
             $html .= $view->render();
@@ -577,7 +577,7 @@ class Twocents_CommentView
                 . '<blockquote>' . $this->_renderMessage()
                 . '</blockquote>';
         }
-        $html .= '</li>';
+        $html .= '</div>';
         return $html;
     }
 

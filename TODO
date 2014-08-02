@@ -1,6 +1,5 @@
 * Ajax form submission
 * add "thanks for your comment"
-* don't use <ul>
 * update manuals and CHANGELOG
 
 * config option "captcha_plugin" should be enum

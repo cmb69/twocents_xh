@@ -3,12 +3,9 @@
  */
 
 .twocents_comments {
-    list-style: none;
-    padding-left: 0;
 }
-.twocents_comments li {
+.twocents_comment {
     overflow: hidden;
-    margin-left: 0;
 }
 .twocents_hidden {
     opacity: 0.7;
