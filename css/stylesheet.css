@@ -6,7 +6,7 @@
     list-style: none;
     padding-left: 0;
 }
-.twocents_comments {
+.twocents_comments li {
     overflow: hidden;
     margin-left: 0;
 }
@@ -19,6 +19,8 @@
 }
 .twocents_admin_tools form {
     display: inline-block;
+}
+.twocents_admin_tools button {
     margin-left: 0.5em;
 }
 .twocents_form {
