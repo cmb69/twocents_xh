@@ -3,8 +3,10 @@
 $plugin_tx['twocents']['format_heading']="On {DATE} at {TIME} {USER} wrote:";
 $plugin_tx['twocents']['format_date']="n/d/Y";
 $plugin_tx['twocents']['format_time']="g:ia";
-$plugin_tx['twocents']['label_delete']="Delete";
 $plugin_tx['twocents']['label_edit']="Edit";
+$plugin_tx['twocents']['label_hide']="Hide";
+$plugin_tx['twocents']['label_show']="Show";
+$plugin_tx['twocents']['label_delete']="Delete";
 $plugin_tx['twocents']['label_user']="Name";
 $plugin_tx['twocents']['label_email']="Email";
 $plugin_tx['twocents']['label_message']="Comment";

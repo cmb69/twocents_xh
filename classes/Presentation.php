@@ -176,6 +176,12 @@ EOT;
                 $html .= $this->_updateComment($topicname);
             }
             break;
+        case 'toggle_visibility':
+            if (XH_ADM) {
+                $_XH_csrfProtection->check();
+                $this->_toggleVisibility($topicname);
+            }
+            break;
         case 'remove_comment':
             if (XH_ADM) {
                 $_XH_csrfProtection->check();
@@ -295,6 +301,26 @@ EOT;
             $this->_comment = null;
         }
         return $html;
+    }
+
+    /**
+     * Toggles the visibility of a comment.
+     *
+     * @param string $topicname A topicname.
+     *
+     * @return void
+     */
+    private function _toggleVisibility($topicname)
+    {
+        $comment = Twocents_Comment::find(
+            stsl($_POST['twocents_id']), $topicname
+        );
+        if ($comment->isVisible()) {
+            $comment->hide();
+        } else {
+            $comment->show();
+        }
+        $comment->update();
     }
 
     /**
@@ -427,7 +453,9 @@ class Twocents_CommentsView
         $this->_writeScriptsToBjs();
         $html = '<ul class="twocents_comments">';
         foreach ($this->_comments as $comment) {
-            $html .= $this->_renderComment($comment);
+            if ($comment->isVisible() || XH_ADM) {
+                $html .= $this->_renderComment($comment);
+            }
         }
         $html .= '</ul>';
         if (!isset($this->_currentComment)
@@ -470,13 +498,15 @@ EOT;
      */
     private function _renderComment(Twocents_Comment $comment)
     {
-        if (isset($this->_currentComment)
-            && $this->_currentComment->getId() == $comment->getId()
-        ) {
+        $id = $this->_isCurrentComment($comment)
+            ? ''
+            : ' id="twocents_comment_' . $comment->getId() . '"';
+        $class = $comment->isVisible() ? '' : ' class="twocents_hidden"';
+        $html = '<li' . $id . $class . '>';
+        if ($this->_isCurrentComment($comment)) {
             $view = new Twocents_CommentFormView($this->_currentComment);
-            $html = '<li>' . $view->render();
+            $html .= $view->render();
         } else {
-            $html = '<li id="twocents_comment_' . $comment->getId() . '">';
             if (XH_ADM) {
                 $html .= $this->_renderAdminTools($comment);
             }
@@ -517,15 +547,19 @@ EOT;
     {
         global $plugin_tx, $_XH_csrfProtection;
 
+        $hideLabel = $comment->isVisible()
+            ? $plugin_tx['twocents']['label_hide']
+            : $plugin_tx['twocents']['label_show'];
         return '<form method="post" action="' . XH_hsc($this->_getUrl()) . '">'
             . $_XH_csrfProtection->tokenInput()
             . tag(
                 'input type="hidden" name="twocents_id" value="'
                 . $comment->getId() . '"'
             )
+            . '<button name="twocents_action" value="toggle_visibility">'
+            . $hideLabel . '</button>'
             . '<button name="twocents_action" value="remove_comment">'
-            . $plugin_tx['twocents']['label_delete']
-            . '</button>'
+            . $plugin_tx['twocents']['label_delete'] . '</button>'
             . '</form>';
     }
 
@@ -602,15 +636,45 @@ EOT;
         );
         return $sn . '?' . $queryString;
     }
+
+    /**
+     * Returns whether a comment is the current comment.
+     *
+     * @param Twocents_Comment $comment A comment.
+     *
+     * @return bool
+     */
+    private function _isCurrentComment(Twocents_Comment $comment)
+    {
+        return isset($this->_currentComment)
+            && $this->_currentComment->getId() == $comment->getId();
+    }
 }
 
+/**
+ * The comment form views.
+ *
+ * @category CMSimple_XH
+ * @package  Twocents
+ * @author   Christoph M. Becker <cmbecker69@gmx.de>
+ * @license  http://www.gnu.org/licenses/gpl-3.0.en.html GNU GPLv3
+ * @link     http://3-magi.net/?CMSimple_XH/Twocents_XH
+ */
 class Twocents_CommentFormView
 {
+    /**
+     * The comment.
+     *
+     * @var Twocents_Comment
+     */
     private $_comment;
 
     /**
+     * Initializes a new instance.
+     *
      * @param Twocents_Comment $comment A comment.
      *
+     * @return void
      */
     public function __construct(Twocents_Comment $comment = null)
     {

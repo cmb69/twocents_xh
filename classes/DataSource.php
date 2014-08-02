@@ -271,6 +271,7 @@ class Twocents_Comment
         $comment->_user = $record[2];
         $comment->_email = $record[3];
         $comment->_message = $record[4];
+        $comment->_hidden = isset($record[5]) ? (bool) $record[5] : false;
         return $comment;
     }
 
@@ -317,6 +318,13 @@ class Twocents_Comment
     private $_message;
 
     /**
+     * Whether the comment is hidden.
+     *
+     * @var bool
+     */
+    private $_hidden;
+
+    /**
      * Makes and returns a comment.
      *
      * @param string $topicname A topicname.
@@ -341,6 +349,7 @@ class Twocents_Comment
     {
         $this->_topicname = (string) $topicname;
         $this->_time = (int) $time;
+        $this->_hidden = false;
     }
 
     /**
@@ -404,6 +413,16 @@ class Twocents_Comment
     }
 
     /**
+     * Returns whether the comment is visible.
+     *
+     * @return bool
+     */
+    public function isVisible()
+    {
+        return !$this->_hidden;
+    }
+
+    /**
      * Sets the username.
      *
      * @param string $user A username.
@@ -437,6 +456,26 @@ class Twocents_Comment
     public function setMessage($message)
     {
         $this->_message = (string) $message;
+    }
+
+    /**
+     * Hides this comment.
+     *
+     * @return void
+     */
+    public function hide()
+    {
+        $this->_hidden = true;
+    }
+
+    /**
+     * Shows this comment.
+     *
+     * @return void
+     */
+    public function show()
+    {
+        $this->_hidden = false;
     }
 
     /**
@@ -518,7 +557,8 @@ class Twocents_Comment
     private function _toRecord()
     {
         return array(
-            $this->_id, $this->_time, $this->_user, $this->_email, $this->_message
+            $this->_id, $this->_time, $this->_user, $this->_email,
+            $this->_message, $this->_hidden
         );
     }
 }

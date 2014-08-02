@@ -45,10 +45,17 @@
             return window.confirm(TWOCENTS.deleteMessage);
         }
 
+        function removeSubmitHandler(event) {
+            event = event || window.event;
+            (event.target || event.srcElement).form.onsubmit = null;
+        }
+
         divs = document.getElementsByTagName("div");
         for (i = 0; i < divs.length; i += 1) {
             if (divs[i].className === "twocents_admin_tools") {
                 form = divs[i].getElementsByTagName("form")[0];
+                form.getElementsByTagName("button")[0].onclick =
+                        removeSubmitHandler;
                 form.onsubmit = confirmDeletion;
             }
         }

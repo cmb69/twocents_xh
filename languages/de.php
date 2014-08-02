@@ -3,8 +3,10 @@
 $plugin_tx['twocents']['format_heading']="Am {DATE} um {TIME} schrieb {USER}:";
 $plugin_tx['twocents']['format_date']="d.n.Y";
 $plugin_tx['twocents']['format_time']="G:i";
-$plugin_tx['twocents']['label_delete']="Löschen";
 $plugin_tx['twocents']['label_edit']="Bearbeiten";
+$plugin_tx['twocents']['label_hide']="Verstecken";
+$plugin_tx['twocents']['label_show']="Anzeigen";
+$plugin_tx['twocents']['label_delete']="Löschen";
 $plugin_tx['twocents']['label_user']="Name";
 $plugin_tx['twocents']['label_email']="E-Mail-Adresse";
 $plugin_tx['twocents']['label_message']="Kommentar";

@@ -50,7 +50,7 @@ class CommentTest extends PHPUnit_Framework_TestCase
     /**
      * A CSV line.
      */
-    const LINE1 = "1a2b3c,123456,cmb,,\n";
+    const LINE1 = "1a2b3c,123456,cmb,,,\n";
 
     /**
      * Another CSV line.
@@ -179,6 +179,38 @@ class CommentTest extends PHPUnit_Framework_TestCase
         $message = 'blah blah';
         $this->_subject->setMessage($message);
         $this->assertEquals($message, $this->_subject->getMessage());
+    }
+
+    /**
+     * Tests that the comment is visible.
+     *
+     * @return void
+     */
+    public function testIsVisible()
+    {
+        $this->assertTrue($this->_subject->isVisible());
+    }
+
+    /**
+     * Tests that the comment can be hidden.
+     *
+     * @return void
+     */
+    public function testCanHide()
+    {
+        $this->_subject->hide();
+        $this->assertFalse($this->_subject->isVisible());
+    }
+
+    /**
+     * Tests that the comment can be shown.
+     *
+     * @return void
+     */
+    public function testCanShow()
+    {
+        $this->_subject->show();
+        $this->assertTrue($this->_subject->isVisible());
     }
 
     /**

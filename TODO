@@ -1,4 +1,5 @@
 * moderated comments
+* fix layout problems in structure_black
 * don't use <ul>
 * config option "captcha_plugin" should be enum
 * button to toggle comments form (sugg. by Der Zwerch

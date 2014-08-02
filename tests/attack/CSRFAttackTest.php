@@ -121,17 +121,24 @@ class CSRFAttackTest extends PHPUnit_Framework_TestCase
             array(
                 array(
                     'twocents_id' => '53d8e06e34a34',
-                    'twocents_action' => 'remove_comment'
+                    'twocents_user' => 'hacker',
+                    'twocents_email' => 'hacker@example.com',
+                    'twocents_message' => 'hacked!',
+                    'twocents_action' => 'update_comment'
                 ),
                 'Languages&normal'
             ),
             array(
                 array(
                     'twocents_id' => '53d8e06e34a34',
-                    'twocents_user' => 'hacker',
-                    'twocents_email' => 'hacker@example.com',
-                    'twocents_message' => 'hacked!',
-                    'twocents_action' => 'update_comment'
+                    'twocents_action' => 'toggle_visibility'
+                ),
+                'Languages&normal'
+            ),
+            array(
+                array(
+                    'twocents_id' => '53d8e06e34a34',
+                    'twocents_action' => 'remove_comment'
                 ),
                 'Languages&normal'
             )

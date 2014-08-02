@@ -85,8 +85,10 @@ class CommentsViewTest extends PHPUnit_Framework_TestCase
                 'format_heading' => 'On {DATE} at {TIME} {USER} wrote:',
                 'format_time' => 'g:ia',
                 'label_add' => 'Add Comment',
-                'label_delete' => 'Delete',
                 'label_edit' => 'Edit',
+                'label_hide' => 'Hide',
+                'label_show' => 'Show',
+                'label_delete' => 'Delete',
                 'label_email' => 'Email',
                 'label_message' => 'Message',
                 'label_reset' => 'Reset',
@@ -111,6 +113,9 @@ class CommentsViewTest extends PHPUnit_Framework_TestCase
         );
         $commentStub->expects($this->any())->method('getMessage')->will(
             $this->returnValue(self::MESSAGE)
+        );
+        $commentStub->expects($this->any())->method('isVisible')->will(
+            $this->returnValue(true)
         );
         $this->_subject = Twocents_CommentsView::make(
             array($commentStub, $commentStub, $commentStub), null
