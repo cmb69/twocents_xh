@@ -1,3 +1,4 @@
+* Ajax form submission
 * add "thanks for your comment"
 * don't use <ul>
 * update manuals and CHANGELOG
@@ -7,7 +8,6 @@
   <http://cmsimpleforum.com/viewtopic.php?f=16&t=7933#p43083>)
 * placement of comments form
   (<http://3-magi.net/demo/interaction/de/?Twocents_XH#twocents_comment_53dc5922dd3a8>)
-* Ajax form submission
 * file error handling
 * markup for comments (check WP plugins)
 * admin area

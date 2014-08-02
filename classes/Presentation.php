@@ -476,7 +476,8 @@ class Twocents_CommentsView
         $html = '<ul class="twocents_comments">';
         foreach ($this->_comments as $comment) {
             if ($comment->isVisible() || XH_ADM) {
-                $html .= $this->_renderComment($comment);
+                $view = new Twocents_CommentView($comment, $this->_currentComment);
+                $html .= $view->render();
             }
         }
         $html .= '</ul>';
@@ -511,29 +512,69 @@ TWOCENTS = {deleteMessage: "$message"};
 EOT;
     }
 
+}
+
+/**
+ * The comment views.
+ *
+ * @category CMSimple_XH
+ * @package  Twocents
+ * @author   Christoph M. Becker <cmbecker69@gmx.de>
+ * @license  http://www.gnu.org/licenses/gpl-3.0.en.html GNU GPLv3
+ * @link     http://3-magi.net/?CMSimple_XH/Twocents_XH
+ */
+class Twocents_CommentView
+{
+    /**
+     * The comment to render.
+     *
+     * @var Twocents_Comment
+     */
+    private $_comment;
+
+    /**
+     * The current comment, if any.
+     *
+     * @var Twocents_Comment
+     */
+    private $_currentComment;
+
+    /**
+     * Initializes a new instance.
+     *
+     * @param Twocents_Comment $comment        A comment to render.
+     * @param Twocents_Comment $currentComment The posted comment.
+     *
+     * @return void
+     */
+    public function __construct(
+        Twocents_Comment $comment, Twocents_Comment $currentComment = null
+    ) {
+        $this->_comment = $comment;
+        $this->_currentComment = $currentComment;
+    }
+
     /**
      * Renders a certain comment.
      *
-     * @param Twocents_Comment $comment A comment.
-     *
      * @return string (X)HTML.
      */
-    private function _renderComment(Twocents_Comment $comment)
+    public function render()
     {
-        $id = $this->_isCurrentComment($comment)
+        $id = $this->_isCurrentComment()
             ? ''
-            : ' id="twocents_comment_' . $comment->getId() . '"';
-        $class = $comment->isVisible() ? '' : ' class="twocents_hidden"';
+            : ' id="twocents_comment_' . $this->_comment->getId() . '"';
+        $class = $this->_comment->isVisible() ? '' : ' class="twocents_hidden"';
         $html = '<li' . $id . $class . '>';
-        if ($this->_isCurrentComment($comment)) {
+        if ($this->_isCurrentComment()) {
             $view = new Twocents_CommentFormView($this->_currentComment);
             $html .= $view->render();
         } else {
             if (XH_ADM) {
-                $html .= $this->_renderAdminTools($comment);
+                $html .= $this->_renderAdminTools();
             }
-            $html .= '<p>' . $this->_renderHeading($comment) . '</p>'
-                . '<blockquote>' . $this->_renderMessage($comment)
+            $html .= '<p>' . $this->_renderHeading() . '</p>'
+                . '<blockquote>' . $this->_renderMessage()
                 . '</blockquote>';
         }
         $html .= '</li>';
@@ -543,40 +584,36 @@ EOT;
     /**
      * Renders the admin tools.
      *
-     * @param Twocents_Comment $comment A comment.
-     *
      * @return string (X)HTML.
      */
-    private function _renderAdminTools(Twocents_Comment $comment)
+    private function _renderAdminTools()
     {
         return '<div class="twocents_admin_tools">'
-            . $this->_renderEditLink($comment)
-            . $this->_renderDeleteForm($comment)
+            . $this->_renderEditLink()
+            . $this->_renderDeleteForm()
             . '</div>';
     }
 
     /**
      * Renders the delete form.
      *
-     * @param Twocents_Comment $comment A comment.
-     *
      * @return string (X)HTML.
      *
      * @global array             The localization of the plugins.
      * @global XH_CSRFProtection The CSRF protector.
      */
-    private function _renderDeleteForm(Twocents_Comment $comment)
+    private function _renderDeleteForm()
     {
         global $plugin_tx, $_XH_csrfProtection;
 
-        $hideLabel = $comment->isVisible()
+        $hideLabel = $this->_comment->isVisible()
             ? $plugin_tx['twocents']['label_hide']
             : $plugin_tx['twocents']['label_show'];
         return '<form method="post" action="' . XH_hsc($this->_getUrl()) . '">'
             . $_XH_csrfProtection->tokenInput()
             . tag(
                 'input type="hidden" name="twocents_id" value="'
-                . $comment->getId() . '"'
+                . $this->_comment->getId() . '"'
             )
             . '<button name="twocents_action" value="toggle_visibility">'
             . $hideLabel . '</button>'
@@ -588,17 +625,15 @@ EOT;
     /**
      * Renders the edit link.
      *
-     * @param Twocents_Comment $comment A comment.
-     *
      * @return string (X)HTML.
      *
      * @global array The localization of the plugins.
      */
-    private function _renderEditLink(Twocents_Comment $comment)
+    private function _renderEditLink()
     {
         global $plugin_tx;
 
-        $url = $this->_getUrl() . '&twocents_id=' . $comment->getId();
+        $url = $this->_getUrl() . '&twocents_id=' . $this->_comment->getId();
         return '<a href="' . XH_hsc($url) . '">'
             . $plugin_tx['twocents']['label_edit'] . '</a>';
     }
@@ -606,24 +641,26 @@ EOT;
     /**
      * Renders the comment heading.
      *
-     * @param Twocents_Comment $comment A comment.
-     *
      * @return string (X)HTML.
      *
      * @global array The localization of the plugins.
      */
-    private function _renderHeading(Twocents_Comment $comment)
+    private function _renderHeading()
     {
         global $plugin_tx;
 
-        $date = date($plugin_tx['twocents']['format_date'], $comment->getTime());
-        $time = date($plugin_tx['twocents']['format_time'], $comment->getTime());
+        $date = date(
+            $plugin_tx['twocents']['format_date'], $this->_comment->getTime()
+        );
+        $time = date(
+            $plugin_tx['twocents']['format_time'], $this->_comment->getTime()
+        );
         return strtr(
             $plugin_tx['twocents']['format_heading'],
             array(
                 '{DATE}' => $date,
                 '{TIME}' => $time,
-                '{USER}' => XH_hsc($comment->getUser())
+                '{USER}' => XH_hsc($this->_comment->getUser())
             )
         );
     }
@@ -631,14 +668,12 @@ EOT;
     /**
      * Renders the comment message.
      *
-     * @param Twocents_Comment $comment A comment.
-     *
      * @return string (X)HTML.
      */
-    private function _renderMessage(Twocents_Comment $comment)
+    private function _renderMessage()
     {
         return preg_replace(
-            '/(?:\r\n|\r|\n)/', tag('br'), XH_hsc($comment->getMessage())
+            '/(?:\r\n|\r|\n)/', tag('br'), XH_hsc($this->_comment->getMessage())
         );
     }
 
@@ -662,14 +697,12 @@ EOT;
     /**
      * Returns whether a comment is the current comment.
      *
-     * @param Twocents_Comment $comment A comment.
-     *
      * @return bool
      */
-    private function _isCurrentComment(Twocents_Comment $comment)
+    private function _isCurrentComment()
     {
         return isset($this->_currentComment)
-            && $this->_currentComment->getId() == $comment->getId();
+            && $this->_currentComment->getId() == $this->_comment->getId();
     }
 }
 
