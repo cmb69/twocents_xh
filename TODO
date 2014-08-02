@@ -1,6 +1,4 @@
-* rename config option "order" to "comments_order"
 * add "thanks for your comment"
-* check overlong posts for word-break
 * don't use <ul>
 * update manuals and CHANGELOG
 

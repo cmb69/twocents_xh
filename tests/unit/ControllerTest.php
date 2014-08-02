@@ -77,7 +77,7 @@ class ControllerTest extends PHPUnit_Framework_TestCase
         $plugin_cf = array(
             'twocents' => array(
                 'comments_moderated' => '',
-                'order' => 'ASC',
+                'comments_order' => 'ASC',
                 'email_address' => 'cmbecker69@gmx.de',
                 'email_linebreak' => 'CRLF',
                 'captcha_plugin' => ''

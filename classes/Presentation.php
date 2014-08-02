@@ -195,7 +195,7 @@ EOT;
             );
         }
         $comments = Twocents_Comment::findByTopicname($topicname);
-        if ($plugin_cf['twocents']['order'] == 'DESC') {
+        if ($plugin_cf['twocents']['comments_order'] == 'DESC') {
             $comments = array_reverse($comments);
         }
         $html .= Twocents_CommentsView::make($comments, $this->_comment)->render();
