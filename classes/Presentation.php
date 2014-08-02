@@ -223,19 +223,41 @@ EOT;
      */
     private function _addComment($topicname)
     {
+        global $plugin_tx;
+
         $this->_comment = Twocents_Comment::make(
             $topicname, time()
         );
         $this->_comment->setUser(trim(stsl($_POST['twocents_user'])));
         $this->_comment->setEmail(trim(stsl($_POST['twocents_email'])));
         $this->_comment->setMessage(trim(stsl($_POST['twocents_message'])));
+        if ($this->_isModerated()) {
+            $this->_comment->hide();
+        }
         $html = $this->_renderErrorMessages();
         if (!$html) {
             $this->_comment->insert();
             $this->_sendNotificationEmail();
             $this->_comment = null;
+            if ($this->_isModerated()) {
+                $html = XH_message(
+                    'info', $plugin_tx['twocents']['message_moderated']
+                );
+            }
         }
         return $html;
+    }
+
+    /**
+     * Returns whether the added comment is moderated.
+     *
+     * @return bool
+     */
+    private function _isModerated()
+    {
+        global $plugin_cf;
+
+        return $plugin_cf['twocents']['comments_moderated'] && !XH_ADM;
     }
 
     /**
