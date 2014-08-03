@@ -246,8 +246,12 @@ EOT;
             $this->_addedComment = $this->_comment;
             $this->_comment = null;
             if ($this->_isModerated()) {
-                $html = XH_message(
+                $html .= XH_message(
                     'info', $plugin_tx['twocents']['message_moderated']
+                );
+            } elseif (!XH_ADM) {
+                $html .= XH_message(
+                    'success', $plugin_tx['twocents']['message_added']
                 );
             }
         }

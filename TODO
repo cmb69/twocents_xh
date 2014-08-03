@@ -1,4 +1,3 @@
-* add "thanks for your comment"
 * fix UTC
 * update manuals and CHANGELOG
 
@@ -17,3 +16,4 @@
 * image upload (sugg. by snafu
   <http://3-magi.net/demo/interaction/de/?Twocents_XH#twocents_comment_53dc793d8ed0b>)
 * more Ajax form submissions
+* fix JS doc
