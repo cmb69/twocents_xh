@@ -198,11 +198,11 @@ EOT;
         if ($plugin_cf['twocents']['comments_order'] == 'DESC') {
             $comments = array_reverse($comments);
         }
-        $html .= Twocents_CommentsView::make($comments, $this->_comment)->render();
+        $view = Twocents_CommentsView::make($comments, $this->_comment, $html);
         if (!isset($_POST['twocents_ajax'])) {
-            return '<div>' . $html . '</div>';
+            return '<div>' . $view->render() . '</div>';
         } else {
-            echo $html;
+            echo $view->render();
             exit;
         }
     }
@@ -435,12 +435,14 @@ class Twocents_CommentsView
      *
      * @param array            $comments       An array of comments.
      * @param Twocents_Comment $currentComment The current comment.
+     * @param string           $messages       (X)HTML messages.
      *
      * @return Twocents_CommentsView.
      */
-    public static function make($comments, Twocents_Comment $currentComment = null)
-    {
-        return new self($comments, $currentComment);
+    public static function make(
+        $comments, Twocents_Comment $currentComment = null, $messages = ''
+    ) {
+        return new self($comments, $currentComment, $messages);
     }
 
     /**
@@ -458,17 +460,27 @@ class Twocents_CommentsView
     private $_currentComment;
 
     /**
+     * (X)HTML messages.
+     *
+     * @var string
+     */
+    private $_messages;
+
+    /**
      * Initializes a new instance.
      *
      * @param array            $comments       An array of comments.
      * @param Twocents_Comment $currentComment The current comment.
+     * @param string           $messages       (X)HTML messages.
      *
      * @return void
      */
-    private function __construct($comments, Twocents_Comment $currentComment = null)
-    {
+    private function __construct(
+        $comments, Twocents_Comment $currentComment = null, $messages = ''
+    ) {
         $this->_comments = (array) $comments;
         $this->_currentComment = $currentComment;
+        $this->_messages = (string) $messages;
     }
 
     /**
@@ -482,6 +494,11 @@ class Twocents_CommentsView
         $html = '<div class="twocents_comments">';
         foreach ($this->_comments as $comment) {
             if ($comment->isVisible() || XH_ADM) {
+                if (isset($this->_currentComment)
+                    && $this->_currentComment->getId() == $comment->getId()
+                ) {
+                    $html .= $this->_messages;
+                }
                 $view = new Twocents_CommentView($comment, $this->_currentComment);
                 $html .= $view->render();
             }
@@ -491,7 +508,7 @@ class Twocents_CommentsView
             || $this->_currentComment->getId() == null
         ) {
             $view = new Twocents_CommentFormView($this->_currentComment);
-            $html .= $view->render();
+            $html .= $this->_messages . $view->render();
         }
         return $html;
     }
