@@ -10,6 +10,7 @@ $plugin_tx['twocents']['label_delete']="Löschen";
 $plugin_tx['twocents']['label_user']="Name";
 $plugin_tx['twocents']['label_email']="E-Mail-Adresse";
 $plugin_tx['twocents']['label_message']="Kommentar";
+$plugin_tx['twocents']['label_new']="Neuen Kommentar verfassen";
 $plugin_tx['twocents']['label_add']="Kommentar hinzufügen";
 $plugin_tx['twocents']['label_update']="Kommentar aktualisieren";
 $plugin_tx['twocents']['label_cancel']="Abbrechen";

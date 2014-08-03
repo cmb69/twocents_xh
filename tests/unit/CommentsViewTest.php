@@ -84,6 +84,7 @@ class CommentsViewTest extends PHPUnit_Framework_TestCase
                 'format_date' => 'n/j/Y',
                 'format_heading' => 'On {DATE} at {TIME} {USER} wrote:',
                 'format_time' => 'g:ia',
+                'label_new' => 'Write new comment',
                 'label_add' => 'Add Comment',
                 'label_edit' => 'Edit',
                 'label_hide' => 'Hide',

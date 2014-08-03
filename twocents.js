@@ -44,7 +44,7 @@
         var divs, i, form;
 
         function confirmDeletion() {
-            return window.confirm(TWOCENTS.deleteMessage);
+            return window.confirm(TWOCENTS.message_delete);
         }
 
         function removeSubmitHandler(event) {
@@ -63,7 +63,7 @@
         }
     }
 
-    function addAjaxSubmission() {
+    function prepareForm() {
         var buttons, i, button;
 
         function submit(form) {
@@ -107,7 +107,7 @@
                     commentsDiv.className = "";
                     convertAsToButtons();
                     addDeleteConfirmation();
-                    addAjaxSubmission();
+                    prepareForm();
                     scrollMarker = document.getElementById(
                         "twocents_scroll_marker"
                     );
@@ -133,8 +133,26 @@
             return true;
         }
 
-        function onsubmit() {
-            return !submit(button.form);
+        function onsubmit(event) {
+            event = event || window.event;
+            return !submit(event.target || event.srcElement);
+        }
+
+        function hideForm(form) {
+            var button;
+
+            if (form.previousSibling.nodeName.toLowerCase() !== "p") {
+                form.style.display = "none";
+                button = document.createElement("button");
+                button.type = "button";
+                button.className = "twocents_write_button";
+                button.onclick = function () {
+                    form.style.display = "";
+                    button.parentNode.removeChild(button);
+                };
+                button.innerHTML = TWOCENTS.label_new;
+                form.parentNode.appendChild(button);
+            }
         }
 
         buttons = document.getElementsByTagName("button");
@@ -143,11 +161,12 @@
             if (button.name === "twocents_action" &&
                     button.value === "add_comment") {
                 button.form.onsubmit = onsubmit;
+                hideForm(button.form);
             }
         }
     }
 
     convertAsToButtons();
     addDeleteConfirmation();
-    addAjaxSubmission();
+    prepareForm();
 }());

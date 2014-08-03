@@ -250,7 +250,7 @@ EOT;
                 $html .= XH_message(
                     'info', $plugin_tx['twocents']['message_moderated']
                 );
-            } elseif (!XH_ADM) {
+            } else {
                 $html .= XH_message(
                     'success', $plugin_tx['twocents']['message_added']
                 );
@@ -533,13 +533,16 @@ class Twocents_CommentsView
     {
         global $pth, $bjs, $plugin_tx;
 
-        $message = addcslashes($plugin_tx['twocents']['message_delete'], "\"\r\n");
+        $properties = array('label_new', 'message_delete');
+        $config = array();
+        foreach ($properties as $property) {
+            $config[$property] = $plugin_tx['twocents'][$property];
+        }
+        $json = XH_encodeJson($config);
+        $filename = $pth['folder']['plugins'] . 'twocents/twocents.js';
         $bjs .= <<<EOT
-<script type="text/javascript">/* <[CDATA[ */
-TWOCENTS = {deleteMessage: "$message"};
-/* ]]> */</script>
-<script type="text/javascript"
-        src="{$pth['folder']['plugins']}twocents/twocents.js"></script>
+<script type="text/javascript">/* <[CDATA[ */TWOCENTS = $json;/* ]]> */</script>
+<script type="text/javascript" src="$filename"></script>
 EOT;
     }
 
