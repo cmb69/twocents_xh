@@ -235,7 +235,9 @@ EOT;
         );
         $this->_comment->setUser(trim(stsl($_POST['twocents_user'])));
         $this->_comment->setEmail(trim(stsl($_POST['twocents_email'])));
-        $this->_comment->setMessage(trim(stsl($_POST['twocents_message'])));
+        $this->_comment->setMessage(
+            $this->_purify(trim(stsl($_POST['twocents_message'])))
+        );
         if ($this->_isModerated()) {
             $this->_comment->hide();
         }
@@ -260,6 +262,36 @@ EOT;
             $html = $marker . $html;
         }
         return $html;
+    }
+
+    /**
+     * Purifies a message.
+     *
+     * @param string $message A message.
+     *
+     * @return string
+     *
+     * @global array The paths of system files and folders.
+     * @global array The configuration of the core.
+     * @global array The configuration of the plugins.
+     */
+    private function _purify($message)
+    {
+        global $pth, $cf, $plugin_cf;
+
+        if (!XH_ADM && $plugin_cf['twocents']['comments_markup'] == 'HTML') {
+            include_once $pth['folder']['plugins']
+                . 'twocents/htmlpurifier/HTMLPurifier.standalone.php';
+            $config = HTMLPurifier_Config::createDefault();
+            if (!$cf['xhtml']['endtags']) {
+                $config->set('HTML.Doctype', 'HTML 4.01 Transitional');
+            }
+            $config->set('HTML.Allowed', 'p,blockquote,b,i,a[href]');
+            $config->set('HTML.Nofollow', true);
+            $purifier = new HTMLPurifier($config);
+            $message = $purifier->purify($message);
+        }
+        return $message;
     }
 
     /**
@@ -290,13 +322,17 @@ EOT;
         $email = $plugin_cf['twocents']['email_address'];
         if (!XH_ADM && $email != '') {
             $ptx = $plugin_tx['twocents'];
+            $message = $this->_comment->getMessage();
+            if ($plugin_cf['twocents']['comments_markup'] == 'HTML') {
+                $message = strip_tags($message);
+            }
             $message = '<' . $this->_getUrl() . '#twocents_comment_'
                 . $this->_comment->getId() . '>' . PHP_EOL . PHP_EOL
                 . $ptx['label_user'] . ': ' . $this->_comment->getUser() . PHP_EOL
                 . $ptx['label_email'] . ': <' . $this->_comment->getEmail()
                 . '>' . PHP_EOL
                 . $ptx['label_message'] . ':' . PHP_EOL . PHP_EOL
-                . $this->_comment->getMessage() . PHP_EOL;
+                . $message . PHP_EOL;
             $mailer = Twocents_Mailer::make(
                 ($plugin_cf['twocents']['email_linebreak'] == 'LF') ? "\n" : "\r\n"
             );
@@ -703,12 +739,20 @@ class Twocents_CommentView
      * Renders the comment message.
      *
      * @return string (X)HTML.
+     *
+     * @global array The configuration of the plugins.
      */
     private function _renderMessage()
     {
-        return preg_replace(
-            '/(?:\r\n|\r|\n)/', tag('br'), XH_hsc($this->_comment->getMessage())
-        );
+        global $plugin_cf;
+
+        if ($plugin_cf['twocents']['comments_markup'] == 'HTML') {
+            return $this->_comment->getMessage();
+        } else {
+            return preg_replace(
+                '/(?:\r\n|\r|\n)/', tag('br'), XH_hsc($this->_comment->getMessage())
+            );
+        }
     }
 
     /**

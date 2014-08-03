@@ -11,6 +11,7 @@
 
     <excludes>
         <exclude id="twocents">
+            <directory name="htmlpurifier"/>
             <directory name="test"/>
             <directory name="vendor"/>
             <constant name="INTL_IDNA_VARIANT_UTS46"/>

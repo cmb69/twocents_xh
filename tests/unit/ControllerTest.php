@@ -78,6 +78,7 @@ class ControllerTest extends PHPUnit_Framework_TestCase
             'twocents' => array(
                 'comments_moderated' => '',
                 'comments_order' => 'ASC',
+                'comments_markup' => '',
                 'email_address' => 'cmbecker69@gmx.de',
                 'email_linebreak' => 'CRLF',
                 'captcha_plugin' => ''
