@@ -17,11 +17,13 @@
         function convertAToButton(a) {
             var button;
 
+            function relocate() {
+                window.location.href = a.href;
+            }
+
             button = document.createElement("button");
             button.type = "button";
-            button.onclick = function () {
-                window.location.href = a.href;
-            };
+            button.onclick = relocate;
             button.innerHTML = a.innerHTML;
             a.parentNode.replaceChild(button, a);
         }
@@ -61,6 +63,82 @@
         }
     }
 
+    function addAjaxSubmission() {
+        var buttons, i, button;
+
+        function submit(form) {
+            var request;
+
+            function serialize() {
+                var params, pairs, prop;
+
+                function getParams() {
+                    var params, elements, i, element;
+
+                    params = {};
+                    elements = form.elements;
+                    for (i = 0; i < elements.length; i += 1) {
+                        element = elements[i];
+                        if (element.name) {
+                            params[element.name] = element.value;
+                        }
+                    }
+                    params.twocents_ajax = '';
+                    return params;
+                }
+
+                params = getParams();
+                pairs = [];
+                for (prop in params) {
+                    if (params.hasOwnProperty(prop)) {
+                        pairs.push(encodeURIComponent(prop) + "="
+                                + encodeURIComponent(params[prop]));
+                    }
+                }
+                return pairs.join("&");
+            }
+
+            function onreadystatechange() {
+                var commentsDiv;
+
+                if (request.readyState === 4 && request.status === 200) {
+                    commentsDiv = form.parentNode;
+                    commentsDiv.innerHTML = request.responseText;
+                    commentsDiv.className = "";
+                    convertAsToButtons();
+                    addDeleteConfirmation();
+                    addAjaxSubmission();
+                }
+            }
+
+            if (typeof XMLHttpRequest === "undefined") {
+                return false;
+            }
+            request = new XMLHttpRequest();
+            request.open("POST", window.location.href);
+            request.setRequestHeader("Content-Type",
+                    "application/x-www-form-urlencoded");
+            request.onreadystatechange = onreadystatechange;
+            request.send(serialize());
+            form.parentNode.className = "twocents_loading";
+            return true;
+        }
+
+        function onsubmit() {
+            return !submit(button.form);
+        }
+
+        buttons = document.getElementsByTagName("button");
+        for (i = 0; i < buttons.length; i += 1) {
+            button = buttons[i];
+            if (button.name === "twocents_action" &&
+                    button.value === "add_comment") {
+                button.form.onsubmit = onsubmit;
+            }
+        }
+    }
+
     convertAsToButtons();
     addDeleteConfirmation();
+    addAjaxSubmission();
 }());

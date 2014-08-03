@@ -1,7 +1,10 @@
-* Ajax form submission
+* change position of messages
+* fix UTC
 * add "thanks for your comment"
 * update manuals and CHANGELOG
 
+* pagination (sugg. by oldnema
+  <http://cmsimpleforum.com/viewtopic.php?f=16&t=7933&start=10#p43103>)
 * config option "captcha_plugin" should be enum
 * button to toggle comments form (sugg. by Der Zwerch
   <http://cmsimpleforum.com/viewtopic.php?f=16&t=7933#p43083>)
@@ -12,7 +15,6 @@
 * admin area
 * multiple comments on a single page (requires topicname to be sent)
 * Realblog_XH binding
-* pagination (sugg. by oldnema
-  <http://cmsimpleforum.com/viewtopic.php?f=16&t=7933&start=10#p43103>)
 * image upload (sugg. by snafu
   <http://3-magi.net/demo/interaction/de/?Twocents_XH#twocents_comment_53dc793d8ed0b>)
+* more Ajax form submissions

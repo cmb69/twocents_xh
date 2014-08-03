@@ -199,7 +199,12 @@ EOT;
             $comments = array_reverse($comments);
         }
         $html .= Twocents_CommentsView::make($comments, $this->_comment)->render();
-        return $html;
+        if (!isset($_POST['twocents_ajax'])) {
+            return '<div>' . $html . '</div>';
+        } else {
+            echo $html;
+            exit;
+        }
     }
 
     /**
@@ -238,6 +243,7 @@ EOT;
         if (!$html) {
             $this->_comment->insert();
             $this->_sendNotificationEmail();
+            $this->_addedComment = $this->_comment;
             $this->_comment = null;
             if ($this->_isModerated()) {
                 $html = XH_message(

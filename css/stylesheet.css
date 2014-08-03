@@ -2,6 +2,10 @@
  * Front-end.
  */
 
+.twocents_loading {
+    opacity: 0.3;
+    filter: alpha(opacity=30); /* IE < 9 */
+}
 .twocents_comments {
 }
 .twocents_comment {
