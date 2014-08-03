@@ -239,11 +239,12 @@ EOT;
         if ($this->_isModerated()) {
             $this->_comment->hide();
         }
+        $marker = '<div id="twocents_scroll_marker" class="twocents_scroll_marker">'
+            . '</div>';
         $html = $this->_renderErrorMessages();
         if (!$html) {
             $this->_comment->insert();
             $this->_sendNotificationEmail();
-            $this->_addedComment = $this->_comment;
             $this->_comment = null;
             if ($this->_isModerated()) {
                 $html .= XH_message(
@@ -254,6 +255,9 @@ EOT;
                     'success', $plugin_tx['twocents']['message_added']
                 );
             }
+            $html .= $marker;
+        } else {
+            $html = $marker . $html;
         }
         return $html;
     }

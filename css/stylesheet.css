@@ -50,6 +50,9 @@
 .twocents_form button {
     margin: 0 0.5em;
 }
+.twocents_scroll_marker {
+    height: 1em;
+}
 
 /*
  * Back-end.

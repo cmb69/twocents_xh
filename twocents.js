@@ -99,7 +99,7 @@
             }
 
             function onreadystatechange() {
-                var commentsDiv;
+                var commentsDiv, scrollMarker;
 
                 if (request.readyState === 4 && request.status === 200) {
                     commentsDiv = form.parentNode;
@@ -108,6 +108,15 @@
                     convertAsToButtons();
                     addDeleteConfirmation();
                     addAjaxSubmission();
+                    scrollMarker = document.getElementById(
+                        "twocents_scroll_marker"
+                    );
+                    if (scrollMarker) {
+                        scrollMarker.scrollIntoView(
+                            scrollMarker.nextSibling.nodeName.toLowerCase() ===
+                                    "p"
+                        );
+                    }
                 }
             }
 
