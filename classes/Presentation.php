@@ -222,12 +222,17 @@ EOT;
      * Imports all comments from the Comments plugin.
      *
      * @return string (X)HTML.
-     *
-     * @todo Implement!
      */
     private function _importComments()
     {
-        return XH_message('info', 'not yet implemented')
+        $topics = Twocents_CommentsTopic::findAll();
+        foreach ($topics as $topic) {
+            $comments = Twocents_CommentsComment::findByTopicname($topic->getName());
+            foreach ($comments as $comment) {
+                $comment->insert();
+            }
+        }
+        return XH_message('success', 'done')
             . $this->_renderMainAdministration();
     }
 

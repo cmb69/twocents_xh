@@ -1,7 +1,8 @@
 * CSRF protection for conversion and import
-* import from Comments
+* import from Comments: HTML/plain
 * update manuals and CHANGELOG
 * reply button
+* import images from Comments?
 
 * log messages?
 * pagination (sugg. by oldnema

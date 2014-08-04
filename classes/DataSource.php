@@ -100,6 +100,11 @@ class Twocents_Db
 class Twocents_Topic
 {
     /**
+     * The file extension.
+     */
+    const EXT = 'csv';
+
+    /**
      * Returns all topics.
      *
      * @return array
@@ -110,8 +115,8 @@ class Twocents_Topic
         Twocents_Db::lock(LOCK_SH);
         if ($dir = opendir(Twocents_Db::getFoldername())) {
             while (($entry = readdir($dir)) !== false) {
-                if (pathinfo($entry, PATHINFO_EXTENSION) == 'csv') {
-                    $topics[] = self::_load(basename($entry, '.csv'));
+                if (pathinfo($entry, PATHINFO_EXTENSION) == self::EXT) {
+                    $topics[] = self::_load(basename($entry, '.' . self::EXT));
                 }
             }
         }
@@ -130,7 +135,7 @@ class Twocents_Topic
      */
     public static function findByName($name)
     {
-        if (file_exists(Twocents_Db::getFoldername() . $name . '.csv')) {
+        if (file_exists(Twocents_Db::getFoldername() . $name . '.' . self::EXT)) {
             return self::_load($name);
         } else {
             return null;
@@ -186,7 +191,7 @@ class Twocents_Topic
     public function insert()
     {
         Twocents_Db::lock(LOCK_EX);
-        touch(Twocents_Db::getFoldername() . $this->_name . '.csv');
+        touch(Twocents_Db::getFoldername() . $this->_name . '.' . self::EXT);
         Twocents_Db::lock(LOCK_UN);
     }
 
@@ -198,7 +203,7 @@ class Twocents_Topic
     public function delete()
     {
         Twocents_Db::lock(LOCK_EX);
-        unlink(Twocents_Db::getFoldername() . $this->_name . '.csv');
+        unlink(Twocents_Db::getFoldername() . $this->_name . '.' . self::EXT);
         Twocents_Db::lock(LOCK_UN);
     }
 }
@@ -215,6 +220,11 @@ class Twocents_Topic
 class Twocents_Comment
 {
     /**
+     * The file extension.
+     */
+    const EXT = 'csv';
+
+    /**
      * Finds all comments for a certain topic and returns them.
      *
      * @param string $name A topicname.
@@ -225,7 +235,7 @@ class Twocents_Comment
     {
         $comments = array();
         Twocents_Db::lock(LOCK_SH);
-        $filename = Twocents_Db::getFoldername() . $name . '.csv';
+        $filename = Twocents_Db::getFoldername() . $name . '.' . self::EXT;
         if (is_readable($filename) && ($file = fopen($filename, 'r'))) {
             while (($record = fgetcsv($file)) !== false) {
                 $comments[] = self::_load($name, $record);
@@ -267,11 +277,11 @@ class Twocents_Comment
     private static function _load($topicname, $record)
     {
         $comment = new self($topicname, $record[1]);
-        $comment->_id = $record[0];
-        $comment->_user = $record[2];
-        $comment->_email = $record[3];
-        $comment->_message = $record[4];
-        $comment->_hidden = isset($record[5]) ? (bool) $record[5] : false;
+        $comment->id = $record[0];
+        $comment->user = $record[2];
+        $comment->email = $record[3];
+        $comment->message = $record[4];
+        $comment->hidden = isset($record[5]) ? (bool) $record[5] : false;
         return $comment;
     }
 
@@ -280,49 +290,49 @@ class Twocents_Comment
      *
      * @var string
      */
-    private $_id;
+    protected $id;
 
     /**
      * The topicname.
      *
      * @var string
      */
-    private $_topicname;
+    protected $topicname;
 
     /**
      * The timestamp of the original post.
      *
      * @var int
      */
-    private $_time;
+    protected $time;
 
     /**
      * The name of the poster.
      *
      * @var string
      */
-    private $_user;
+    protected $user;
 
     /**
      * The email address of the poster.
      *
      * @var string
      */
-    private $_email;
+    protected $email;
 
     /**
      * The comment message.
      *
      * @var string
      */
-    private $_message;
+    protected $message;
 
     /**
      * Whether the comment is hidden.
      *
      * @var bool
      */
-    private $_hidden;
+    protected $hidden;
 
     /**
      * Makes and returns a comment.
@@ -345,11 +355,11 @@ class Twocents_Comment
      *
      * @return void
      */
-    private function __construct($topicname, $time)
+    protected function __construct($topicname, $time)
     {
-        $this->_topicname = (string) $topicname;
-        $this->_time = (int) $time;
-        $this->_hidden = false;
+        $this->topicname = (string) $topicname;
+        $this->time = (int) $time;
+        $this->hidden = false;
     }
 
     /**
@@ -359,7 +369,7 @@ class Twocents_Comment
      */
     public function getId()
     {
-        return $this->_id;
+        return $this->id;
     }
 
     /**
@@ -369,7 +379,7 @@ class Twocents_Comment
      */
     public function getTopicname()
     {
-        return $this->_topicname;
+        return $this->topicname;
     }
 
     /**
@@ -379,7 +389,7 @@ class Twocents_Comment
      */
     public function getTime()
     {
-        return $this->_time;
+        return $this->time;
     }
 
     /**
@@ -389,7 +399,7 @@ class Twocents_Comment
      */
     public function getUser()
     {
-        return $this->_user;
+        return $this->user;
     }
 
     /**
@@ -399,7 +409,7 @@ class Twocents_Comment
      */
     public function getEmail()
     {
-        return $this->_email;
+        return $this->email;
     }
 
     /**
@@ -409,7 +419,7 @@ class Twocents_Comment
      */
     public function getMessage()
     {
-        return $this->_message;
+        return $this->message;
     }
 
     /**
@@ -419,7 +429,7 @@ class Twocents_Comment
      */
     public function isVisible()
     {
-        return !$this->_hidden;
+        return !$this->hidden;
     }
 
     /**
@@ -431,7 +441,7 @@ class Twocents_Comment
      */
     public function setUser($user)
     {
-        $this->_user = (string) $user;
+        $this->user = (string) $user;
     }
 
     /**
@@ -443,7 +453,7 @@ class Twocents_Comment
      */
     public function setEmail($email)
     {
-        $this->_email = (string) $email;
+        $this->email = (string) $email;
     }
 
     /**
@@ -455,7 +465,7 @@ class Twocents_Comment
      */
     public function setMessage($message)
     {
-        $this->_message = (string) $message;
+        $this->message = (string) $message;
     }
 
     /**
@@ -465,7 +475,7 @@ class Twocents_Comment
      */
     public function hide()
     {
-        $this->_hidden = true;
+        $this->hidden = true;
     }
 
     /**
@@ -475,7 +485,7 @@ class Twocents_Comment
      */
     public function show()
     {
-        $this->_hidden = false;
+        $this->hidden = false;
     }
 
     /**
@@ -485,10 +495,10 @@ class Twocents_Comment
      */
     public function insert()
     {
-        $this->_id = uniqid();
+        $this->id = uniqid();
         Twocents_Db::lock(LOCK_EX);
         $file = fopen(
-            Twocents_Db::getFoldername() . $this->_topicname . '.csv', 'a'
+            Twocents_Db::getFoldername() . $this->topicname . '.' . self::EXT, 'a'
         );
         fputcsv($file, $this->_toRecord());
         fclose($file);
@@ -504,11 +514,11 @@ class Twocents_Comment
     {
         Twocents_Db::lock(LOCK_EX);
         $file = fopen(
-            Twocents_Db::getFoldername() . $this->_topicname . '.csv', 'r+'
+            Twocents_Db::getFoldername() . $this->topicname . '.' . self::EXT, 'r+'
         );
         $temp = fopen('php://temp', 'w+');
         while (($record = fgetcsv($file)) !== false) {
-            if ($record[0] != $this->_id) {
+            if ($record[0] != $this->id) {
                 fputcsv($temp, $record);
             } else {
                 fputcsv($temp, $this->_toRecord());
@@ -532,11 +542,11 @@ class Twocents_Comment
     {
         Twocents_Db::lock(LOCK_EX);
         $file = fopen(
-            Twocents_Db::getFoldername() . $this->_topicname . '.csv', 'r+'
+            Twocents_Db::getFoldername() . $this->topicname . '.' . self::EXT, 'r+'
         );
         $temp = fopen('php://temp', 'w+');
         while (($record = fgetcsv($file)) !== false) {
-            if ($record[0] != $this->_id) {
+            if ($record[0] != $this->id) {
                 fputcsv($temp, $record);
             }
         }
@@ -557,10 +567,123 @@ class Twocents_Comment
     private function _toRecord()
     {
         return array(
-            $this->_id, $this->_time, $this->_user, $this->_email,
-            $this->_message, $this->_hidden
+            $this->id, $this->time, $this->user, $this->email,
+            $this->message, $this->hidden
         );
     }
 }
+
+/**
+ * The topics of the Comments Plugin.
+ *
+ * @category CMSimple_XH
+ * @package  Twocents
+ * @author   Christoph M. Becker <cmbecker69@gmx.de>
+ * @license  http://www.gnu.org/licenses/gpl-3.0.en.html GNU GPLv3
+ * @link     http://3-magi.net/?CMSimple_XH/Twocents_XH
+ */
+class Twocents_CommentsTopic extends Twocents_Topic
+{
+    /**
+     * The file extension.
+     */
+    const EXT = 'txt';
+
+    /**
+     * Returns all topics.
+     *
+     * @return array
+     */
+    public static function findAll()
+    {
+        $topics = array();
+        Twocents_Db::lock(LOCK_SH);
+        if ($dir = opendir(Twocents_Db::getFoldername())) {
+            while (($entry = readdir($dir)) !== false) {
+                if (pathinfo($entry, PATHINFO_EXTENSION) == self::EXT) {
+                    $topics[] = self::_load(basename($entry, '.' . self::EXT));
+                }
+            }
+        }
+        closedir($dir);
+        Twocents_Db::lock(LOCK_UN);
+        return $topics;
+    }
+
+    /**
+     * Loads a topic and returns it.
+     *
+     * @param string $name A topicname.
+     *
+     * @return Twocents_Topic
+     */
+    private static function _load($name)
+    {
+        return new self($name);
+    }
+}
+
+/**
+ * The comments of the Comments plugin.
+ *
+ * @category CMSimple_XH
+ * @package  Twocents
+ * @author   Christoph M. Becker <cmbecker69@gmx.de>
+ * @license  http://www.gnu.org/licenses/gpl-3.0.en.html GNU GPLv3
+ * @link     http://3-magi.net/?CMSimple_XH/Twocents_XH
+ */
+class Twocents_CommentsComment extends Twocents_Comment
+{
+    /**
+     * The file extension.
+     */
+    const EXT = 'txt';
+
+    /**
+     * Finds all comments for a certain topic and returns them.
+     *
+     * @param string $name A topicname.
+     *
+     * @return array
+     */
+    public static function findByTopicname($name)
+    {
+        $comments = array();
+        Twocents_Db::lock(LOCK_SH);
+        $filename = Twocents_Db::getFoldername() . $name . '.' . self::EXT;
+        if (is_readable($filename) && ($file = fopen($filename, 'r'))) {
+            if (fgets($file) !== false) {
+                while (($line = fgets($file)) !== false) {
+                    $record = explode('-,+;-', trim($line));
+                    $comments[] = self::_load($name, $record);
+                }
+            }
+            fclose($file);
+        }
+        Twocents_Db::lock(LOCK_UN);
+        return $comments;
+    }
+
+    /**
+     * Loads a comment and returns it.
+     *
+     * @param string $topicname A topicname.
+     * @param array  $record    A record.
+     *
+     * @return Twocents_Comment
+     */
+    private static function _load($topicname, $record)
+    {
+        $comment = new parent($topicname, $record[5]);
+        //$comment->id = uniqid(); // FIXME: trouble on Windows!
+        $comment->user = $record[1];
+        $comment->email = $record[2];
+        $comment->message = $record[7];
+        $comment->hidden = $record[5] == 'hidden';
+        return $comment;
+    }
+}
+
+
 
 ?>
