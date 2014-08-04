@@ -199,15 +199,7 @@ EOT;
                 if ($to == 'html') {
                     $message = $this->_htmlify(XH_hsc($comment->getMessage()));
                 } else {
-                    $message = html_entity_decode(
-                        strip_tags(
-                            str_replace(
-                                array('</p><p>', tag('br')),
-                                array(PHP_EOL . PHP_EOL, PHP_EOL),
-                                $comment->getMessage()
-                            )
-                        ), ENT_QUOTES, 'UTF-8'
-                    );
+                    $message = $this->plainify($comment->getMessage());
                 }
                 $comment->setMessage($message);
                 $comment->update();
@@ -222,13 +214,24 @@ EOT;
      * Imports all comments from the Comments plugin.
      *
      * @return string (X)HTML.
+     *
+     * @global array The configuration of the plugins.
      */
     private function _importComments()
     {
+        global $plugin_cf;
+
         $topics = Twocents_CommentsTopic::findAll();
         foreach ($topics as $topic) {
             $comments = Twocents_CommentsComment::findByTopicname($topic->getName());
             foreach ($comments as $comment) {
+                $message = $comment->getMessage();
+                if ($plugin_cf['twocents']['comments_markup'] == 'HTML') {
+                    $message = $this->_purify($message);
+                } else {
+                    $message = $this->plainify($message);
+                }
+                $comment->setMessage($message);
                 $comment->insert();
             }
         }
@@ -369,19 +372,24 @@ EOT;
      * @param string $topicname A topicname.
      *
      * @return string (X)HTML.
+     *
+     * @global array The configuration of the plugins.
+     * @global array The localization of the core.
      */
     private function _addComment($topicname)
     {
-        global $plugin_tx;
+        global $plugin_cf, $plugin_tx;
 
         $this->_comment = Twocents_Comment::make(
             $topicname, time()
         );
         $this->_comment->setUser(trim(stsl($_POST['twocents_user'])));
         $this->_comment->setEmail(trim(stsl($_POST['twocents_email'])));
-        $this->_comment->setMessage(
-            $this->_purify(trim(stsl($_POST['twocents_message'])))
-        );
+        $message = trim(stsl($_POST['twocents_message']));
+        if (!XH_ADM && $plugin_cf['twocents']['comments_markup'] == 'HTML') {
+            $message = $this->_purify($message);
+        }
+        $this->_comment->setMessage($message);
         if ($this->_isModerated()) {
             $this->_comment->hide();
         }
@@ -417,28 +425,24 @@ EOT;
      *
      * @global array The paths of system files and folders.
      * @global array The configuration of the core.
-     * @global array The configuration of the plugins.
      */
     private function _purify($message)
     {
-        global $pth, $cf, $plugin_cf;
+        global $pth, $cf;
 
-        if (!XH_ADM && $plugin_cf['twocents']['comments_markup'] == 'HTML') {
-            include_once $pth['folder']['plugins']
-                . 'twocents/htmlpurifier/HTMLPurifier.standalone.php';
-            if (!preg_match('/<[a-z].*>/is', $message)) {
-                $message = $this->_htmlify($message);
-            }
-            $config = HTMLPurifier_Config::createDefault();
-            if (!$cf['xhtml']['endtags']) {
-                $config->set('HTML.Doctype', 'HTML 4.01 Transitional');
-            }
-            $config->set('HTML.Allowed', 'p,blockquote,br,b,i,a[href]');
-            $config->set('HTML.Nofollow', true);
-            $purifier = new HTMLPurifier($config);
-            $message = $purifier->purify($message);
+        include_once $pth['folder']['plugins']
+            . 'twocents/htmlpurifier/HTMLPurifier.standalone.php';
+        if (!preg_match('/<[a-z].*>/is', $message)) {
+            $message = $this->_htmlify($message);
         }
-        return $message;
+        $config = HTMLPurifier_Config::createDefault();
+        if (!$cf['xhtml']['endtags']) {
+            $config->set('HTML.Doctype', 'HTML 4.01 Transitional');
+        }
+        $config->set('HTML.Allowed', 'p,blockquote,br,b,i,a[href]');
+        $config->set('HTML.Nofollow', true);
+        $purifier = new HTMLPurifier($config);
+        return $purifier->purify($message);
     }
 
     /**
@@ -454,6 +458,27 @@ EOT;
             array('/(?:\r\n|\r)/', '/\n{2,}/', '/\n/'),
             array("\n", '</p><p>', tag('br')),
             '<p>' . $text . '</p>'
+        );
+    }
+
+    /**
+     * Returns plainified HTML.
+     *
+     * @param string $html (X)HTML.
+     *
+     * @return string
+     */
+    protected function plainify($html)
+    {
+        return html_entity_decode(
+            strip_tags(
+                str_replace(
+                    array('</p><p>', tag('br')),
+                    array(PHP_EOL . PHP_EOL, PHP_EOL),
+                    $html
+                )
+            ),
+            ENT_QUOTES, 'UTF-8'
         );
     }
 
