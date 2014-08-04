@@ -45,7 +45,7 @@ class Twocents_Controller
 
         if (XH_ADM) {
             if (function_exists('XH_registerStandardPluginMenuItems')) {
-                XH_registerStandardPluginMenuItems(false);
+                XH_registerStandardPluginMenuItems(true);
             }
             if (isset($twocents) && $twocents == 'true') {
                 $this->_handleAdministration();
@@ -66,10 +66,13 @@ class Twocents_Controller
     {
         global $admin, $action, $o;
 
-        $o .= print_plugin_admin('off');
+        $o .= print_plugin_admin('on');
         switch ($admin) {
         case '':
             $o .= $this->_renderInfo();
+            break;
+        case 'plugin_main':
+            $o .= $this->_handleMainAdministration();
             break;
         default:
             $o .= plugin_admin_common($action, $admin, 'twocents');
@@ -143,6 +146,142 @@ Public License along with this program. If not, see <a
 href="http://www.gnu.org/licenses/"
 target="_blank">http://www.gnu.org/licenses/</a>. </p>
 EOT;
+    }
+
+    /**
+     * Handles the main administration.
+     *
+     * @return void
+     *
+     * @global string The value of the <var>action</var> GP parameter.
+     * @global string The (X)HTML for the contents area.
+     */
+    private function _handleMainAdministration()
+    {
+        global $action, $o;
+
+        $o .= '<h1>Twocents &ndash; Conversion</h1>';
+        switch ($action) {
+        case 'convert_html':
+            $o .= $this->_convertCommentsTo('html');
+            break;
+        case 'convert_plain':
+            $o .= $this->_convertCommentsTo('plain');
+            break;
+        case 'import_comments':
+            $o .= $this->_importComments();
+            break;
+        case 'import_gbook':
+            $o .= $this->_importGbook();
+            break;
+        default:
+            $o .= $this->_renderMainAdministration();
+        }
+    }
+
+    /**
+     * Converts all comments to another markup format.
+     *
+     * @param string $to A markup format ('html' or 'plain').
+     *
+     * @return string (X)HTML.
+     *
+     * @global array The localization of the plugins.
+     */
+    private function _convertCommentsTo($to)
+    {
+        global $plugin_tx;
+
+        $topics = Twocents_Topic::findAll();
+        foreach ($topics as $topic) {
+            $comments = Twocents_Comment::findByTopicname($topic->getName());
+            foreach ($comments as $comment) {
+                if ($to == 'html') {
+                    $message = $this->_htmlify(XH_hsc($comment->getMessage()));
+                } else {
+                    $message = html_entity_decode(
+                        strip_tags(
+                            str_replace(
+                                array('</p><p>', tag('br')),
+                                array(PHP_EOL . PHP_EOL, PHP_EOL),
+                                $comment->getMessage()
+                            )
+                        ), ENT_QUOTES, 'UTF-8'
+                    );
+                }
+                $comment->setMessage($message);
+                $comment->update();
+            }
+        }
+        $message = $plugin_tx['twocents']['message_converted_' . $to];
+        return  XH_message('success', $message)
+            . $this->_renderMainAdministration();
+    }
+
+    /**
+     * Imports all comments from the Comments plugin.
+     *
+     * @return string (X)HTML.
+     *
+     * @todo Implement!
+     */
+    private function _importComments()
+    {
+        return XH_message('info', 'not yet implemented')
+            . $this->_renderMainAdministration();
+    }
+
+    /**
+     * Imports all comments from the GBook plugin.
+     *
+     * @return string (X)HTML.
+     *
+     * @todo Implement!
+     */
+    private function _importGbook()
+    {
+        return XH_message('info', 'not yet implemented')
+            . $this->_renderMainAdministration();
+    }
+
+    /**
+     * Renders the main administration view.
+     *
+     * @return string (X)HTML.
+     *
+     * @global string The script name.
+     * @global array  The plugin configuration.
+     */
+    private function _renderMainAdministration()
+    {
+        global $sn, $plugin_cf;
+
+        $html = '<form action="' . $sn . '?&twocents" method="post">'
+            . tag('input type="hidden" name="admin" value="plugin_main"');
+        if ($plugin_cf['twocents']['comments_markup'] == 'HTML') {
+            $html .= $this->_renderMainAdminButton('convert_plain');
+        } else {
+            $html .= $this->_renderMainAdminButton('convert_html');
+        }
+        $html .= $this->_renderMainAdminButton('import_comments')
+            . $this->_renderMainAdminButton('import_gbook')
+            . '</form>';
+        return $html;
+    }
+
+    /**
+     * Renders a button of the main administration.
+     *
+     * @param string $name A feature name.
+     *
+     * @return string (X)HTML.
+     */
+    private function _renderMainAdminButton($name)
+    {
+        global $plugin_tx;
+
+        return '<p><button name="action" value="' . $name . '">'
+            . $plugin_tx['twocents']['label_' . $name] . '</button></p>';
     }
 
     /**

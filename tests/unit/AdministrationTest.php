@@ -67,7 +67,7 @@ class AdministrationTest extends PHPUnit_Framework_TestCase
         $printPluginAdminMock = new PHPUnit_Extensions_MockFunction(
             'print_plugin_admin', $this->_subject
         );
-        $printPluginAdminMock->expects($this->once())->with('off');
+        $printPluginAdminMock->expects($this->once())->with('on');
         $pluginAdminCommonMock = new PHPUnit_Extensions_MockFunction(
             'plugin_admin_common', $this->_subject
         );
@@ -82,7 +82,7 @@ class AdministrationTest extends PHPUnit_Framework_TestCase
      */
     public function testShowsIntegratedPluginMenu()
     {
-        $this->_rspmiMock->expects($this->once())->with(false);
+        $this->_rspmiMock->expects($this->once())->with(true);
         $this->_subject->dispatch();
     }
 
