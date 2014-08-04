@@ -1,10 +1,11 @@
-* use WYSIWYG editor
 * update manuals and CHANGELOG
 * focus 1st form field on button click
+* reply button
+* handle non marked up HTML
 * converter
 
 * log messages?
-* import of Comments
+* import from Comments
 * pagination (sugg. by oldnema
   <http://cmsimpleforum.com/viewtopic.php?f=16&t=7933&start=10#p43103>)
 * config option "captcha_plugin" should be enum

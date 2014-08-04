@@ -29,8 +29,7 @@
     max-width: 99%;
     margin: 2em 0;
 }
-.twocents_form label {
-    display: block;
+.twocents_form > div {
     margin: 1em 0;
 }
 .twocents_form label span {
@@ -42,12 +41,22 @@
 .twocents_form textarea {
     height: 12em;
 }
+.twocents_editor_toolbar {
+    text-align: center;
+}
+.twocents_editor_toolbar button {
+    margin: 0;
+}
+.twocents_editor {
+    height: 12em;
+    border: 1px solid #888;
+    overflow-y: scroll;
+}
 .twocents_form_buttons {
-    margin: 1em 0;
     width: 99%;
     text-align: center;
 }
-.twocents_form button {
+.twocents_form_buttons button {
     margin: 0 0.5em;
 }
 .twocents_scroll_marker {

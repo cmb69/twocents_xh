@@ -564,14 +564,17 @@ class Twocents_CommentsView
      *
      * @global array  The paths of system files and folders.
      * @global string The (X)HTML fragment to insert at the bottom of the body.
+     * @global array  The localization of the plugins.
      */
     private function _writeScriptsToBjs()
     {
-        global $pth, $bjs, $plugin_tx;
+        global $pth, $bjs, $plugin_cf, $plugin_tx;
 
-        $properties = array('label_new', 'message_delete');
         $config = array();
-        foreach ($properties as $property) {
+        foreach (array('comments_markup') as $property) {
+            $config[$property] = $plugin_cf['twocents'][$property];
+        }
+        foreach (array('label_new', 'message_delete') as $property) {
             $config[$property] = $plugin_tx['twocents'][$property];
         }
         $json = XH_encodeJson($config);

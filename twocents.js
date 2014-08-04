@@ -22,7 +22,8 @@
             }
 
             button = document.createElement("button");
-            button.type = "button";
+            //button.type = "button";
+            button.setAttribute("type", "button");
             button.onclick = relocate;
             button.innerHTML = a.innerHTML;
             a.parentNode.replaceChild(button, a);
@@ -134,8 +135,14 @@
         }
 
         function onsubmit(event) {
+            var form, textarea, editor;
+
             event = event || window.event;
-            return !submit(event.target || event.srcElement);
+            form = event.target || event.srcElement;
+            textarea = form.getElementsByTagName("textarea")[0];
+            editor = textarea.parentNode.nextSibling.nextSibling;
+            textarea.value = editor.innerHTML;
+            return !submit(form);
         }
 
         function hideForm(form) {
@@ -144,7 +151,8 @@
             if (form.previousSibling.nodeName.toLowerCase() !== "p") {
                 form.style.display = "none";
                 button = document.createElement("button");
-                button.type = "button";
+                //button.type = "button";
+                button.setAttribute("type", "button");
                 button.className = "twocents_write_button";
                 button.onclick = function () {
                     form.style.display = "";
@@ -166,7 +174,77 @@
         }
     }
 
+    function makeEditors() {
+        var textareas, i, textarea, div;
+
+        function makeEditor(textarea) {
+            var div, button, div2, buttons, prop;
+
+            function bold() {
+                document.execCommand("bold");
+            }
+
+            function italic() {
+                document.execCommand("italic");
+            }
+
+            function link() {
+                var url;
+
+                url = window.prompt("URL");
+                document.execCommand("createLink", false, url);
+            }
+
+            function unlink() {
+                document.execCommand("unlink");
+            }
+
+            div2 = document.createElement("div");
+            div2.className = "twocents_editor_toolbar";
+            div = document.createElement("div");
+            div.className = "twocents_editor";
+            div.innerHTML = textarea.value || "<p>&nbsp;</p>";
+            textarea.parentNode.parentNode.appendChild(div2);
+            textarea.parentNode.parentNode.appendChild(div);
+            textarea.style.display = "none";
+            buttons = {
+                "bold": bold,
+                "italic": italic,
+                "link": link,
+                "unlink": unlink
+            };
+            for (prop in buttons) {
+                if (buttons.hasOwnProperty(prop)) {
+                    button = document.createElement("button");
+                    //button.type = "button";
+                    button.setAttribute("type", "button");
+                    button.innerHTML = prop;
+                    button.onclick = buttons[prop];
+                    div2.appendChild(button);
+                }
+            }
+            div.contentEditable = true;
+            document.execCommand("styleWithCSS", false, false);
+        }
+
+        div = document.createElement("div");
+        if (typeof div.contentEditable === "undefined"
+                || typeof document.execCommand === "undefined") {
+            return;
+        }
+        textareas = document.getElementsByTagName("textarea");
+        for (i = 0; i < textareas.length; i += 1) {
+            textarea = textareas[i];
+            if (textarea.name === "twocents_message") {
+                makeEditor(textarea);
+            }
+        }
+    }
+
     convertAsToButtons();
     addDeleteConfirmation();
     prepareForm();
+    if (TWOCENTS.comments_markup === "HTML") {
+        makeEditors();
+    }
 }());
