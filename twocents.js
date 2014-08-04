@@ -157,6 +157,7 @@
                 button.onclick = function () {
                     form.style.display = "";
                     button.parentNode.removeChild(button);
+                    form.elements.twocents_user.focus();
                 };
                 button.innerHTML = TWOCENTS.label_new;
                 form.parentNode.appendChild(button);
