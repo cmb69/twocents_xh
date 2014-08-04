@@ -282,16 +282,35 @@ EOT;
         if (!XH_ADM && $plugin_cf['twocents']['comments_markup'] == 'HTML') {
             include_once $pth['folder']['plugins']
                 . 'twocents/htmlpurifier/HTMLPurifier.standalone.php';
+            if (!preg_match('/<[a-z].*>/is', $message)) {
+                $message = $this->_htmlify($message);
+            }
             $config = HTMLPurifier_Config::createDefault();
             if (!$cf['xhtml']['endtags']) {
                 $config->set('HTML.Doctype', 'HTML 4.01 Transitional');
             }
-            $config->set('HTML.Allowed', 'p,blockquote,b,i,a[href]');
+            $config->set('HTML.Allowed', 'p,blockquote,br,b,i,a[href]');
             $config->set('HTML.Nofollow', true);
             $purifier = new HTMLPurifier($config);
             $message = $purifier->purify($message);
         }
         return $message;
+    }
+
+    /**
+     * Returns a HTMLified text.
+     *
+     * @param string $text A text.
+     *
+     * @return string (X)HTML.
+     */
+    private function _htmlify($text)
+    {
+        return preg_replace(
+            array('/(?:\r\n|\r)/', '/\n{2,}/', '/\n/'),
+            array("\n", '</p><p>', tag('br')),
+            '<p>' . $text . '</p>'
+        );
     }
 
     /**
