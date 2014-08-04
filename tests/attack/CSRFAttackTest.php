@@ -141,6 +141,34 @@ class CSRFAttackTest extends PHPUnit_Framework_TestCase
                     'twocents_action' => 'remove_comment'
                 ),
                 'Languages&normal'
+            ),
+            array(
+                array(
+                    'admin' => 'plugin_main',
+                    'action' => 'convert_html'
+                ),
+                '&twocents&normal'
+            ),
+            array(
+                array(
+                    'admin' => 'plugin_main',
+                    'action' => 'convert_plain'
+                ),
+                '&twocents&normal'
+            ),
+            array(
+                array(
+                    'admin' => 'plugin_main',
+                    'action' => 'import_comments'
+                ),
+                '&twocents&normal'
+            ),
+            array(
+                array(
+                    'admin' => 'plugin_main',
+                    'action' => 'import_gbook'
+                ),
+                '&twocents&normal'
             )
         );
     }

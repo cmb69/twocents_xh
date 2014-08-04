@@ -153,25 +153,30 @@ EOT;
      *
      * @return void
      *
-     * @global string The value of the <var>action</var> GP parameter.
-     * @global string The (X)HTML for the contents area.
+     * @global string            The value of the <var>action</var> GP parameter.
+     * @global string            The (X)HTML for the contents area.
+     * @global XH_CSRFProtection The CSRF protector.
      */
     private function _handleMainAdministration()
     {
-        global $action, $o;
+        global $action, $o, $_XH_csrfProtection;
 
         $o .= '<h1>Twocents &ndash; Conversion</h1>';
         switch ($action) {
         case 'convert_html':
+            $_XH_csrfProtection->check();
             $o .= $this->_convertCommentsTo('html');
             break;
         case 'convert_plain':
+            $_XH_csrfProtection->check();
             $o .= $this->_convertCommentsTo('plain');
             break;
         case 'import_comments':
+            $_XH_csrfProtection->check();
             $o .= $this->_importComments();
             break;
         case 'import_gbook':
+            $_XH_csrfProtection->check();
             $o .= $this->_importGbook();
             break;
         default:
@@ -257,15 +262,17 @@ EOT;
      *
      * @return string (X)HTML.
      *
-     * @global string The script name.
-     * @global array  The plugin configuration.
+     * @global string            The script name.
+     * @global array             The plugin configuration.
+     * @global XH_CSRFProtection The CSRF protector.
      */
     private function _renderMainAdministration()
     {
-        global $sn, $plugin_cf;
+        global $sn, $plugin_cf, $_XH_csrfProtection;
 
         $html = '<form action="' . $sn . '?&twocents" method="post">'
-            . tag('input type="hidden" name="admin" value="plugin_main"');
+            . tag('input type="hidden" name="admin" value="plugin_main"')
+            . $_XH_csrfProtection->tokenInput();
         if ($plugin_cf['twocents']['comments_markup'] == 'HTML') {
             $html .= $this->_renderMainAdminButton('convert_plain');
         } else {

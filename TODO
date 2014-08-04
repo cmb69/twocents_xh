@@ -1,7 +1,7 @@
-* CSRF protection for conversion and import
 * update manuals and CHANGELOG
 * reply button
 * import images from Comments?
+* prevent double import; avoid unallowed names
 
 * log messages?
 * pagination (sugg. by oldnema

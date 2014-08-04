@@ -674,8 +674,8 @@ class Twocents_CommentsComment extends Twocents_Comment
      */
     private static function _load($topicname, $record)
     {
+        // image is $record[6]
         $comment = new parent($topicname, $record[5]);
-        //$comment->id = uniqid(); // FIXME: trouble on Windows!
         $comment->user = $record[1];
         $comment->email = $record[2];
         $comment->message = $record[7];
