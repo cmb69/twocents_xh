@@ -445,16 +445,19 @@ EOT;
 
         include_once $pth['folder']['plugins']
             . 'twocents/htmlpurifier/HTMLPurifier.standalone.php';
-        if (!preg_match('/<[a-z].*>/is', $message)) {
-            $message = $this->_htmlify($message);
-        }
         $config = HTMLPurifier_Config::createDefault();
         if (!$cf['xhtml']['endtags']) {
             $config->set('HTML.Doctype', 'HTML 4.01 Transitional');
         }
         $config->set('HTML.Allowed', 'p,blockquote,br,b,i,a[href]');
+        $config->set('AutoFormat.AutoParagraph', true);
+        $config->set('AutoFormat.RemoveEmpty', true);
+        $config->set('AutoFormat.RemoveEmpty.RemoveNbsp', true);
         $config->set('HTML.Nofollow', true);
+        $config->set('Output.TidyFormat', true);
+        $config->set('Output.Newline', "\n");
         $purifier = new HTMLPurifier($config);
+        $message = str_replace(array('&nbsp;', "\C2\A0"), ' ', $message);
         return $purifier->purify($message);
     }
 

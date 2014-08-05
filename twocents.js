@@ -11,6 +11,8 @@
 (function () {
     "use strict";
 
+    var init;
+
     function convertAsToButtons() {
         var divs, i, as;
 
@@ -106,9 +108,7 @@
                     commentsDiv = form.parentNode;
                     commentsDiv.innerHTML = request.responseText;
                     commentsDiv.className = "";
-                    convertAsToButtons();
-                    addDeleteConfirmation();
-                    prepareForm();
+                    init();
                     scrollMarker = document.getElementById(
                         "twocents_scroll_marker"
                     );
@@ -204,7 +204,7 @@
             div2.className = "twocents_editor_toolbar";
             div = document.createElement("div");
             div.className = "twocents_editor";
-            div.innerHTML = textarea.value || "<p>&nbsp;</p>";
+            div.innerHTML = textarea.value;
             textarea.parentNode.parentNode.appendChild(div2);
             textarea.parentNode.parentNode.appendChild(div);
             textarea.style.display = "none";
@@ -225,7 +225,14 @@
                 }
             }
             div.contentEditable = true;
-            document.execCommand("styleWithCSS", false, false);
+            div.onkeypress = function () {
+                var textContent = div.textContent || div.innerText;
+
+                if (!textContent) {
+                    document.execCommand("formatBlock", false, "P");
+                }
+            };
+            textarea.required = false;
         }
 
         div = document.createElement("div");
@@ -242,10 +249,14 @@
         }
     }
 
-    convertAsToButtons();
-    addDeleteConfirmation();
-    prepareForm();
-    if (TWOCENTS.comments_markup === "HTML") {
-        makeEditors();
-    }
+    init = function () {
+        convertAsToButtons();
+        addDeleteConfirmation();
+        prepareForm();
+        if (TWOCENTS.comments_markup === "HTML") {
+            makeEditors();
+        }
+    };
+    init();
+
 }());
