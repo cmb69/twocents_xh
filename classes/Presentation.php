@@ -221,10 +221,11 @@ EOT;
      * @return string (X)HTML.
      *
      * @global array The configuration of the plugins.
+     * @global array The localization of the plugins.
      */
     private function _importComments()
     {
-        global $plugin_cf;
+        global $plugin_cf, $plugin_tx;
 
         $topics = Twocents_CommentsTopic::findAll();
         foreach ($topics as $topic) {
@@ -240,7 +241,8 @@ EOT;
                 $comment->insert();
             }
         }
-        return XH_message('success', 'done')
+        $message = $plugin_tx['twocents']['message_imported_comments'];
+        return XH_message('success', $message)
             . $this->_renderMainAdministration();
     }
 
@@ -249,11 +251,15 @@ EOT;
      *
      * @return string (X)HTML.
      *
+     * @global array The localization of the plugins.
+     *
      * @todo Implement!
      */
     private function _importGbook()
     {
-        return XH_message('info', 'not yet implemented')
+        global $plugin_tx;
+
+        return XH_message('info', $plugin_tx['twocents']['message_nyi'])
             . $this->_renderMainAdministration();
     }
 
