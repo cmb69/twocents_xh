@@ -249,6 +249,9 @@
                 }
             };
             textarea.required = false;
+            textarea.parentNode.onclick = function () {
+                div.focus();
+            };
         }
 
         div = document.createElement("div");
