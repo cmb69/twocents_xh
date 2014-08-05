@@ -164,6 +164,20 @@
             }
         }
 
+        function reset(event) {
+            var button, divs, i;
+
+            event = event || window.event;
+            button = event.target || event.srcElement;
+            divs = button.form.getElementsByTagName("div");
+            for (i = 0; i < divs.length; i += 1) {
+                if (divs[i].className === "twocents_editor") {
+                    divs[i].innerHTML =
+                            button.form.elements.twocents_message.value;
+                }
+            }
+        }
+
         buttons = document.getElementsByTagName("button");
         for (i = 0; i < buttons.length; i += 1) {
             button = buttons[i];
@@ -171,6 +185,8 @@
                     button.value === "add_comment") {
                 button.form.onsubmit = onsubmit;
                 hideForm(button.form);
+            } else if (button.type === "reset") {
+                button.onclick = reset;
             }
         }
     }
