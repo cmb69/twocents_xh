@@ -1,3 +1,11 @@
+Version 1.0alpha3 -- released 2014-08-05
+* moved messages directly above the comments form (sugg. by Ludwig)
+* added optional comment moderation
+* added possibility to hide individual comments
+* added optional HTML markup and a simple WYSIWYG editor
+* added conversion between HTML and plain text messages
+* added import from Comments plugin
+
 Version 1.0alpha2 -- released 2014-08-02
 * restricted width of input fields (sugg. by Der Zwerch)
 * added optional email notification about new comments

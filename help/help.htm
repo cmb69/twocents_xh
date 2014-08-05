@@ -14,9 +14,11 @@
 speech bubble">
 <p>Twocents_XH allows your visitors to add their two cents. ;) You can use it as
 a general commenting possibility on multiple pages, or as a guestbook on a
-single page, or both.</p>
-<p>Optionally you can be notified about new comments via email, and you can add
-spam prevention by using a <a
+single page, or both. As markup language a minimal subset of HTML is optionally
+available, which can be entered with a simple WYSIWYG editor.</p>
+<p>Optionally you can enable comment moderation (i.e. comments will not be
+published automatically), be notified about new comments via email, and you can
+add spam prevention by using a <a
 href="http://www.cmsimple-xh.org/wiki/doku.php/captcha_plugins">conforming
 CAPTCHA plugin</a>.</p>
 
@@ -96,7 +98,17 @@ the comments for the same topic on different pages.</p>
 <h3 id="usage-admin">Administration</h2>
 <p>The administration of the comments happens on the pages where the comments
 are displayed. When you're logged in as administrator, you'll see buttons to
-edit and delete each comment.</p>
+edit, hide/show and delete each comment.</p>
+<p>In the plugin administration area you can convert existing comments from
+resp. to HTML, depending on the setting of the configuration option Comments
+&rarr; Markup. Note that it's best to do this only when the site is in
+maintenance mode, and that you have to change this configuration option after
+the conversion.</p>
+<p>Furthermore there is the possibility to import comments from the Comments
+plugin. To use this, you have to copy the data files of the Comments plugin into
+Twocents_XH's data folder. Note that some of the information will be ignored,
+e.g. the IP address and the uploaded image, as well as the markup when
+Twocents_XH is in plain text mode.</p>
 <div class="toplink"><a href="#">back to top</a></div>
 
 <h2 id="limitations">Limitations</h2>
