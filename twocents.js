@@ -134,7 +134,7 @@
             return true;
         }
 
-        function onsubmit(event) {
+        function update(event) {
             var form, textarea, editor;
 
             event = event || window.event;
@@ -142,6 +142,15 @@
             textarea = form.getElementsByTagName("textarea")[0];
             editor = textarea.parentNode.nextSibling.nextSibling;
             textarea.value = editor.innerHTML;
+            return true;
+        }
+
+        function onsubmit(event) {
+            var form;
+
+            event = event || window.event;
+            form = event.target || event.srcElement;
+            update(event);
             return !submit(form);
         }
 
@@ -181,10 +190,13 @@
         buttons = document.getElementsByTagName("button");
         for (i = 0; i < buttons.length; i += 1) {
             button = buttons[i];
-            if (button.name === "twocents_action" &&
-                    button.value === "add_comment") {
-                button.form.onsubmit = onsubmit;
-                hideForm(button.form);
+            if (button.name === "twocents_action") {
+                if (button.value === "add_comment") {
+                    button.form.onsubmit = onsubmit;
+                    hideForm(button.form);
+                } else if (button.value === "update_comment") {
+                    button.form.onsubmit = update;
+                }
             } else if (button.type === "reset") {
                 button.onclick = reset;
             }
