@@ -301,7 +301,7 @@ EOT;
     {
         global $plugin_tx;
 
-        return '<p><button name="action" value="' . $name . '">'
+        return '<p><button type="submit" name="action" value="' . $name . '">'
             . $plugin_tx['twocents']['label_' . $name] . '</button></p>';
     }
 
@@ -892,9 +892,9 @@ class Twocents_CommentView
                 'input type="hidden" name="twocents_id" value="'
                 . $this->_comment->getId() . '"'
             )
-            . '<button name="twocents_action" value="toggle_visibility">'
+            . '<button type="submit" name="twocents_action" value="toggle_visibility">'
             . $hideLabel . '</button>'
-            . '<button name="twocents_action" value="remove_comment">'
+            . '<button type="submit" name="twocents_action" value="remove_comment">'
             . $plugin_tx['twocents']['label_delete'] . '</button>'
             . '</form>';
     }
@@ -1165,8 +1165,8 @@ class Twocents_CommentFormView
         $ptx = $plugin_tx['twocents'];
         $action = $this->_comment->getId() ? 'update' : 'add';
         $html = '<div class="twocents_form_buttons">'
-            . '<button name="twocents_action" value="' . $action . '_comment">'
-            . $ptx['label_' . $action] . '</button>';
+            . '<button type="submit" name="twocents_action" value="' . $action
+            . '_comment">' . $ptx['label_' . $action] . '</button>';
         if ($this->_comment->getId()) {
             $html .= '<a href="' . $this->_getUrl() . '">'
                 . $ptx['label_cancel'] . '</a>';
