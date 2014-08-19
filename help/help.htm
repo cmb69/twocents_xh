@@ -62,8 +62,8 @@ CMSimple_XH wiki</a> for further details.</p>
 <li>Unzip the distribution on your computer.</li>
 <li>Upload the whole directory twocents/ to your server into CMSimple_XH's
 plugins/ directory.</li>
-<li>Set write permissions for the subdirectories css/<!--, config/--> and
-languages/.</li>
+<li>Set write permissions for the subdirectories css/, config/, languages/ and
+htmlpurifier/standalone/HTMLPurifier/DefinitionCache/Serializer/.</li>
 <!--<li>Browse to Twocents's administration (Plugins &rarr; Twocents), and check
 if all requirements are fulfilled.</li>-->
 </ol>
@@ -84,11 +84,11 @@ available), or customize them according to your needs.</p>
 <h2 id="usage">Usage</h2>
 <p>To place a comment facility on a page, write:</p>
 <pre>{{{twocents('%TOPICNAME%');}}}</pre>
-<p>%TOPICNAME% can be an arbitrary name, but it may contain only letters (a-z),
-digits (0-9) and minus signs (-). The topicname is not necessarily related to
-the page heading; in fact it is just the name of a file that is stored in the
-subfolder twocents/ of CMSimple_XH's content folder. If you like you can display
-the comments for the same topic on different pages.</p>
+<p>%TOPICNAME% can be an arbitrary name, but it may contain only the letters
+a-z, the digits 0-9 and minus signs (-). The topicname is not necessarily
+related to the page heading; in fact it is just the name of a file that is
+stored in the subfolder twocents/ of CMSimple_XH's content folder. If you like
+you can display the comments for the same topic on different pages.</p>
 <p>Some examples:</p>
 <pre>{{{twocents('guestbook');}}}
 {{{twocents('article-1');}}}</pre>
@@ -112,6 +112,8 @@ Twocents_XH is in plain text mode.</p>
 <div class="toplink"><a href="#">back to top</a></div>
 
 <h2 id="limitations">Limitations</h2>
+<p>Currently, posting comments from very old browsers such as IE 6 and IE 7 is
+not possible; the form submission will silently fail.</p>
 <p>Twocents_XH uses HTML5 form validation features. These will be critized by
 validators for HTML 4.01 and XHTML 1.0 templates. Other than that they cause no
 harm; old browsers will simply ignore them, and contemporary browsers will
