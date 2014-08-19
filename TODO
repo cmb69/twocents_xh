@@ -1,5 +1,4 @@
 * update manuals and CHANGELOG
-* add credits to HTMLpurifier
 
 * fix IE6/7 can't add new comments? (problem due to insufficient support of
   <button>)
