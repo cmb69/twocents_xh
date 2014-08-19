@@ -48,7 +48,9 @@ require_once $pth['folder']['plugin_classes'] . 'Presentation.php';
 /**
  * The Realblog_XH bridge.
  */
-require_once $pth['folder']['plugin_classes'] . 'RealblogBridge.php';
+if (interface_exists('Realblog_CommentsBridge')) {
+    include_once $pth['folder']['plugin_classes'] . 'RealblogBridge.php';
+}
 
 /**
  * The plugin version.
