@@ -15,7 +15,6 @@
 * file error handling
 * admin area
 * multiple comments on a single page (requires topicname to be sent)
-* Realblog_XH binding
 * image upload (sugg. by snafu
   <http://3-magi.net/demo/interaction/de/?Twocents_XH#twocents_comment_53dc793d8ed0b>)
 * more Ajax form submissions

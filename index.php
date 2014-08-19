@@ -46,6 +46,11 @@ require_once $pth['folder']['plugin_classes'] . 'DataSource.php';
 require_once $pth['folder']['plugin_classes'] . 'Presentation.php';
 
 /**
+ * The Realblog_XH bridge.
+ */
+require_once $pth['folder']['plugin_classes'] . 'RealblogBridge.php';
+
+/**
  * The plugin version.
  */
 define('TWOCENTS_VERSION', '@TWOCENTS_VERSION@');
