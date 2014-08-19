@@ -892,8 +892,8 @@ class Twocents_CommentView
                 'input type="hidden" name="twocents_id" value="'
                 . $this->_comment->getId() . '"'
             )
-            . '<button type="submit" name="twocents_action" value="toggle_visibility">'
-            . $hideLabel . '</button>'
+            . '<button type="submit" name="twocents_action"'
+            . ' value="toggle_visibility">' . $hideLabel . '</button>'
             . '<button type="submit" name="twocents_action" value="remove_comment">'
             . $plugin_tx['twocents']['label_delete'] . '</button>'
             . '</form>';
