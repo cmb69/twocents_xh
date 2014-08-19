@@ -1,6 +1,7 @@
-* fix IE6/7 can't add new comments
 * update manuals and CHANGELOG
 
+* fix IE6/7 can't add new comments? (problem due to insufficient support of
+  <button>)
 * reply button
 * import images from Comments?
 * prevent double import; avoid unallowed names
@@ -20,3 +21,4 @@
 * fix JS doc
 * move button to top for guestbook order
 * place messages inside form?
+* add target=_blank to posted links
