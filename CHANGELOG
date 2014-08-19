@@ -5,6 +5,7 @@ Version 1.0alpha3 -- released 2014-08-20
 * added optional HTML markup and a simple WYSIWYG editor
 * added conversion between HTML and plain text messages
 * added import from Comments plugin
+* added bridge to Realblog_XH
 
 Version 1.0alpha2 -- released 2014-08-02
 * restricted width of input fields (sugg. by Der Zwerch)
