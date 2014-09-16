@@ -137,7 +137,7 @@ class CommentsViewTest extends PHPUnit_Framework_TestCase
         global $bjs;
 
         $this->_subject->render();
-        $this->assertTag(
+        @$this->assertTag(
             array(
                 'tag' => 'script',
                 'attributes' => array(
@@ -161,7 +161,7 @@ class CommentsViewTest extends PHPUnit_Framework_TestCase
         global $bjs;
 
         $this->_subject->render();
-        $this->assertTag(
+        @$this->assertTag(
             array(
                 'tag' => 'script',
                 'attributes' => array('type' => 'text/javascript'),
@@ -178,7 +178,7 @@ class CommentsViewTest extends PHPUnit_Framework_TestCase
      */
     public function testRendersDivWith3Children()
     {
-        $this->assertTag(
+        @$this->assertTag(
             array(
                 'tag' => 'div',
                 'attributes' => array('class' => 'twocents_comments'),
@@ -201,7 +201,7 @@ class CommentsViewTest extends PHPUnit_Framework_TestCase
      */
     public function testRendersCommentHeading()
     {
-        $this->assertTag(
+        @$this->assertTag(
             array(
                 'tag' => 'div',
                 'id' => 'twocents_comment_' . self::ID,
@@ -222,7 +222,7 @@ class CommentsViewTest extends PHPUnit_Framework_TestCase
      */
     public function testRendersCommentMessage()
     {
-        $this->assertTag(
+        @$this->assertTag(
             array(
                 'tag' => 'div',
                 'attributes' => array('class' => 'twocents_comment'),
@@ -244,7 +244,7 @@ class CommentsViewTest extends PHPUnit_Framework_TestCase
     public function testRendersAdminTools()
     {
         $this->_defineConstant('XH_ADM', true);
-        $this->assertTag(
+        @$this->assertTag(
             array(
                 'tag' => 'div',
                 'attributes' => array('class' => 'twocents_admin_tools')
@@ -261,7 +261,7 @@ class CommentsViewTest extends PHPUnit_Framework_TestCase
     public function testRendersEditLink()
     {
         $this->_defineConstant('XH_ADM', true);
-        $this->assertTag(
+        @$this->assertTag(
             array(
                 'tag' => 'a',
                 'content' => 'Edit'
@@ -278,7 +278,7 @@ class CommentsViewTest extends PHPUnit_Framework_TestCase
     public function testRendersDeleteForm()
     {
         $this->_defineConstant('XH_ADM', true);
-        $this->assertTag(
+        @$this->assertTag(
             array(
                 'tag' => 'form',
                 'attributes' => array(
@@ -297,7 +297,7 @@ class CommentsViewTest extends PHPUnit_Framework_TestCase
     public function testRendersDeleteButton()
     {
         $this->_defineConstant('XH_ADM', true);
-        $this->assertTag(
+        @$this->assertTag(
             array(
                 'tag' => 'button',
                 'content' => 'Delete',
@@ -318,7 +318,7 @@ class CommentsViewTest extends PHPUnit_Framework_TestCase
     public function testRendersDeleteId()
     {
         $this->_defineConstant('XH_ADM', true);
-        $this->assertTag(
+        @$this->assertTag(
             array(
                 'tag' => 'input',
                 'attributes' => array(
@@ -338,7 +338,7 @@ class CommentsViewTest extends PHPUnit_Framework_TestCase
      */
     public function testRendersCommentForm()
     {
-        $this->assertTag(
+        @$this->assertTag(
             array(
                 'tag' => 'form',
                 'attributes' => array(
@@ -357,7 +357,7 @@ class CommentsViewTest extends PHPUnit_Framework_TestCase
      */
     public function testRendersIdInput()
     {
-        $this->assertTag(
+        @$this->assertTag(
             array(
                 'tag' => 'input',
                 'attributes' => array(
@@ -394,7 +394,7 @@ class CommentsViewTest extends PHPUnit_Framework_TestCase
      */
     public function testRendersUserInput()
     {
-        $this->assertTag(
+        @$this->assertTag(
             array(
                 'tag' => 'label',
                 'content' => 'Username',
@@ -440,7 +440,7 @@ class CommentsViewTest extends PHPUnit_Framework_TestCase
      */
     public function testRendersEmailInput()
     {
-        $this->assertTag(
+        @$this->assertTag(
             array(
                 'tag' => 'label',
                 'content' => 'Email',
@@ -486,7 +486,7 @@ class CommentsViewTest extends PHPUnit_Framework_TestCase
      */
     public function testRendersMessageTextarea()
     {
-        $this->assertTag(
+        @$this->assertTag(
             array(
                 'tag' => 'label',
                 'content' => 'Message',
@@ -529,7 +529,7 @@ class CommentsViewTest extends PHPUnit_Framework_TestCase
      */
     public function testRendersSubmitButton()
     {
-        $this->assertTag(
+        @$this->assertTag(
             array(
                 'tag' => 'button',
                 'attributes' => array(
@@ -565,7 +565,7 @@ class CommentsViewTest extends PHPUnit_Framework_TestCase
      */
     public function testRendersResetButton()
     {
-        $this->assertTag(
+        @$this->assertTag(
             array(
                 'tag' => 'button',
                 'attributes' => array('type' => 'reset'),

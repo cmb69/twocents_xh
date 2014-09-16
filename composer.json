@@ -2,8 +2,11 @@
     "minimum-stability": "dev",
 
     "require-dev": {
+        "phing/phing": "2.8.*",
+        "squizlabs/php_codesniffer": "1.5.*",
         "bartlett/php-compatinfo": "3.3.*",
-        "tcz/phpunit-mockfunction": "1.0.0",
-        "mikey179/vfsStream": "1.2.0"
+        "phpunit/phpunit": "4.2.*",
+        "tcz/phpunit-mockfunction": "1.0.*",
+        "mikey179/vfsStream": "1.3.*"
     }
 }

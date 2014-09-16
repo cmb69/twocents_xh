@@ -128,7 +128,7 @@ class ControllerTest extends PHPUnit_Framework_TestCase
      */
     public function testRendersErrorForInvalidTopicName()
     {
-        $this->assertTag(
+        @$this->assertTag(
             array(
                 'tag' => 'p'
             ),
