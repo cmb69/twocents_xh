@@ -38,9 +38,7 @@
     </target>
 
     <target name="compat">
-        <exec command="phpcompatinfo --configuration phpcompatinfo.xml print
-                                     --exclude-pattern twocents ."
-              logoutput="true"/>
+        <exec command="phpcompatinfo analyser:run ." logoutput="true"/>
     </target>
 
     <!-- Tests -->
@@ -124,7 +122,7 @@
                 <exclude name="build.xml"/>
                 <exclude name="composer.*"/>
                 <exclude name="coverage.xml"/>
-                <exclude name="phpcompatinfo.xml"/>
+                <exclude name="phpcompatinfo.json"/>
                 <exclude name="TODO"/>
                 <exclude name="twocents.komodoproject"/>
             </fileset>

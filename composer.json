@@ -1,5 +1,8 @@
 {
+    "minimum-stability": "dev",
+
     "require-dev": {
+        "bartlett/php-compatinfo": "3.3.*",
         "tcz/phpunit-mockfunction": "1.0.0",
         "mikey179/vfsStream": "1.2.0"
     }

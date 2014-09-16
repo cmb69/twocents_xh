@@ -82,10 +82,11 @@ class Twocents_Mailer
         }
         $local = $matches[1];
         $domain = $matches[2];
-        if (function_exists('idn_to_ascii')) {
+        $idnToAscii = 'idn_to_ascii';
+        if (function_exists($idnToAscii)) {
             $domain = defined('INTL_IDNA_VARIANT_UTS46')
-                ? idn_to_ascii($domain, 0, INTL_IDNA_VARIANT_UTS46)
-                : idn_to_ascii($domain);
+                ? $idnToAscii($domain, 0, constant('INTL_IDNA_VARIANT_UTS46'))
+                : $idnToAscii($domain);
         }
         if (gethostbyname($domain) == $domain) {
             return false;
