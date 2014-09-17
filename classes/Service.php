@@ -71,6 +71,8 @@ class Twocents_Mailer
      * @param string $address An email address.
      *
      * @return bool
+     *
+     * @todo Get rid of PHPCI 3 workaround.
      */
     public function isValidAddress($address)
     {
