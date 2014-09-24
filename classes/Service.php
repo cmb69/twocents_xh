@@ -71,8 +71,6 @@ class Twocents_Mailer
      * @param string $address An email address.
      *
      * @return bool
-     *
-     * @todo Get rid of PHPCI 3 workaround.
      */
     public function isValidAddress($address)
     {
@@ -84,11 +82,10 @@ class Twocents_Mailer
         }
         $local = $matches[1];
         $domain = $matches[2];
-        $idnToAscii = 'idn_to_ascii';
-        if (function_exists($idnToAscii)) {
+        if (function_exists('idn_to_ascii')) {
             $domain = defined('INTL_IDNA_VARIANT_UTS46')
-                ? $idnToAscii($domain, 0, constant('INTL_IDNA_VARIANT_UTS46'))
-                : $idnToAscii($domain);
+                ? idn_to_ascii($domain, 0, INTL_IDNA_VARIANT_UTS46)
+                : idn_to_ascii($domain);
         }
         if (gethostbyname($domain) == $domain) {
             return false;
