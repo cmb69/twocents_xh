@@ -31,21 +31,21 @@ class MailerTest extends PHPUnit_Framework_TestCase
      *
      * @var Twocents_Mailer
      */
-    private $_subject;
+    protected $subject;
 
     /**
      * The gethostbyname() mock.
      *
      * @var object
      */
-    private $_gethostbynameMock;
+    protected $gethostbynameMock;
 
     /**
      * The mail() mock.
      *
      * @var object
      */
-    private $_mailMock;
+    protected $mailMock;
 
     /**
      * Sets up the test fixture.
@@ -54,12 +54,12 @@ class MailerTest extends PHPUnit_Framework_TestCase
      */
     public function setUp()
     {
-        $this->_subject = Twocents_Mailer::make();
-        $this->_gethostbynameMock = new PHPUnit_Extensions_MockFunction(
-            'gethostbyname', $this->_subject
+        $this->subject = Twocents_Mailer::make();
+        $this->gethostbynameMock = new PHPUnit_Extensions_MockFunction(
+            'gethostbyname', $this->subject
         );
-        $this->_mailMock = new PHPUnit_Extensions_MockFunction(
-            'mail', $this->_subject
+        $this->mailMock = new PHPUnit_Extensions_MockFunction(
+            'mail', $this->subject
         );
     }
 
@@ -70,10 +70,10 @@ class MailerTest extends PHPUnit_Framework_TestCase
      */
     public function testValidAddress()
     {
-        $this->_gethostbynameMock->expects($this->any())->will(
+        $this->gethostbynameMock->expects($this->any())->will(
             $this->returnValue('127.0.0.1')
         );
-        $this->assertTrue($this->_subject->isValidAddress('me@example.com'));
+        $this->assertTrue($this->subject->isValidAddress('me@example.com'));
     }
 
     /**
@@ -83,7 +83,7 @@ class MailerTest extends PHPUnit_Framework_TestCase
      */
     public function testLocalPartWithSpaceIsInvalidAddress()
     {
-        $this->assertFalse($this->_subject->isValidAddress('c b@example.com'));
+        $this->assertFalse($this->subject->isValidAddress('c b@example.com'));
     }
 
     /**
@@ -93,10 +93,10 @@ class MailerTest extends PHPUnit_Framework_TestCase
      */
     public function testNotExistingDomainIsInvalidAddress()
     {
-        $this->_gethostbynameMock->expects($this->any())->will(
+        $this->gethostbynameMock->expects($this->any())->will(
             $this->returnValue('test.invalid')
         );
-        $this->assertFalse($this->_subject->isValidAddress('me@test.invalid'));
+        $this->assertFalse($this->subject->isValidAddress('me@test.invalid'));
     }
 
     /**
@@ -106,7 +106,7 @@ class MailerTest extends PHPUnit_Framework_TestCase
      */
     public function testSendAsciiSubjectCallsMailWithCorrectArguments()
     {
-        $this->_mailMock->expects($this->once())->with(
+        $this->mailMock->expects($this->once())->with(
             'cmbecker69@gmx',
             'A test',
             "TG9yZW0gaXBzdW0=\r\n",
@@ -115,7 +115,7 @@ class MailerTest extends PHPUnit_Framework_TestCase
             . "Content-Transfer-Encoding: base64\r\n"
             . "From: cmbecker69@gmx.de"
         );
-        $this->_subject->send(
+        $this->subject->send(
             'cmbecker69@gmx',
             'A test',
             'Lorem ipsum',
@@ -130,7 +130,7 @@ class MailerTest extends PHPUnit_Framework_TestCase
      */
     public function testSendUtf8SubjectCallsMailWithCorrectArguments()
     {
-        $this->_mailMock->expects($this->once())->with(
+        $this->mailMock->expects($this->once())->with(
             'cmbecker69@gmx',
             '=?UTF-8?B?RHJpdmluZyB5b3VyIEJNVyBkb3duIHRoZSByb2FkLCBpcyBGYWhydmVy'
             . "Z24=?=\r\n =?UTF-8?B?w7xnZW4=?=",
@@ -140,7 +140,7 @@ class MailerTest extends PHPUnit_Framework_TestCase
             . "Content-Transfer-Encoding: base64\r\n"
             . "From: cmbecker69@gmx.de"
         );
-        $this->_subject->send(
+        $this->subject->send(
             'cmbecker69@gmx',
             "Driving your BMW down the road, is Fahrvergn\xC3\xBCgen",
             'Lorem ipsum',

@@ -33,7 +33,7 @@ class InfoViewTest extends PHPUnit_Framework_TestCase
      *
      * @var Twocents_Controller
      */
-    private $_subject;
+    protected $subject;
 
     /**
      * Sets up the test fixture.
@@ -49,8 +49,8 @@ class InfoViewTest extends PHPUnit_Framework_TestCase
     {
         global $twocents, $o, $pth, $plugin_tx;
 
-        $this->_defineConstant('XH_ADM', true);
-        $this->_defineConstant('TWOCENTS_VERSION', '1.0');
+        $this->defineConstant('XH_ADM', true);
+        $this->defineConstant('TWOCENTS_VERSION', '1.0');
         $twocents = 'true';
         $o = '';
         $pth = array(
@@ -59,14 +59,14 @@ class InfoViewTest extends PHPUnit_Framework_TestCase
         $plugin_tx = array(
             'twocents' => array('alt_icon' => 'Speech bubble')
         );
-        $this->_subject = new Twocents_Controller();
+        $this->subject = new Twocents_Controller();
         $rspmiMock = new PHPUnit_Extensions_MockFunction(
-            'XH_registerStandardPluginMenuItems', $this->_subject
+            'XH_registerStandardPluginMenuItems', $this->subject
         );
         $printPluginAdminMock = new PHPUnit_Extensions_MockFunction(
-            'print_plugin_admin', $this->_subject
+            'print_plugin_admin', $this->subject
         );
-        $this->_subject->dispatch();
+        $this->subject->dispatch();
     }
 
     /**
@@ -190,7 +190,7 @@ class InfoViewTest extends PHPUnit_Framework_TestCase
      *
      * @return void
      */
-    private function _defineConstant($name, $value)
+    protected function defineConstant($name, $value)
     {
         if (!defined($name)) {
             define($name, $value);

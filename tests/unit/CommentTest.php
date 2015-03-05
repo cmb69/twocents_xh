@@ -60,14 +60,14 @@ class CommentTest extends PHPUnit_Framework_TestCase
      *
      * @var Twocents_Comment
      */
-    private $_subject;
+    protected $subject;
 
     /**
      * The comments filename.
      *
      * @var string
      */
-    private $_filename;
+    protected $filename;
 
     /**
      * Sets up the test fixture.
@@ -76,9 +76,9 @@ class CommentTest extends PHPUnit_Framework_TestCase
      */
     public function setUp()
     {
-        $this->_setUpFilesystem();
-        $this->_subject = Twocents_Comment::make(self::TOPICNAME, self::TIME);
-        $this->_setupMocks();
+        $this->setUpFilesystem();
+        $this->subject = Twocents_Comment::make(self::TOPICNAME, self::TIME);
+        $this->setupMocks();
     }
 
     /**
@@ -88,15 +88,15 @@ class CommentTest extends PHPUnit_Framework_TestCase
      *
      * @global array The paths of system files and folders.
      */
-    private function _setUpFilesystem()
+    protected function setUpFilesystem()
     {
         global $pth;
 
         vfsStreamWrapper::register();
         vfsStreamWrapper::setRoot(new vfsStreamDirectory('test'));
-        $this->_filename = vfsStream::url('test/twocents/foo.csv');
-        mkdir(dirname($this->_filename));
-        file_put_contents($this->_filename, self::LINE2);
+        $this->filename = vfsStream::url('test/twocents/foo.csv');
+        mkdir(dirname($this->filename));
+        file_put_contents($this->filename, self::LINE2);
         $pth['folder']['content'] = vfsStream::url('test/');
     }
 
@@ -105,10 +105,10 @@ class CommentTest extends PHPUnit_Framework_TestCase
      *
      * @return void
      */
-    private function _setUpMocks()
+    protected function setUpMocks()
     {
         $uniqidStub = new PHPUnit_Extensions_MockFunction(
-            'uniqid', $this->_subject
+            'uniqid', $this->subject
         );
         $uniqidStub->expects($this->any())->will($this->returnValue(self::ID));
     }
@@ -120,7 +120,7 @@ class CommentTest extends PHPUnit_Framework_TestCase
      */
     public function testIdIsNull()
     {
-        $this->assertNull($this->_subject->getId());
+        $this->assertNull($this->subject->getId());
     }
 
     /**
@@ -130,7 +130,7 @@ class CommentTest extends PHPUnit_Framework_TestCase
      */
     public function testTopicnameIsCorrect()
     {
-        $this->assertEquals(self::TOPICNAME, $this->_subject->getTopicname());
+        $this->assertEquals(self::TOPICNAME, $this->subject->getTopicname());
     }
 
     /**
@@ -140,7 +140,7 @@ class CommentTest extends PHPUnit_Framework_TestCase
      */
     public function testTimeIsCorrect()
     {
-        $this->assertEquals(self::TIME, $this->_subject->getTime());
+        $this->assertEquals(self::TIME, $this->subject->getTime());
     }
 
     /**
@@ -151,8 +151,8 @@ class CommentTest extends PHPUnit_Framework_TestCase
     public function testUserIsCorrect()
     {
         $user = 'cmb';
-        $this->_subject->setUser($user);
-        $this->assertEquals($user, $this->_subject->getUser());
+        $this->subject->setUser($user);
+        $this->assertEquals($user, $this->subject->getUser());
     }
 
     /**
@@ -163,8 +163,8 @@ class CommentTest extends PHPUnit_Framework_TestCase
     public function testEmailIsCorrect()
     {
         $email = 'me@example.com';
-        $this->_subject->setEmail($email);
-        $this->assertEquals($email, $this->_subject->getEmail());
+        $this->subject->setEmail($email);
+        $this->assertEquals($email, $this->subject->getEmail());
     }
 
     /**
@@ -175,8 +175,8 @@ class CommentTest extends PHPUnit_Framework_TestCase
     public function testMessageIsCorrect()
     {
         $message = 'blah blah';
-        $this->_subject->setMessage($message);
-        $this->assertEquals($message, $this->_subject->getMessage());
+        $this->subject->setMessage($message);
+        $this->assertEquals($message, $this->subject->getMessage());
     }
 
     /**
@@ -186,7 +186,7 @@ class CommentTest extends PHPUnit_Framework_TestCase
      */
     public function testIsVisible()
     {
-        $this->assertTrue($this->_subject->isVisible());
+        $this->assertTrue($this->subject->isVisible());
     }
 
     /**
@@ -196,8 +196,8 @@ class CommentTest extends PHPUnit_Framework_TestCase
      */
     public function testCanHide()
     {
-        $this->_subject->hide();
-        $this->assertFalse($this->_subject->isVisible());
+        $this->subject->hide();
+        $this->assertFalse($this->subject->isVisible());
     }
 
     /**
@@ -207,8 +207,8 @@ class CommentTest extends PHPUnit_Framework_TestCase
      */
     public function testCanShow()
     {
-        $this->_subject->show();
-        $this->assertTrue($this->_subject->isVisible());
+        $this->subject->show();
+        $this->assertTrue($this->subject->isVisible());
     }
 
     /**
@@ -218,11 +218,11 @@ class CommentTest extends PHPUnit_Framework_TestCase
      */
     public function testInsertSavesToFile()
     {
-        unlink($this->_filename);
-        rmdir(dirname($this->_filename));
-        $this->_subject->setUser('cmb');
-        $this->_subject->insert();
-        $this->assertStringEqualsFile($this->_filename, self::LINE1);
+        unlink($this->filename);
+        rmdir(dirname($this->filename));
+        $this->subject->setUser('cmb');
+        $this->subject->insert();
+        $this->assertStringEqualsFile($this->filename, self::LINE1);
     }
 
     /**
@@ -232,10 +232,10 @@ class CommentTest extends PHPUnit_Framework_TestCase
      */
     public function testUpdateSavesToFile()
     {
-        $this->_subject->insert();
-        $this->_subject->setUser('cmb');
-        $this->_subject->update();
-        $this->assertStringEqualsFile($this->_filename, self::LINE2 . self::LINE1);
+        $this->subject->insert();
+        $this->subject->setUser('cmb');
+        $this->subject->update();
+        $this->assertStringEqualsFile($this->filename, self::LINE2 . self::LINE1);
     }
 
     /**
@@ -245,9 +245,9 @@ class CommentTest extends PHPUnit_Framework_TestCase
      */
     public function testDeleteRemovesFromFile()
     {
-        $this->_subject->insert();
-        $this->_subject->delete();
-        $this->assertStringEqualsFile($this->_filename, self::LINE2);
+        $this->subject->insert();
+        $this->subject->delete();
+        $this->assertStringEqualsFile($this->filename, self::LINE2);
     }
 
     /**
@@ -257,7 +257,7 @@ class CommentTest extends PHPUnit_Framework_TestCase
      */
     public function testFinds2CommentsByTopicname()
     {
-        $this->_subject->insert();
+        $this->subject->insert();
         $comments = Twocents_Comment::findByTopicname(self::TOPICNAME);
         $this->assertContainsOnlyInstancesOf('Twocents_Comment', $comments);
         $this->assertCount(2, $comments);
@@ -281,9 +281,9 @@ class CommentTest extends PHPUnit_Framework_TestCase
      */
     public function testFindsInsertedComment()
     {
-        $this->_subject->insert();
+        $this->subject->insert();
         $this->assertEquals(
-            $this->_subject, Twocents_Comment::find(self::ID, self::TOPICNAME)
+            $this->subject, Twocents_Comment::find(self::ID, self::TOPICNAME)
         );
     }
 
@@ -294,8 +294,8 @@ class CommentTest extends PHPUnit_Framework_TestCase
      */
     public function testDoesNotFindDeletedComment()
     {
-        $this->_subject->insert();
-        $this->_subject->delete();
+        $this->subject->insert();
+        $this->subject->delete();
         $this->assertNull(Twocents_Comment::find(self::ID, self::TOPICNAME));
     }
 }

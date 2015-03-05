@@ -29,7 +29,7 @@ class Twocents_Db
      *
      * @var resource
      */
-    private static $_lockFile;
+    protected static $lockFile;
 
     /**
      * Returns the path of the data folder.
@@ -65,12 +65,12 @@ class Twocents_Db
         switch ($operation) {
         case LOCK_SH:
         case LOCK_EX:
-            self::$_lockFile = fopen(self::_getLockFilename(), 'r');
-            flock(self::$_lockFile, $operation);
+            self::$lockFile = fopen(self::getLockFilename(), 'r');
+            flock(self::$lockFile, $operation);
             break;
         case LOCK_UN:
-            flock(self::$_lockFile, $operation);
-            fclose(self::$_lockFile);
+            flock(self::$lockFile, $operation);
+            fclose(self::$lockFile);
             break;
         }
     }
@@ -80,7 +80,7 @@ class Twocents_Db
      *
      * @return string
      */
-    private static function _getLockFilename()
+    protected static function getLockFilename()
     {
         return self::getFoldername() . '.lock';
     }

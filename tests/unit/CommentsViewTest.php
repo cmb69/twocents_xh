@@ -60,7 +60,7 @@ class CommentsViewTest extends PHPUnit_Framework_TestCase
      *
      * @var Twocents_CommentsView
      */
-    private $_subject;
+    protected $subject;
 
     /**
      * Sets up the test fixture.
@@ -74,7 +74,7 @@ class CommentsViewTest extends PHPUnit_Framework_TestCase
     {
         global $plugin_tx, $_XH_csrfProtection;
 
-        $this->_defineConstant('XH_ADM', false);
+        $this->defineConstant('XH_ADM', false);
         $_SERVER['QUERY_STRING'] = 'Page';
         $plugin_tx = array(
             'twocents' => array(
@@ -115,7 +115,7 @@ class CommentsViewTest extends PHPUnit_Framework_TestCase
         $commentStub->expects($this->any())->method('isVisible')->will(
             $this->returnValue(true)
         );
-        $this->_subject = Twocents_CommentsView::make(
+        $this->subject = Twocents_CommentsView::make(
             array($commentStub, $commentStub, $commentStub), null
         );
         $_XH_csrfProtection = $this->getMockBuilder('XH_CSRFProtection')
@@ -133,7 +133,7 @@ class CommentsViewTest extends PHPUnit_Framework_TestCase
     {
         global $bjs;
 
-        $this->_subject->render();
+        $this->subject->render();
         @$this->assertTag(
             array(
                 'tag' => 'script',
@@ -157,7 +157,7 @@ class CommentsViewTest extends PHPUnit_Framework_TestCase
     {
         global $bjs;
 
-        $this->_subject->render();
+        $this->subject->render();
         @$this->assertTag(
             array(
                 'tag' => 'script',
@@ -187,7 +187,7 @@ class CommentsViewTest extends PHPUnit_Framework_TestCase
                     'count' => 3
                 )
             ),
-            $this->_subject->render()
+            $this->subject->render()
         );
     }
 
@@ -208,7 +208,7 @@ class CommentsViewTest extends PHPUnit_Framework_TestCase
                     'content' => 'On 7/29/2014 at 2:55pm >cmb< wrote'
                 )
             ),
-            $this->_subject->render()
+            $this->subject->render()
         );
     }
 
@@ -229,7 +229,7 @@ class CommentsViewTest extends PHPUnit_Framework_TestCase
                     'child' => array('tag' => 'br')
                 )
             ),
-            $this->_subject->render()
+            $this->subject->render()
         );
     }
 
@@ -240,13 +240,13 @@ class CommentsViewTest extends PHPUnit_Framework_TestCase
      */
     public function testRendersAdminTools()
     {
-        $this->_defineConstant('XH_ADM', true);
+        $this->defineConstant('XH_ADM', true);
         @$this->assertTag(
             array(
                 'tag' => 'div',
                 'attributes' => array('class' => 'twocents_admin_tools')
             ),
-            $this->_subject->render()
+            $this->subject->render()
         );
     }
 
@@ -257,13 +257,13 @@ class CommentsViewTest extends PHPUnit_Framework_TestCase
      */
     public function testRendersEditLink()
     {
-        $this->_defineConstant('XH_ADM', true);
+        $this->defineConstant('XH_ADM', true);
         @$this->assertTag(
             array(
                 'tag' => 'a',
                 'content' => 'Edit'
             ),
-            $this->_subject->render()
+            $this->subject->render()
         );
     }
 
@@ -274,7 +274,7 @@ class CommentsViewTest extends PHPUnit_Framework_TestCase
      */
     public function testRendersDeleteForm()
     {
-        $this->_defineConstant('XH_ADM', true);
+        $this->defineConstant('XH_ADM', true);
         @$this->assertTag(
             array(
                 'tag' => 'form',
@@ -282,7 +282,7 @@ class CommentsViewTest extends PHPUnit_Framework_TestCase
                     'method' => 'post'
                 )
             ),
-            $this->_subject->render()
+            $this->subject->render()
         );
     }
 
@@ -293,7 +293,7 @@ class CommentsViewTest extends PHPUnit_Framework_TestCase
      */
     public function testRendersDeleteButton()
     {
-        $this->_defineConstant('XH_ADM', true);
+        $this->defineConstant('XH_ADM', true);
         @$this->assertTag(
             array(
                 'tag' => 'button',
@@ -303,7 +303,7 @@ class CommentsViewTest extends PHPUnit_Framework_TestCase
                     'value' => 'remove_comment'
                 )
             ),
-            $this->_subject->render()
+            $this->subject->render()
         );
     }
 
@@ -314,7 +314,7 @@ class CommentsViewTest extends PHPUnit_Framework_TestCase
      */
     public function testRendersDeleteId()
     {
-        $this->_defineConstant('XH_ADM', true);
+        $this->defineConstant('XH_ADM', true);
         @$this->assertTag(
             array(
                 'tag' => 'input',
@@ -324,7 +324,7 @@ class CommentsViewTest extends PHPUnit_Framework_TestCase
                     'value' => '1a2b3c'
                 )
             ),
-            $this->_subject->render()
+            $this->subject->render()
         );
     }
 
@@ -343,7 +343,7 @@ class CommentsViewTest extends PHPUnit_Framework_TestCase
                     'class' => 'twocents_form'
                 )
             ),
-            $this->_subject->render()
+            $this->subject->render()
         );
     }
 
@@ -363,13 +363,13 @@ class CommentsViewTest extends PHPUnit_Framework_TestCase
                     //'value' => ''
                 )
             ),
-            $this->_subject->render()
+            $this->subject->render()
         );
     }
 
     //public function testRendersIdInputWhenEditing()
     //{
-    //    var_dump($this->_subject->render());
+    //    var_dump($this->subject->render());
     //    $_GET['twocents_id'] = self::ID;
     //    $this->assertTag(
     //        array(
@@ -380,7 +380,7 @@ class CommentsViewTest extends PHPUnit_Framework_TestCase
     //                'value' => self::ID
     //            )
     //        ),
-    //        $this->_subject->render()
+    //        $this->subject->render()
     //    );
     //}
 
@@ -406,7 +406,7 @@ class CommentsViewTest extends PHPUnit_Framework_TestCase
                     ),
                 )
             ),
-            $this->_subject->render()
+            $this->subject->render()
         );
     }
 
@@ -426,7 +426,7 @@ class CommentsViewTest extends PHPUnit_Framework_TestCase
     //                ),
     //            )
     //        ),
-    //        $this->_subject->render()
+    //        $this->subject->render()
     //    );
     //}
 
@@ -452,7 +452,7 @@ class CommentsViewTest extends PHPUnit_Framework_TestCase
                     ),
                 )
             ),
-            $this->_subject->render()
+            $this->subject->render()
         );
     }
 
@@ -472,7 +472,7 @@ class CommentsViewTest extends PHPUnit_Framework_TestCase
     //                ),
     //            )
     //        ),
-    //        $this->_subject->render()
+    //        $this->subject->render()
     //    );
     //}
 
@@ -498,7 +498,7 @@ class CommentsViewTest extends PHPUnit_Framework_TestCase
                     //'content' => ''
                 )
             ),
-            $this->_subject->render()
+            $this->subject->render()
         );
     }
 
@@ -515,7 +515,7 @@ class CommentsViewTest extends PHPUnit_Framework_TestCase
     //                'content' => self::MESSAGE
     //            )
     //        ),
-    //        $this->_subject->render()
+    //        $this->subject->render()
     //    );
     //}
 
@@ -535,7 +535,7 @@ class CommentsViewTest extends PHPUnit_Framework_TestCase
                 ),
                 'content' => 'Add Comment'
             ),
-            $this->_subject->render()
+            $this->subject->render()
         );
     }
 
@@ -551,7 +551,7 @@ class CommentsViewTest extends PHPUnit_Framework_TestCase
     //            ),
     //            'content' => 'Update Comment'
     //        ),
-    //        $this->_subject->render()
+    //        $this->subject->render()
     //    );
     //}
 
@@ -568,7 +568,7 @@ class CommentsViewTest extends PHPUnit_Framework_TestCase
                 'attributes' => array('type' => 'reset'),
                 'content' => 'Reset'
             ),
-            $this->_subject->render()
+            $this->subject->render()
         );
     }
 
@@ -580,7 +580,7 @@ class CommentsViewTest extends PHPUnit_Framework_TestCase
      *
      * @return void
      */
-    private function _defineConstant($name, $value)
+    protected function defineConstant($name, $value)
     {
         if (!defined($name)) {
             define($name, $value);

@@ -34,28 +34,28 @@ class ControllerTest extends PHPUnit_Framework_TestCase
      *
      * @var Twocents_Controller
      */
-    private $_subject;
+    protected $subject;
 
     /**
      * The findByTopicname mock.
      *
      * @var object
      */
-    private $_findByTopicnameMock;
+    protected $findByTopicnameMock;
 
     /**
      * The comments view mock.
      *
      * @var Twocents_CommentsView
      */
-    private $_viewMock;
+    protected $viewMock;
 
     /**
      * The mailer mock.
      *
      * @var Twocents_Mailer
      */
-    private $_mailerMock;
+    protected $mailerMock;
 
     /**
      * Sets up the test fixture.
@@ -69,7 +69,7 @@ class ControllerTest extends PHPUnit_Framework_TestCase
     {
         global $plugin_cf, $_XH_csrfProtection;
 
-        $this->_defineConstant('CMSIMPLE_URL', 'http://localhost/xh/');
+        $this->defineConstant('CMSIMPLE_URL', 'http://localhost/xh/');
         $plugin_cf = array(
             'twocents' => array(
                 'comments_moderated' => '',
@@ -80,28 +80,28 @@ class ControllerTest extends PHPUnit_Framework_TestCase
                 'captcha_plugin' => ''
             )
         );
-        $this->_defineConstant('XH_ADM', false);
-        $this->_subject = new Twocents_Controller();
-        $this->_findByTopicnameMock = new PHPUnit_Extensions_MockStaticMethod(
-            'Twocents_Comment::findByTopicname', $this->_subject
+        $this->defineConstant('XH_ADM', false);
+        $this->subject = new Twocents_Controller();
+        $this->findByTopicnameMock = new PHPUnit_Extensions_MockStaticMethod(
+            'Twocents_Comment::findByTopicname', $this->subject
         );
-        $this->_viewMock = $this->getMockBuilder('Twocents_CommentsView')
+        $this->viewMock = $this->getMockBuilder('Twocents_CommentsView')
             ->disableOriginalConstructor()->getMock();
         $viewMakeStub = new PHPUnit_Extensions_MockStaticMethod(
-            'Twocents_CommentsView::make', $this->_subject
+            'Twocents_CommentsView::make', $this->subject
         );
         $viewMakeStub->expects($this->any())->will(
-            $this->returnValue($this->_viewMock)
+            $this->returnValue($this->viewMock)
         );
         $_XH_csrfProtection = $this->getMockBuilder('XH_CSRFProtection')
             ->disableOriginalConstructor()->getMock();
-        $this->_mailerMock = $this->getMockBuilder('Twocents_Mailer')
+        $this->mailerMock = $this->getMockBuilder('Twocents_Mailer')
             ->disableOriginalConstructor()->getMock();
         $mailerMakeMock = new PHPUnit_Extensions_MockStaticMethod(
-            'Twocents_Mailer::make', $this->_subject
+            'Twocents_Mailer::make', $this->subject
         );
         $mailerMakeMock->expects($this->any())->will(
-            $this->returnValue($this->_mailerMock)
+            $this->returnValue($this->mailerMock)
         );
     }
 
@@ -112,9 +112,9 @@ class ControllerTest extends PHPUnit_Framework_TestCase
      */
     public function testRenderComments()
     {
-        $this->_viewMock->expects($this->once())->method('render');
-        $this->_findByTopicnameMock->expects($this->once())->with('foo');
-        $this->_subject->renderComments('foo');
+        $this->viewMock->expects($this->once())->method('render');
+        $this->findByTopicnameMock->expects($this->once())->with('foo');
+        $this->subject->renderComments('foo');
     }
 
     /**
@@ -128,7 +128,7 @@ class ControllerTest extends PHPUnit_Framework_TestCase
             array(
                 'tag' => 'p'
             ),
-            $this->_subject->renderComments('foo bar')
+            $this->subject->renderComments('foo bar')
         );
     }
 
@@ -146,7 +146,7 @@ class ControllerTest extends PHPUnit_Framework_TestCase
             'twocents_message' => 'blah blah'
         );
         $_SERVER['QUERY_STRING'] = 'Page';
-        $this->_mailerMock->expects($this->any())->method('isValidAddress')
+        $this->mailerMock->expects($this->any())->method('isValidAddress')
             ->will($this->returnValue(true));
         $commentSpy = $this->getMockBuilder('Twocents_Comment')
             ->disableOriginalConstructor()
@@ -154,10 +154,10 @@ class ControllerTest extends PHPUnit_Framework_TestCase
             ->getMock();
         $commentSpy->expects($this->once())->method('insert');
         $makeMock = new PHPUnit_Extensions_MockStaticMethod(
-            'Twocents_Comment::make', $this->_subject
+            'Twocents_Comment::make', $this->subject
         );
         $makeMock->expects($this->once())->will($this->returnValue($commentSpy));
-        $this->_subject->renderComments('foo');
+        $this->subject->renderComments('foo');
     }
 
     /**
@@ -173,7 +173,7 @@ class ControllerTest extends PHPUnit_Framework_TestCase
             'twocents_email' => 'me@example.com',
             'twocents_message' => 'blah blah'
         );
-        $this->_assertDoesNotAddInvalidComment();
+        $this->assertDoesNotAddInvalidComment();
     }
 
     /**
@@ -189,7 +189,7 @@ class ControllerTest extends PHPUnit_Framework_TestCase
             'twocents_email' => 'cmb',
             'twocents_message' => 'blah blah'
         );
-        $this->_assertDoesNotAddInvalidComment();
+        $this->assertDoesNotAddInvalidComment();
     }
 
     /**
@@ -205,7 +205,7 @@ class ControllerTest extends PHPUnit_Framework_TestCase
             'twocents_email' => 'me@example.com',
             'twocents_message' => ''
         );
-        $this->_assertDoesNotAddInvalidComment();
+        $this->assertDoesNotAddInvalidComment();
     }
 
     /**
@@ -213,7 +213,7 @@ class ControllerTest extends PHPUnit_Framework_TestCase
      *
      * @return void
      */
-    private function _assertDoesNotAddInvalidComment()
+    protected function assertDoesNotAddInvalidComment()
     {
         $_SERVER['QUERY_STRING'] = 'Page';
         $commentSpy = $this->getMockBuilder('Twocents_Comment')
@@ -222,10 +222,10 @@ class ControllerTest extends PHPUnit_Framework_TestCase
             ->getMock();
         $commentSpy->expects($this->never())->method('insert');
         $makeMock = new PHPUnit_Extensions_MockStaticMethod(
-            'Twocents_Comment::make', $this->_subject
+            'Twocents_Comment::make', $this->subject
         );
         $makeMock->expects($this->once())->will($this->returnValue($commentSpy));
-        $this->_subject->renderComments('foo');
+        $this->subject->renderComments('foo');
     }
 
     /**
@@ -242,18 +242,18 @@ class ControllerTest extends PHPUnit_Framework_TestCase
             'twocents_message' => 'blah blah'
         );
         $_SERVER['QUERY_STRING'] = 'Page';
-        $this->_mailerMock->expects($this->any())->method('isValidAddress')
+        $this->mailerMock->expects($this->any())->method('isValidAddress')
             ->will($this->returnValue(true));
-        $this->_mailerMock->expects($this->once())->method('send');
+        $this->mailerMock->expects($this->once())->method('send');
         $commentSpy = $this->getMockBuilder('Twocents_Comment')
             ->disableOriginalConstructor()
             ->setMethods(array('insert'))
             ->getMock();
         $makeMock = new PHPUnit_Extensions_MockStaticMethod(
-            'Twocents_Comment::make', $this->_subject
+            'Twocents_Comment::make', $this->subject
         );
         $makeMock->expects($this->once())->will($this->returnValue($commentSpy));
-        $this->_subject->renderComments('foo');
+        $this->subject->renderComments('foo');
     }
 
     /**
@@ -263,7 +263,7 @@ class ControllerTest extends PHPUnit_Framework_TestCase
      */
     public function testUpdateComment()
     {
-        $this->_defineConstant('XH_ADM', true);
+        $this->defineConstant('XH_ADM', true);
         $_POST = array(
             'twocents_action' => 'update_comment',
             'twocents_id' => '1a2b3c',
@@ -272,7 +272,7 @@ class ControllerTest extends PHPUnit_Framework_TestCase
             'twocents_message' => 'blah blah'
         );
         $_SERVER['QUERY_STRING'] = 'Page';
-        $this->_mailerMock->expects($this->any())->method('isValidAddress')
+        $this->mailerMock->expects($this->any())->method('isValidAddress')
             ->will($this->returnValue(true));
         $commentSpy = $this->getMockBuilder('Twocents_Comment')
             ->disableOriginalConstructor()
@@ -280,10 +280,10 @@ class ControllerTest extends PHPUnit_Framework_TestCase
             ->getMock();
         $commentSpy->expects($this->once())->method('update');
         $makeMock = new PHPUnit_Extensions_MockStaticMethod(
-            'Twocents_Comment::find', $this->_subject
+            'Twocents_Comment::find', $this->subject
         );
         $makeMock->expects($this->once())->will($this->returnValue($commentSpy));
-        $this->_subject->renderComments('foo');
+        $this->subject->renderComments('foo');
     }
 
     /**
@@ -293,7 +293,7 @@ class ControllerTest extends PHPUnit_Framework_TestCase
      */
     public function testDoesNotUpdateInvalidUserComment()
     {
-        $this->_defineConstant('XH_ADM', true);
+        $this->defineConstant('XH_ADM', true);
         $_POST = array(
             'twocents_action' => 'update_comment',
             'twocents_id' => '1a2b3c',
@@ -301,7 +301,7 @@ class ControllerTest extends PHPUnit_Framework_TestCase
             'twocents_email' => 'me@example.com',
             'twocents_message' => 'blah blah'
         );
-        $this->_assertDoesNotUpdateInvalidComment();
+        $this->assertDoesNotUpdateInvalidComment();
     }
 
     /**
@@ -311,7 +311,7 @@ class ControllerTest extends PHPUnit_Framework_TestCase
      */
     public function testDoesNotUpdateInvalidEmailComment()
     {
-        $this->_defineConstant('XH_ADM', true);
+        $this->defineConstant('XH_ADM', true);
         $_POST = array(
             'twocents_action' => 'update_comment',
             'twocents_id' => '1a2b3c',
@@ -319,7 +319,7 @@ class ControllerTest extends PHPUnit_Framework_TestCase
             'twocents_email' => '',
             'twocents_message' => 'blah blah'
         );
-        $this->_assertDoesNotUpdateInvalidComment();
+        $this->assertDoesNotUpdateInvalidComment();
     }
 
     /**
@@ -329,7 +329,7 @@ class ControllerTest extends PHPUnit_Framework_TestCase
      */
     public function testDoesNotUpdateInvalidMessageComment()
     {
-        $this->_defineConstant('XH_ADM', true);
+        $this->defineConstant('XH_ADM', true);
         $_POST = array(
             'twocents_action' => 'update_comment',
             'twocents_id' => '1a2b3c',
@@ -337,7 +337,7 @@ class ControllerTest extends PHPUnit_Framework_TestCase
             'twocents_email' => 'me@example.com',
             'twocents_message' => ''
         );
-        $this->_assertDoesNotUpdateInvalidComment();
+        $this->assertDoesNotUpdateInvalidComment();
     }
 
     /**
@@ -345,7 +345,7 @@ class ControllerTest extends PHPUnit_Framework_TestCase
      *
      * @return void
      */
-    private function _assertDoesNotUpdateInvalidComment()
+    protected function assertDoesNotUpdateInvalidComment()
     {
         $_SERVER['QUERY_STRING'] = 'Page';
         $commentSpy = $this->getMockBuilder('Twocents_Comment')
@@ -354,10 +354,10 @@ class ControllerTest extends PHPUnit_Framework_TestCase
             ->getMock();
         $commentSpy->expects($this->never())->method('update');
         $makeMock = new PHPUnit_Extensions_MockStaticMethod(
-            'Twocents_Comment::find', $this->_subject
+            'Twocents_Comment::find', $this->subject
         );
         $makeMock->expects($this->once())->will($this->returnValue($commentSpy));
-        $this->_subject->renderComments('foo');
+        $this->subject->renderComments('foo');
     }
 
     /**
@@ -376,10 +376,10 @@ class ControllerTest extends PHPUnit_Framework_TestCase
         );
         $_SERVER['QUERY_STRING'] = 'Page';
         $makeMock = new PHPUnit_Extensions_MockStaticMethod(
-            'Twocents_Comment::find', $this->_subject
+            'Twocents_Comment::find', $this->subject
         );
         $makeMock->expects($this->never());
-        $this->_subject->renderComments('foo');
+        $this->subject->renderComments('foo');
     }
 
     /**
@@ -389,7 +389,7 @@ class ControllerTest extends PHPUnit_Framework_TestCase
      */
     public function testDeleteComment()
     {
-        $this->_defineConstant('XH_ADM', true);
+        $this->defineConstant('XH_ADM', true);
         $_POST = array(
             'twocents_action' => 'remove_comment',
             'twocents_id' => '1a2b3c'
@@ -398,10 +398,10 @@ class ControllerTest extends PHPUnit_Framework_TestCase
             ->disableOriginalConstructor()->getMock();
         $commentSpy->expects($this->once())->method('delete');
         $findMock = new PHPUnit_Extensions_MockStaticMethod(
-            'Twocents_Comment::find', $this->_subject
+            'Twocents_Comment::find', $this->subject
         );
         $findMock->expects($this->any())->will($this->returnValue($commentSpy));
-        $this->_subject->renderComments('foo');
+        $this->subject->renderComments('foo');
     }
 
     /**
@@ -411,16 +411,16 @@ class ControllerTest extends PHPUnit_Framework_TestCase
      */
     public function testDoesNotDeleteCommentFromFrontEnd()
     {
-        $this->_defineConstant('XH_ADM', false);
+        $this->defineConstant('XH_ADM', false);
         $_POST = array(
             'twocents_action' => 'remove_comment',
             'twocents_id' => '1a2b3c'
         );
         $findMock = new PHPUnit_Extensions_MockStaticMethod(
-            'Twocents_Comment::find', $this->_subject
+            'Twocents_Comment::find', $this->subject
         );
         $findMock->expects($this->never());
-        $this->_subject->renderComments('foo');
+        $this->subject->renderComments('foo');
     }
 
     /**
@@ -431,7 +431,7 @@ class ControllerTest extends PHPUnit_Framework_TestCase
      *
      * @return void
      */
-    private function _defineConstant($name, $value)
+    protected function defineConstant($name, $value)
     {
         if (!defined($name)) {
             define($name, $value);

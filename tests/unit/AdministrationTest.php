@@ -32,14 +32,14 @@ class AdministrationTest extends PHPUnit_Framework_TestCase
      *
      * @var Twocents_Controller
      */
-    private $_subject;
+    protected $subject;
 
     /**
      * The XH_registerStandardPluginMenuItems() mock.
      *
      * @var object
      */
-    private $_rspmiMock;
+    protected $rspmiMock;
 
     /**
      * Sets up the test fixture.
@@ -54,20 +54,20 @@ class AdministrationTest extends PHPUnit_Framework_TestCase
     {
         global $twocents, $admin, $action;
 
-        $this->_defineConstant('XH_ADM', true);
+        $this->defineConstant('XH_ADM', true);
         $twocents = 'true';
         $admin = 'plugin_stylesheet';
         $action = 'plugin_text';
-        $this->_subject = new Twocents_Controller();
-        $this->_rspmiMock = new PHPUnit_Extensions_MockFunction(
-            'XH_registerStandardPluginMenuItems', $this->_subject
+        $this->subject = new Twocents_Controller();
+        $this->rspmiMock = new PHPUnit_Extensions_MockFunction(
+            'XH_registerStandardPluginMenuItems', $this->subject
         );
         $printPluginAdminMock = new PHPUnit_Extensions_MockFunction(
-            'print_plugin_admin', $this->_subject
+            'print_plugin_admin', $this->subject
         );
         $printPluginAdminMock->expects($this->once())->with('on');
         $pluginAdminCommonMock = new PHPUnit_Extensions_MockFunction(
-            'plugin_admin_common', $this->_subject
+            'plugin_admin_common', $this->subject
         );
         $pluginAdminCommonMock->expects($this->once())
             ->with($action, $admin, 'twocents');
@@ -80,8 +80,8 @@ class AdministrationTest extends PHPUnit_Framework_TestCase
      */
     public function testShowsIntegratedPluginMenu()
     {
-        $this->_rspmiMock->expects($this->once())->with(true);
-        $this->_subject->dispatch();
+        $this->rspmiMock->expects($this->once())->with(true);
+        $this->subject->dispatch();
     }
 
     /**
@@ -91,7 +91,7 @@ class AdministrationTest extends PHPUnit_Framework_TestCase
      */
     public function testStylesheet()
     {
-        $this->_subject->dispatch();
+        $this->subject->dispatch();
     }
 
     /**
@@ -102,7 +102,7 @@ class AdministrationTest extends PHPUnit_Framework_TestCase
      *
      * @return void
      */
-    private function _defineConstant($name, $value)
+    protected function defineConstant($name, $value)
     {
         if (!defined($name)) {
             define($name, $value);

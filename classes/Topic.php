@@ -41,7 +41,7 @@ class Twocents_Topic
         if ($dir = opendir(Twocents_Db::getFoldername())) {
             while (($entry = readdir($dir)) !== false) {
                 if (pathinfo($entry, PATHINFO_EXTENSION) == self::EXT) {
-                    $topics[] = self::_load(basename($entry, '.' . self::EXT));
+                    $topics[] = self::load(basename($entry, '.' . self::EXT));
                 }
             }
         }
@@ -61,7 +61,7 @@ class Twocents_Topic
     public static function findByName($name)
     {
         if (file_exists(Twocents_Db::getFoldername() . $name . '.' . self::EXT)) {
-            return self::_load($name);
+            return self::load($name);
         } else {
             return null;
         }
@@ -74,7 +74,7 @@ class Twocents_Topic
      *
      * @return Twocents_Topic
      */
-    private static function _load($name)
+    protected static function load($name)
     {
         return new self($name);
     }
@@ -84,7 +84,7 @@ class Twocents_Topic
      *
      * @var string
      */
-    private $_name;
+    protected $name;
 
     /**
      * Initializes a new instance.
@@ -95,7 +95,7 @@ class Twocents_Topic
      */
     public function __construct($name)
     {
-        $this->_name = (string) $name;
+        $this->name = (string) $name;
     }
 
     /**
@@ -105,7 +105,7 @@ class Twocents_Topic
      */
     public function getName()
     {
-        return $this->_name;
+        return $this->name;
     }
 
     /**
@@ -116,7 +116,7 @@ class Twocents_Topic
     public function insert()
     {
         Twocents_Db::lock(LOCK_EX);
-        touch(Twocents_Db::getFoldername() . $this->_name . '.' . self::EXT);
+        touch(Twocents_Db::getFoldername() . $this->name . '.' . self::EXT);
         Twocents_Db::lock(LOCK_UN);
     }
 
@@ -128,7 +128,7 @@ class Twocents_Topic
     public function delete()
     {
         Twocents_Db::lock(LOCK_EX);
-        unlink(Twocents_Db::getFoldername() . $this->_name . '.' . self::EXT);
+        unlink(Twocents_Db::getFoldername() . $this->name . '.' . self::EXT);
         Twocents_Db::lock(LOCK_UN);
     }
 }

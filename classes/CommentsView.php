@@ -44,21 +44,21 @@ class Twocents_CommentsView
      *
      * @var array
      */
-    private $_comments;
+    protected $comments;
 
     /**
      * The current comment, if any.
      *
      * @var Twocents_Comment
      */
-    private $_currentComment;
+    protected $currentComment;
 
     /**
      * (X)HTML messages.
      *
      * @var string
      */
-    private $_messages;
+    protected $messages;
 
     /**
      * Initializes a new instance.
@@ -69,12 +69,12 @@ class Twocents_CommentsView
      *
      * @return void
      */
-    private function __construct(
+    protected function __construct(
         $comments, Twocents_Comment $currentComment = null, $messages = ''
     ) {
-        $this->_comments = (array) $comments;
-        $this->_currentComment = $currentComment;
-        $this->_messages = (string) $messages;
+        $this->comments = (array) $comments;
+        $this->currentComment = $currentComment;
+        $this->messages = (string) $messages;
     }
 
     /**
@@ -84,25 +84,25 @@ class Twocents_CommentsView
      */
     public function render()
     {
-        $this->_writeScriptsToBjs();
+        $this->writeScriptsToBjs();
         $html = '<div class="twocents_comments">';
-        foreach ($this->_comments as $comment) {
+        foreach ($this->comments as $comment) {
             if ($comment->isVisible() || XH_ADM) {
-                if (isset($this->_currentComment)
-                    && $this->_currentComment->getId() == $comment->getId()
+                if (isset($this->currentComment)
+                    && $this->currentComment->getId() == $comment->getId()
                 ) {
-                    $html .= $this->_messages;
+                    $html .= $this->messages;
                 }
-                $view = new Twocents_CommentView($comment, $this->_currentComment);
+                $view = new Twocents_CommentView($comment, $this->currentComment);
                 $html .= $view->render();
             }
         }
         $html .= '</div>';
-        if (!isset($this->_currentComment)
-            || $this->_currentComment->getId() == null
+        if (!isset($this->currentComment)
+            || $this->currentComment->getId() == null
         ) {
-            $view = new Twocents_CommentFormView($this->_currentComment);
-            $html .= $this->_messages . $view->render();
+            $view = new Twocents_CommentFormView($this->currentComment);
+            $html .= $this->messages . $view->render();
         }
         return $html;
     }
@@ -116,7 +116,7 @@ class Twocents_CommentsView
      * @global string The (X)HTML fragment to insert at the bottom of the body.
      * @global array  The localization of the plugins.
      */
-    private function _writeScriptsToBjs()
+    protected function writeScriptsToBjs()
     {
         global $pth, $bjs, $plugin_cf, $plugin_tx;
 

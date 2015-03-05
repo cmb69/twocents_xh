@@ -29,7 +29,7 @@ class Twocents_CommentFormView
      *
      * @var Twocents_Comment
      */
-    private $_comment;
+    protected $comment;
 
     /**
      * Initializes a new instance.
@@ -41,9 +41,9 @@ class Twocents_CommentFormView
     public function __construct(Twocents_Comment $comment = null)
     {
         if (isset($comment)) {
-            $this->_comment = $comment;
+            $this->comment = $comment;
         } else {
-            $this->_comment = Twocents_Comment::make(null, null);
+            $this->comment = Twocents_Comment::make(null, null);
         }
     }
 
@@ -58,14 +58,14 @@ class Twocents_CommentFormView
     {
         global $plugin_tx;
 
-        $url = XH_hsc($this->_getUrl());
+        $url = XH_hsc($this->getUrl());
         return '<form class="twocents_form" method="post" action="' . $url . '">'
-            . $this->_renderHiddenFormFields()
-            . $this->_renderUserInput()
-            . $this->_renderEmailInput()
-            . $this->_renderMessageTextarea()
-            . $this->_renderCaptcha()
-            . $this->_renderButtons()
+            . $this->renderHiddenFormFields()
+            . $this->renderUserInput()
+            . $this->renderEmailInput()
+            . $this->renderMessageTextarea()
+            . $this->renderCaptcha()
+            . $this->renderButtons()
             . '</form>';
     }
 
@@ -76,17 +76,17 @@ class Twocents_CommentFormView
      *
      * @global XH_CSRFProtection The CSRF protector.
      */
-    private function _renderHiddenFormFields()
+    protected function renderHiddenFormFields()
     {
         global $_XH_csrfProtection;
 
         $html = '';
-        if ($this->_comment->getId()) {
+        if ($this->comment->getId()) {
             $html .= $_XH_csrfProtection->tokenInput();
         }
         $html .= tag(
             'input type="hidden" name="twocents_id" value="'
-            . XH_hsc($this->_comment->getId()) . '"'
+            . XH_hsc($this->comment->getId()) . '"'
         );
         return $html;
     }
@@ -98,7 +98,7 @@ class Twocents_CommentFormView
      *
      * @global array The localization of the plugins.
      */
-    private function _renderUserInput()
+    protected function renderUserInput()
     {
         global $plugin_tx;
 
@@ -106,7 +106,7 @@ class Twocents_CommentFormView
             . '</span>'
             . tag(
                 'input type="text" name="twocents_user" value="'
-                . XH_hsc($this->_comment->getUser())
+                . XH_hsc($this->comment->getUser())
                 . '" size="20" required="required"'
             )
             . '</label></div>';
@@ -119,7 +119,7 @@ class Twocents_CommentFormView
      *
      * @global array The localization of the plugins.
      */
-    private function _renderEmailInput()
+    protected function renderEmailInput()
     {
         global $plugin_tx;
 
@@ -127,7 +127,7 @@ class Twocents_CommentFormView
             . '</span>'
             . tag(
                 'input type="email" name="twocents_email" value="'
-                . XH_hsc($this->_comment->getEmail())
+                . XH_hsc($this->comment->getEmail())
                 . '" size="20" required="required"'
             )
             . '</label></div>';
@@ -140,7 +140,7 @@ class Twocents_CommentFormView
      *
      * @global array The localization of the plugins.
      */
-    private function _renderMessageTextarea()
+    protected function renderMessageTextarea()
     {
         global $plugin_tx;
 
@@ -148,7 +148,7 @@ class Twocents_CommentFormView
             . '</span>'
             . '<textarea name="twocents_message" cols="50" rows="8"'
             . ' required="required">'
-            . XH_hsc($this->_comment->getMessage()) . '</textarea></label></div>';
+            . XH_hsc($this->comment->getMessage()) . '</textarea></label></div>';
     }
 
     /**
@@ -159,7 +159,7 @@ class Twocents_CommentFormView
      * @global array The paths of system files and folders.
      * @global array The configuration of the plugins.
      */
-    private function _renderCaptcha()
+    protected function renderCaptcha()
     {
         global $pth, $plugin_cf;
 
@@ -180,17 +180,17 @@ class Twocents_CommentFormView
      *
      * @global array The localization of the plugins.
      */
-    private function _renderButtons()
+    protected function renderButtons()
     {
         global $plugin_tx;
 
         $ptx = $plugin_tx['twocents'];
-        $action = $this->_comment->getId() ? 'update' : 'add';
+        $action = $this->comment->getId() ? 'update' : 'add';
         $html = '<div class="twocents_form_buttons">'
             . '<button type="submit" name="twocents_action" value="' . $action
             . '_comment">' . $ptx['label_' . $action] . '</button>';
-        if ($this->_comment->getId()) {
-            $html .= '<a href="' . $this->_getUrl() . '">'
+        if ($this->comment->getId()) {
+            $html .= '<a href="' . $this->getUrl() . '">'
                 . $ptx['label_cancel'] . '</a>';
         }
         $html .= '<button type="reset">' . $ptx['label_reset'] . '</button>'
@@ -205,7 +205,7 @@ class Twocents_CommentFormView
      *
      * @global string The script name.
      */
-    private function _getUrl()
+    protected function getUrl()
     {
         global $sn;
 

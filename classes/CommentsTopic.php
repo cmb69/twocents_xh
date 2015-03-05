@@ -41,7 +41,7 @@ class Twocents_CommentsTopic extends Twocents_Topic
         if ($dir = opendir(Twocents_Db::getFoldername())) {
             while (($entry = readdir($dir)) !== false) {
                 if (pathinfo($entry, PATHINFO_EXTENSION) == self::EXT) {
-                    $topics[] = self::_load(basename($entry, '.' . self::EXT));
+                    $topics[] = self::load(basename($entry, '.' . self::EXT));
                 }
             }
         }
@@ -57,7 +57,7 @@ class Twocents_CommentsTopic extends Twocents_Topic
      *
      * @return Twocents_Topic
      */
-    private static function _load($name)
+    protected static function load($name)
     {
         return new self($name);
     }

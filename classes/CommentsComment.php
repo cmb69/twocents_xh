@@ -45,7 +45,7 @@ class Twocents_CommentsComment extends Twocents_Comment
             if (fgets($file) !== false) {
                 while (($line = fgets($file)) !== false) {
                     $record = explode('-,+;-', trim($line));
-                    $comments[] = self::_load($name, $record);
+                    $comments[] = self::load($name, $record);
                 }
             }
             fclose($file);
@@ -62,7 +62,7 @@ class Twocents_CommentsComment extends Twocents_Comment
      *
      * @return Twocents_Comment
      */
-    private static function _load($topicname, $record)
+    protected static function load($topicname, $record)
     {
         // image is $record[6]
         $comment = new parent($topicname, $record[5]);

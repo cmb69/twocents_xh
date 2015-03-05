@@ -42,14 +42,14 @@ class TopicTest extends PHPUnit_Framework_TestCase
      *
      * @var Twocents_Topic
      */
-    private $_subject;
+    protected $subject;
 
     /**
      * The path of the data file.
      *
      * @var string
      */
-    private $_filename;
+    protected $filename;
 
     /**
      * Sets up the test fixture.
@@ -58,8 +58,8 @@ class TopicTest extends PHPUnit_Framework_TestCase
      */
     public function setUp()
     {
-        $this->_setUpFilesystem();
-        $this->_subject = new Twocents_Topic(self::TOPIC);
+        $this->setUpFilesystem();
+        $this->subject = new Twocents_Topic(self::TOPIC);
     }
 
     /**
@@ -69,16 +69,16 @@ class TopicTest extends PHPUnit_Framework_TestCase
      *
      * @global array The paths of system files and folders.
      */
-    private function _setUpFilesystem()
+    protected function setUpFilesystem()
     {
         global $pth;
 
         vfsStreamWrapper::register();
         vfsStreamWrapper::setRoot(new vfsStreamDirectory('test'));
-        $this->_filename = vfsStream::url('test/twocents/foo.csv');
-        mkdir(dirname($this->_filename));
+        $this->filename = vfsStream::url('test/twocents/foo.csv');
+        mkdir(dirname($this->filename));
         foreach (array('foo', 'bar', 'baz') as $name) {
-            touch(dirname($this->_filename) . '/' . $name . '.csv');
+            touch(dirname($this->filename) . '/' . $name . '.csv');
         }
         $pth['folder']['content'] = vfsStream::url('test/');
     }
@@ -90,7 +90,7 @@ class TopicTest extends PHPUnit_Framework_TestCase
      */
     public function testNameIsCorrect()
     {
-        $this->assertEquals(self::TOPIC, $this->_subject->getName());
+        $this->assertEquals(self::TOPIC, $this->subject->getName());
     }
 
     /**
@@ -100,10 +100,10 @@ class TopicTest extends PHPUnit_Framework_TestCase
      */
     public function testInsertionCreatesFile()
     {
-        $this->_subject->delete();
-        $this->assertFileNotExists($this->_filename);
-        $this->_subject->insert();
-        $this->assertFileExists($this->_filename);
+        $this->subject->delete();
+        $this->assertFileNotExists($this->filename);
+        $this->subject->insert();
+        $this->assertFileExists($this->filename);
     }
 
     /**
@@ -113,10 +113,10 @@ class TopicTest extends PHPUnit_Framework_TestCase
      */
     public function testDeletionRemovesFile()
     {
-        $this->_subject->insert();
-        $this->assertFileExists($this->_filename);
-        $this->_subject->delete();
-        $this->assertFileNotExists($this->_filename);
+        $this->subject->insert();
+        $this->assertFileExists($this->filename);
+        $this->subject->delete();
+        $this->assertFileNotExists($this->filename);
     }
 
     /**

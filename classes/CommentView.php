@@ -29,14 +29,14 @@ class Twocents_CommentView
      *
      * @var Twocents_Comment
      */
-    private $_comment;
+    protected $comment;
 
     /**
      * The current comment, if any.
      *
      * @var Twocents_Comment
      */
-    private $_currentComment;
+    protected $currentComment;
 
     /**
      * Initializes a new instance.
@@ -49,8 +49,8 @@ class Twocents_CommentView
     public function __construct(
         Twocents_Comment $comment, Twocents_Comment $currentComment = null
     ) {
-        $this->_comment = $comment;
-        $this->_currentComment = $currentComment;
+        $this->comment = $comment;
+        $this->currentComment = $currentComment;
     }
 
     /**
@@ -60,20 +60,20 @@ class Twocents_CommentView
      */
     public function render()
     {
-        $id = $this->_isCurrentComment()
+        $id = $this->isCurrentComment()
             ? ''
-            : ' id="twocents_comment_' . $this->_comment->getId() . '"';
-        $class = $this->_comment->isVisible() ? '' : ' twocents_hidden';
+            : ' id="twocents_comment_' . $this->comment->getId() . '"';
+        $class = $this->comment->isVisible() ? '' : ' twocents_hidden';
         $html = '<div' . $id . ' class="twocents_comment' . $class . '">';
-        if ($this->_isCurrentComment()) {
-            $view = new Twocents_CommentFormView($this->_currentComment);
+        if ($this->isCurrentComment()) {
+            $view = new Twocents_CommentFormView($this->currentComment);
             $html .= $view->render();
         } else {
             if (XH_ADM) {
-                $html .= $this->_renderAdminTools();
+                $html .= $this->renderAdminTools();
             }
-            $html .= '<p>' . $this->_renderHeading() . '</p>'
-                . '<blockquote>' . $this->_renderMessage()
+            $html .= '<p>' . $this->renderHeading() . '</p>'
+                . '<blockquote>' . $this->renderMessage()
                 . '</blockquote>';
         }
         $html .= '</div>';
@@ -85,11 +85,11 @@ class Twocents_CommentView
      *
      * @return string (X)HTML.
      */
-    private function _renderAdminTools()
+    protected function renderAdminTools()
     {
         return '<div class="twocents_admin_tools">'
-            . $this->_renderEditLink()
-            . $this->_renderDeleteForm()
+            . $this->renderEditLink()
+            . $this->renderDeleteForm()
             . '</div>';
     }
 
@@ -101,18 +101,18 @@ class Twocents_CommentView
      * @global array             The localization of the plugins.
      * @global XH_CSRFProtection The CSRF protector.
      */
-    private function _renderDeleteForm()
+    protected function renderDeleteForm()
     {
         global $plugin_tx, $_XH_csrfProtection;
 
-        $hideLabel = $this->_comment->isVisible()
+        $hideLabel = $this->comment->isVisible()
             ? $plugin_tx['twocents']['label_hide']
             : $plugin_tx['twocents']['label_show'];
-        return '<form method="post" action="' . XH_hsc($this->_getUrl()) . '">'
+        return '<form method="post" action="' . XH_hsc($this->getUrl()) . '">'
             . $_XH_csrfProtection->tokenInput()
             . tag(
                 'input type="hidden" name="twocents_id" value="'
-                . $this->_comment->getId() . '"'
+                . $this->comment->getId() . '"'
             )
             . '<button type="submit" name="twocents_action"'
             . ' value="toggle_visibility">' . $hideLabel . '</button>'
@@ -128,11 +128,11 @@ class Twocents_CommentView
      *
      * @global array The localization of the plugins.
      */
-    private function _renderEditLink()
+    protected function renderEditLink()
     {
         global $plugin_tx;
 
-        $url = $this->_getUrl() . '&twocents_id=' . $this->_comment->getId();
+        $url = $this->getUrl() . '&twocents_id=' . $this->comment->getId();
         return '<a href="' . XH_hsc($url) . '">'
             . $plugin_tx['twocents']['label_edit'] . '</a>';
     }
@@ -144,22 +144,22 @@ class Twocents_CommentView
      *
      * @global array The localization of the plugins.
      */
-    private function _renderHeading()
+    protected function renderHeading()
     {
         global $plugin_tx;
 
         $date = date(
-            $plugin_tx['twocents']['format_date'], $this->_comment->getTime()
+            $plugin_tx['twocents']['format_date'], $this->comment->getTime()
         );
         $time = date(
-            $plugin_tx['twocents']['format_time'], $this->_comment->getTime()
+            $plugin_tx['twocents']['format_time'], $this->comment->getTime()
         );
         return strtr(
             $plugin_tx['twocents']['format_heading'],
             array(
                 '{DATE}' => $date,
                 '{TIME}' => $time,
-                '{USER}' => XH_hsc($this->_comment->getUser())
+                '{USER}' => XH_hsc($this->comment->getUser())
             )
         );
     }
@@ -171,15 +171,15 @@ class Twocents_CommentView
      *
      * @global array The configuration of the plugins.
      */
-    private function _renderMessage()
+    protected function renderMessage()
     {
         global $plugin_cf;
 
         if ($plugin_cf['twocents']['comments_markup'] == 'HTML') {
-            return $this->_comment->getMessage();
+            return $this->comment->getMessage();
         } else {
             return preg_replace(
-                '/(?:\r\n|\r|\n)/', tag('br'), XH_hsc($this->_comment->getMessage())
+                '/(?:\r\n|\r|\n)/', tag('br'), XH_hsc($this->comment->getMessage())
             );
         }
     }
@@ -191,7 +191,7 @@ class Twocents_CommentView
      *
      * @global string The script name.
      */
-    private function _getUrl()
+    protected function getUrl()
     {
         global $sn;
 
@@ -206,10 +206,10 @@ class Twocents_CommentView
      *
      * @return bool
      */
-    private function _isCurrentComment()
+    protected function isCurrentComment()
     {
-        return isset($this->_currentComment)
-            && $this->_currentComment->getId() == $this->_comment->getId();
+        return isset($this->currentComment)
+            && $this->currentComment->getId() == $this->comment->getId();
     }
 }
 

@@ -43,7 +43,7 @@ class Twocents_Comment
         $filename = Twocents_Db::getFoldername() . $name . '.' . self::EXT;
         if (is_readable($filename) && ($file = fopen($filename, 'r'))) {
             while (($record = fgetcsv($file)) !== false) {
-                $comments[] = self::_load($name, $record);
+                $comments[] = self::load($name, $record);
             }
             fclose($file);
         }
@@ -79,7 +79,7 @@ class Twocents_Comment
      *
      * @return Twocents_Comment
      */
-    private static function _load($topicname, $record)
+    protected static function load($topicname, $record)
     {
         $comment = new self($topicname, $record[1]);
         $comment->id = $record[0];
@@ -305,7 +305,7 @@ class Twocents_Comment
         $file = fopen(
             Twocents_Db::getFoldername() . $this->topicname . '.' . self::EXT, 'a'
         );
-        fputcsv($file, $this->_toRecord());
+        fputcsv($file, $this->toRecord());
         fclose($file);
         Twocents_Db::lock(LOCK_UN);
     }
@@ -326,7 +326,7 @@ class Twocents_Comment
             if ($record[0] != $this->id) {
                 fputcsv($temp, $record);
             } else {
-                fputcsv($temp, $this->_toRecord());
+                fputcsv($temp, $this->toRecord());
             }
         }
         ftruncate($file, 0);
@@ -369,7 +369,7 @@ class Twocents_Comment
      *
      * @return array
      */
-    private function _toRecord()
+    protected function toRecord()
     {
         return array(
             $this->id, $this->time, $this->user, $this->email,

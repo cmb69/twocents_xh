@@ -34,7 +34,7 @@ class Twocents_Mailer
      *
      * @var string
      */
-    private $_lineBreak;
+    protected $lineBreak;
 
     /**
      * Makes and returns a new mailer.
@@ -55,9 +55,9 @@ class Twocents_Mailer
      *
      * @return void
      */
-    private function __construct($lineBreak)
+    protected function __construct($lineBreak)
     {
-        $this->_lineBreak = (string) $lineBreak;
+        $this->lineBreak = (string) $lineBreak;
     }
 
     /**
@@ -105,14 +105,14 @@ class Twocents_Mailer
      */
     public function send($to, $subject, $message, $additionalHeaders = '')
     {
-        $header = 'MIME-Version: 1.0' . $this->_lineBreak
+        $header = 'MIME-Version: 1.0' . $this->lineBreak
             . 'Content-Type: text/plain; charset=UTF-8; format=flowed'
-            . $this->_lineBreak
-            . 'Content-Transfer-Encoding: base64' . $this->_lineBreak
+            . $this->lineBreak
+            . 'Content-Transfer-Encoding: base64' . $this->lineBreak
             . $additionalHeaders;
-        $subject = $this->_encodeMIMEFieldBody($subject);
+        $subject = $this->encodeMIMEFieldBody($subject);
         $message = preg_replace(
-            '/(?:\r\n|\r|\n)/', $this->_lineBreak, trim($message)
+            '/(?:\r\n|\r|\n)/', $this->lineBreak, trim($message)
         );
         $message = chunk_split(base64_encode($message));
         return mail($to, $subject, $message, $header);
@@ -128,7 +128,7 @@ class Twocents_Mailer
      *
      * @todo Don't we have to fold overlong pure ASCII texts also?
      */
-    private function _encodeMIMEFieldBody($text)
+    protected function encodeMIMEFieldBody($text)
     {
         if (!preg_match('/(?:[^\x00-\x7F])/', $text)) { // ASCII only
             return $text;
@@ -150,7 +150,7 @@ class Twocents_Mailer
             $func = create_function(
                 '$l', 'return \'=?UTF-8?B?\' . base64_encode($l) . \'?=\';'
             );
-            return implode($this->_lineBreak . ' ', array_map($func, $lines));
+            return implode($this->lineBreak . ' ', array_map($func, $lines));
         }
     }
 }

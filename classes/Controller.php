@@ -29,7 +29,7 @@ class Twocents_Controller
      *
      * @var Twocents_Comment
      */
-    private $_comment;
+    protected $comment;
 
     /**
      * Dispatches according to the request.
@@ -47,7 +47,7 @@ class Twocents_Controller
                 XH_registerStandardPluginMenuItems(true);
             }
             if (isset($twocents) && $twocents == 'true') {
-                $this->_handleAdministration();
+                $this->handleAdministration();
             }
         }
     }
@@ -61,17 +61,17 @@ class Twocents_Controller
      * @global string The value of the <var>action</var> GP parameter.
      * @global string The (X)HTML fragment to insert into the contents area.
      */
-    private function _handleAdministration()
+    protected function handleAdministration()
     {
         global $admin, $action, $o;
 
         $o .= print_plugin_admin('on');
         switch ($admin) {
         case '':
-            $o .= $this->_renderInfo();
+            $o .= $this->renderInfo();
             break;
         case 'plugin_main':
-            $o .= $this->_handleMainAdministration();
+            $o .= $this->handleMainAdministration();
             break;
         default:
             $o .= plugin_admin_common($action, $admin, 'twocents');
@@ -83,12 +83,12 @@ class Twocents_Controller
      *
      * @return string (X)HTML.
      */
-    private function _renderInfo()
+    protected function renderInfo()
     {
         return '<h1>Twocents</h1>'
-            . $this->_renderIcon()
+            . $this->renderIcon()
             . '<p>Version: ' . TWOCENTS_VERSION . '</p>'
-            . $this->_renderCopyright() . $this->_renderLicense();
+            . $this->renderCopyright() . $this->renderLicense();
     }
 
     /**
@@ -99,7 +99,7 @@ class Twocents_Controller
      * @global array The paths of system files and folders.
      * @global array The localization of the plugins.
      */
-    private function _renderIcon()
+    protected function renderIcon()
     {
         global $pth, $plugin_tx;
 
@@ -115,7 +115,7 @@ class Twocents_Controller
      *
      * @return string (X)HTML.
      */
-    private function _renderCopyright()
+    protected function renderCopyright()
     {
         return <<<EOT
 <p>Copyright &copy; 2014-2015
@@ -129,7 +129,7 @@ EOT;
      *
      * @return string (X)HTML.
      */
-    private function _renderLicense()
+    protected function renderLicense()
     {
         return <<<EOT
 <p class="twocents_license">This program is free software: you can redistribute
@@ -156,7 +156,7 @@ EOT;
      * @global string            The (X)HTML for the contents area.
      * @global XH_CSRFProtection The CSRF protector.
      */
-    private function _handleMainAdministration()
+    protected function handleMainAdministration()
     {
         global $action, $o, $_XH_csrfProtection;
 
@@ -164,22 +164,22 @@ EOT;
         switch ($action) {
         case 'convert_html':
             $_XH_csrfProtection->check();
-            $o .= $this->_convertCommentsTo('html');
+            $o .= $this->convertCommentsTo('html');
             break;
         case 'convert_plain':
             $_XH_csrfProtection->check();
-            $o .= $this->_convertCommentsTo('plain');
+            $o .= $this->convertCommentsTo('plain');
             break;
         case 'import_comments':
             $_XH_csrfProtection->check();
-            $o .= $this->_importComments();
+            $o .= $this->importComments();
             break;
         case 'import_gbook':
             $_XH_csrfProtection->check();
-            $o .= $this->_importGbook();
+            $o .= $this->importGbook();
             break;
         default:
-            $o .= $this->_renderMainAdministration();
+            $o .= $this->renderMainAdministration();
         }
     }
 
@@ -192,7 +192,7 @@ EOT;
      *
      * @global array The localization of the plugins.
      */
-    private function _convertCommentsTo($to)
+    protected function convertCommentsTo($to)
     {
         global $plugin_tx;
 
@@ -201,7 +201,7 @@ EOT;
             $comments = Twocents_Comment::findByTopicname($topic->getName());
             foreach ($comments as $comment) {
                 if ($to == 'html') {
-                    $message = $this->_htmlify(XH_hsc($comment->getMessage()));
+                    $message = $this->htmlify(XH_hsc($comment->getMessage()));
                 } else {
                     $message = $this->plainify($comment->getMessage());
                 }
@@ -211,7 +211,7 @@ EOT;
         }
         $message = $plugin_tx['twocents']['message_converted_' . $to];
         return  XH_message('success', $message)
-            . $this->_renderMainAdministration();
+            . $this->renderMainAdministration();
     }
 
     /**
@@ -222,7 +222,7 @@ EOT;
      * @global array The configuration of the plugins.
      * @global array The localization of the plugins.
      */
-    private function _importComments()
+    protected function importComments()
     {
         global $plugin_cf, $plugin_tx;
 
@@ -232,7 +232,7 @@ EOT;
             foreach ($comments as $comment) {
                 $message = $comment->getMessage();
                 if ($plugin_cf['twocents']['comments_markup'] == 'HTML') {
-                    $message = $this->_purify($message);
+                    $message = $this->purify($message);
                 } else {
                     $message = $this->plainify($message);
                 }
@@ -242,7 +242,7 @@ EOT;
         }
         $message = $plugin_tx['twocents']['message_imported_comments'];
         return XH_message('success', $message)
-            . $this->_renderMainAdministration();
+            . $this->renderMainAdministration();
     }
 
     /**
@@ -254,12 +254,12 @@ EOT;
      *
      * @todo Implement!
      */
-    private function _importGbook()
+    protected function importGbook()
     {
         global $plugin_tx;
 
         return XH_message('info', $plugin_tx['twocents']['message_nyi'])
-            . $this->_renderMainAdministration();
+            . $this->renderMainAdministration();
     }
 
     /**
@@ -271,7 +271,7 @@ EOT;
      * @global array             The plugin configuration.
      * @global XH_CSRFProtection The CSRF protector.
      */
-    private function _renderMainAdministration()
+    protected function renderMainAdministration()
     {
         global $sn, $plugin_cf, $_XH_csrfProtection;
 
@@ -279,12 +279,12 @@ EOT;
             . tag('input type="hidden" name="admin" value="plugin_main"')
             . $_XH_csrfProtection->tokenInput();
         if ($plugin_cf['twocents']['comments_markup'] == 'HTML') {
-            $html .= $this->_renderMainAdminButton('convert_plain');
+            $html .= $this->renderMainAdminButton('convert_plain');
         } else {
-            $html .= $this->_renderMainAdminButton('convert_html');
+            $html .= $this->renderMainAdminButton('convert_html');
         }
-        $html .= $this->_renderMainAdminButton('import_comments')
-            . $this->_renderMainAdminButton('import_gbook')
+        $html .= $this->renderMainAdminButton('import_comments')
+            . $this->renderMainAdminButton('import_gbook')
             . '</form>';
         return $html;
     }
@@ -296,7 +296,7 @@ EOT;
      *
      * @return string (X)HTML.
      */
-    private function _renderMainAdminButton($name)
+    protected function renderMainAdminButton($name)
     {
         global $plugin_tx;
 
@@ -319,7 +319,7 @@ EOT;
     {
         global $plugin_cf, $plugin_tx, $_XH_csrfProtection;
 
-        if (!$this->_isValidTopicname($topicname)) {
+        if (!$this->isValidTopicname($topicname)) {
             return XH_message('fail', $plugin_tx['twocents']['error_topicname']);
         }
         $action = isset($_POST['twocents_action'])
@@ -327,29 +327,29 @@ EOT;
         $html = '';
         switch ($action) {
         case 'add_comment':
-            $html .= $this->_addComment($topicname);
+            $html .= $this->addComment($topicname);
             break;
         case 'update_comment':
             if (XH_ADM) {
                 $_XH_csrfProtection->check();
-                $html .= $this->_updateComment($topicname);
+                $html .= $this->updateComment($topicname);
             }
             break;
         case 'toggle_visibility':
             if (XH_ADM) {
                 $_XH_csrfProtection->check();
-                $this->_toggleVisibility($topicname);
+                $this->toggleVisibility($topicname);
             }
             break;
         case 'remove_comment':
             if (XH_ADM) {
                 $_XH_csrfProtection->check();
-                $this->_deleteComment($topicname);
+                $this->deleteComment($topicname);
             }
             break;
         }
         if (isset($_GET['twocents_id'])) {
-            $this->_comment = Twocents_Comment::find(
+            $this->comment = Twocents_Comment::find(
                 stsl($_GET['twocents_id']), $topicname
             );
         }
@@ -357,7 +357,7 @@ EOT;
         if ($plugin_cf['twocents']['comments_order'] == 'DESC') {
             $comments = array_reverse($comments);
         }
-        $view = Twocents_CommentsView::make($comments, $this->_comment, $html);
+        $view = Twocents_CommentsView::make($comments, $this->comment, $html);
         if (!isset($_POST['twocents_ajax'])) {
             return '<div>' . $view->render() . '</div>';
         } else {
@@ -373,7 +373,7 @@ EOT;
      *
      * @return bool
      */
-    private function _isValidTopicname($topicname)
+    protected function isValidTopicname($topicname)
     {
         return (bool) preg_match('/^[a-z0-9-]+$/i', $topicname);
     }
@@ -388,31 +388,31 @@ EOT;
      * @global array The configuration of the plugins.
      * @global array The localization of the core.
      */
-    private function _addComment($topicname)
+    protected function addComment($topicname)
     {
         global $plugin_cf, $plugin_tx;
 
-        $this->_comment = Twocents_Comment::make(
+        $this->comment = Twocents_Comment::make(
             $topicname, time()
         );
-        $this->_comment->setUser(trim(stsl($_POST['twocents_user'])));
-        $this->_comment->setEmail(trim(stsl($_POST['twocents_email'])));
+        $this->comment->setUser(trim(stsl($_POST['twocents_user'])));
+        $this->comment->setEmail(trim(stsl($_POST['twocents_email'])));
         $message = trim(stsl($_POST['twocents_message']));
         if (!XH_ADM && $plugin_cf['twocents']['comments_markup'] == 'HTML') {
-            $message = $this->_purify($message);
+            $message = $this->purify($message);
         }
-        $this->_comment->setMessage($message);
-        if ($this->_isModerated()) {
-            $this->_comment->hide();
+        $this->comment->setMessage($message);
+        if ($this->isModerated()) {
+            $this->comment->hide();
         }
         $marker = '<div id="twocents_scroll_marker" class="twocents_scroll_marker">'
             . '</div>';
-        $html = $this->_renderErrorMessages();
+        $html = $this->renderErrorMessages();
         if (!$html) {
-            $this->_comment->insert();
-            $this->_sendNotificationEmail();
-            $this->_comment = null;
-            if ($this->_isModerated()) {
+            $this->comment->insert();
+            $this->sendNotificationEmail();
+            $this->comment = null;
+            if ($this->isModerated()) {
                 $html .= XH_message(
                     'info', $plugin_tx['twocents']['message_moderated']
                 );
@@ -438,7 +438,7 @@ EOT;
      * @global array The paths of system files and folders.
      * @global array The configuration of the core.
      */
-    private function _purify($message)
+    protected function purify($message)
     {
         global $pth, $cf;
 
@@ -467,7 +467,7 @@ EOT;
      *
      * @return string (X)HTML.
      */
-    private function _htmlify($text)
+    protected function htmlify($text)
     {
         return preg_replace(
             array('/(?:\r\n|\r)/', '/\n{2,}/', '/\n/'),
@@ -502,7 +502,7 @@ EOT;
      *
      * @return bool
      */
-    private function _isModerated()
+    protected function isModerated()
     {
         global $plugin_cf;
 
@@ -518,21 +518,21 @@ EOT;
      * @global array The configuration of the plugins.
      * @global array The localization of the plugins.
      */
-    private function _sendNotificationEmail()
+    protected function sendNotificationEmail()
     {
         global $plugin_cf, $plugin_tx;
 
         $email = $plugin_cf['twocents']['email_address'];
         if (!XH_ADM && $email != '') {
             $ptx = $plugin_tx['twocents'];
-            $message = $this->_comment->getMessage();
+            $message = $this->comment->getMessage();
             if ($plugin_cf['twocents']['comments_markup'] == 'HTML') {
                 $message = strip_tags($message);
             }
-            $message = '<' . $this->_getUrl() . '#twocents_comment_'
-                . $this->_comment->getId() . '>' . PHP_EOL . PHP_EOL
-                . $ptx['label_user'] . ': ' . $this->_comment->getUser() . PHP_EOL
-                . $ptx['label_email'] . ': <' . $this->_comment->getEmail()
+            $message = '<' . $this->getUrl() . '#twocents_comment_'
+                . $this->comment->getId() . '>' . PHP_EOL . PHP_EOL
+                . $ptx['label_user'] . ': ' . $this->comment->getUser() . PHP_EOL
+                . $ptx['label_email'] . ': <' . $this->comment->getEmail()
                 . '>' . PHP_EOL
                 . $ptx['label_message'] . ':' . PHP_EOL . PHP_EOL
                 . $message . PHP_EOL;
@@ -550,7 +550,7 @@ EOT;
      *
      * @return string
      */
-    private function _getUrl()
+    protected function getUrl()
     {
         return CMSIMPLE_URL . '?' . $_SERVER['QUERY_STRING'];
     }
@@ -562,18 +562,18 @@ EOT;
      *
      * @return string (X)HTML.
      */
-    private function _updateComment($topicname)
+    protected function updateComment($topicname)
     {
-        $this->_comment = Twocents_Comment::find(
+        $this->comment = Twocents_Comment::find(
             stsl($_POST['twocents_id']), $topicname
         );
-        $this->_comment->setUser(trim(stsl($_POST['twocents_user'])));
-        $this->_comment->setEmail(trim(stsl($_POST['twocents_email'])));
-        $this->_comment->setMessage(trim(stsl($_POST['twocents_message'])));
-        $html = $this->_renderErrorMessages();
+        $this->comment->setUser(trim(stsl($_POST['twocents_user'])));
+        $this->comment->setEmail(trim(stsl($_POST['twocents_email'])));
+        $this->comment->setMessage(trim(stsl($_POST['twocents_message'])));
+        $html = $this->renderErrorMessages();
         if (!$html) {
-            $this->_comment->update();
-            $this->_comment = null;
+            $this->comment->update();
+            $this->comment = null;
         }
         return $html;
     }
@@ -585,7 +585,7 @@ EOT;
      *
      * @return void
      */
-    private function _toggleVisibility($topicname)
+    protected function toggleVisibility($topicname)
     {
         $comment = Twocents_Comment::find(
             stsl($_POST['twocents_id']), $topicname
@@ -605,7 +605,7 @@ EOT;
      *
      * @return void
      */
-    private function _deleteComment($topicname)
+    protected function deleteComment($topicname)
     {
         $comment = Twocents_Comment::find(
             stsl($_POST['twocents_id']), $topicname
@@ -622,22 +622,22 @@ EOT;
      *
      * @global array The localization of the plugins.
      */
-    private function _renderErrorMessages()
+    protected function renderErrorMessages()
     {
         global $plugin_tx;
 
         $html = '';
-        if (utf8_strlen($this->_comment->getUser()) < 2) {
+        if (utf8_strlen($this->comment->getUser()) < 2) {
             $html .= XH_message('fail', $plugin_tx['twocents']['error_user']);
         }
         $mailer = Twocents_Mailer::make();
-        if (!$mailer->isValidAddress($this->_comment->getEmail())) {
+        if (!$mailer->isValidAddress($this->comment->getEmail())) {
             $html .= XH_message('fail', $plugin_tx['twocents']['error_email']);
         }
-        if (utf8_strlen($this->_comment->getMessage()) < 2) {
+        if (utf8_strlen($this->comment->getMessage()) < 2) {
             $html .= XH_message('fail', $plugin_tx['twocents']['error_message']);
         }
-        $html .= $this->_renderCaptchaError();
+        $html .= $this->renderCaptchaError();
         return $html;
     }
 
@@ -650,7 +650,7 @@ EOT;
      * @global array The configuration of the plugins.
      * @global array The localization of the plugins.
      */
-    private function _renderCaptchaError()
+    protected function renderCaptchaError()
     {
         global $pth, $plugin_cf, $plugin_tx;
 
