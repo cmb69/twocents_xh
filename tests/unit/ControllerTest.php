@@ -17,9 +17,6 @@ require_once './vendor/autoload.php';
 require_once '../../cmsimple/classes/CSRFProtection.php';
 require_once '../../cmsimple/functions.php';
 require_once '../utf8/utf8.php';
-require_once './classes/Service.php';
-require_once './classes/DataSource.php';
-require_once './classes/Presentation.php';
 
 /**
  * Testing the controllers.

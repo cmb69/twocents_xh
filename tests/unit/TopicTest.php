@@ -14,7 +14,6 @@
  */
 
 require_once './vendor/autoload.php';
-require_once './classes/DataSource.php';
 
 use org\bovigo\vfs\vfsStreamWrapper;
 use org\bovigo\vfs\vfsStreamDirectory;

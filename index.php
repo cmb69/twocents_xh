@@ -30,21 +30,6 @@ EOT
 }
 
 /**
- * The service layer.
- */
-require_once $pth['folder']['plugin_classes'] . 'Service.php';
-
-/**
- * The data source layer.
- */
-require_once $pth['folder']['plugin_classes'] . 'DataSource.php';
-
-/**
- * The presentation layer.
- */
-require_once $pth['folder']['plugin_classes'] . 'Presentation.php';
-
-/**
  * The Realblog_XH bridge.
  */
 if (interface_exists('Realblog_CommentsBridge')) {
