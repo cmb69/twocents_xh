@@ -59,7 +59,7 @@
         <exec command="phpunit --configuration coverage.xml" logoutput="true"/>
     </target>
 
-    <target name="php-doc" description="generates the developer documentation">
+    <target name="doc" description="generates the developer documentation">
         <phpdoc title="Twocents_XH Developer Documentation" destdir="doc"
                 output="HTML:Smarty:HandS" defaultpackagename="Twocents"
                 defaultcategoryname="CMSimple_XH" parseprivate="true">
