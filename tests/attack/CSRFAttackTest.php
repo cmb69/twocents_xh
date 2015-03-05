@@ -3,10 +3,11 @@
 /**
  * Testing the CSRF protection.
  *
+ * PHP version 5
+ *
  * The environment variable CMSIMPLEDIR has to be set to the installation folder
  * (e.g. / or /cmsimple_xh/).
- *
- * PHP version 5
+ * A page "Twocents" with a Twocents_XH widget has to be there.
  *
  * @category  Testing
  * @package   Twocents
@@ -125,21 +126,21 @@ class CSRFAttackTest extends PHPUnit_Framework_TestCase
                     'twocents_message' => 'hacked!',
                     'twocents_action' => 'update_comment'
                 ),
-                'Languages&normal'
+                'Twocents&normal'
             ),
             array(
                 array(
                     'twocents_id' => '53d8e06e34a34',
                     'twocents_action' => 'toggle_visibility'
                 ),
-                'Languages&normal'
+                'Twocents&normal'
             ),
             array(
                 array(
                     'twocents_id' => '53d8e06e34a34',
                     'twocents_action' => 'remove_comment'
                 ),
-                'Languages&normal'
+                'Twocents&normal'
             ),
             array(
                 array(
