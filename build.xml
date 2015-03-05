@@ -37,7 +37,8 @@
     </target>
 
     <target name="unit-tests" description="runs all unit tests">
-        <phpunit bootstrap="tests/autoload.php" haltonerror="true" haltonfailure="true">
+        <phpunit bootstrap="tests/bootstrap.php"
+                 haltonerror="true" haltonfailure="true">
             <formatter type="plain" usefile="false"/>
             <batchtest>
                 <fileset refid="unit-tests"/>
@@ -47,7 +48,8 @@
 
     <target name="attack-tests" description="runs all attack tests">
         <fail unless="env.CMSIMPLEDIR" message="CMSIMPLEDIR undefined!"/>
-        <phpunit haltonerror="true" haltonfailure="true">
+        <phpunit bootstrap="tests/bootstrap.php"
+                 haltonerror="true" haltonfailure="true">
             <formatter type="plain" usefile="false"/>
             <batchtest>
                 <fileset refid="attack-tests"/>
@@ -103,9 +105,12 @@
             </fileset>
         </move>
         <delete dir="export"/>
-        <copy file="dist/config/config.php" tofile="dist/config/defaultconfig.php"/>
-        <copy file="dist/languages/en.php" tofile="dist/languages/default.php"/>
-        <zip destfile="Twocents_XH-${version}.zip" basedir="dist" prefix="twocents/"/>
+        <copy file="dist/config/config.php"
+              tofile="dist/config/defaultconfig.php"/>
+        <copy file="dist/languages/en.php"
+              tofile="dist/languages/default.php"/>
+        <zip destfile="Twocents_XH-${version}.zip"
+             basedir="dist" prefix="twocents/"/>
         <delete dir="dist"/>
     </target>
 

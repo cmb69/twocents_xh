@@ -13,10 +13,6 @@
  * @link      http://3-magi.net/?CMSimple_XH/Twocents_XH
  */
 
-require_once './vendor/autoload.php';
-require_once '../../cmsimple/classes/CSRFProtection.php';
-require_once '../../cmsimple/functions.php';
-
 /**
  * Testing the comments views.
  *
@@ -28,7 +24,7 @@ require_once '../../cmsimple/functions.php';
  *
  * @todo Test via controller.
  */
-class CommentsViewTest extends PHPUnit_Framework_TestCase
+class CommentsViewTest extends TestCase
 {
     /**
      * The comment ID.
@@ -570,23 +566,6 @@ class CommentsViewTest extends PHPUnit_Framework_TestCase
             ),
             $this->subject->render()
         );
-    }
-
-    /**
-     * (Re)defines a constant.
-     *
-     * @param string $name  A name.
-     * @param string $value A value.
-     *
-     * @return void
-     */
-    protected function defineConstant($name, $value)
-    {
-        if (!defined($name)) {
-            define($name, $value);
-        } else {
-            runkit_constant_redefine($name, $value);
-        }
     }
 }
 

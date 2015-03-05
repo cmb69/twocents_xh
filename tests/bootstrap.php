@@ -13,6 +13,14 @@
  * @link      http://3-magi.net/?CMSimple_XH/Twocents_XH
  */
 
+require_once './vendor/autoload.php';
+require_once '../../cmsimple/functions.php';
+require_once '../../cmsimple/adminfuncs.php';
+require_once '../utf8/utf8.php';
+require_once '../../cmsimple/classes/CSRFProtection.php';
+require_once './tests/TestCase.php';
+
+
 spl_autoload_register(
     function ($class) {
         global $pth;

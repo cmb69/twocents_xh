@@ -13,8 +13,6 @@
  * @link      http://3-magi.net/?CMSimple_XH/Twocents_XH
  */
 
-require_once './vendor/autoload.php';
-
 /**
  * Testing the mailer.
  *
@@ -24,7 +22,7 @@ require_once './vendor/autoload.php';
  * @license  http://www.gnu.org/licenses/gpl-3.0.en.html GNU GPLv3
  * @link     http://3-magi.net/?CMSimple_XH/Twocents_XH
  */
-class MailerTest extends PHPUnit_Framework_TestCase
+class MailerTest extends TestCase
 {
     /**
      * The test subject.

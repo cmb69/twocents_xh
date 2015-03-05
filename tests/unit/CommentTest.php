@@ -13,8 +13,6 @@
  * @link      http://3-magi.net/?CMSimple_XH/Twocents_XH
  */
 
-require_once './vendor/autoload.php';
-
 use org\bovigo\vfs\vfsStreamWrapper;
 use org\bovigo\vfs\vfsStreamDirectory;
 use org\bovigo\vfs\vfsStream;
@@ -28,7 +26,7 @@ use org\bovigo\vfs\vfsStream;
  * @license  http://www.gnu.org/licenses/gpl-3.0.en.html GNU GPLv3
  * @link     http://3-magi.net/?CMSimple_XH/Twocents_XH
  */
-class CommentTest extends PHPUnit_Framework_TestCase
+class CommentTest extends TestCase
 {
     /**
      * The comment ID.

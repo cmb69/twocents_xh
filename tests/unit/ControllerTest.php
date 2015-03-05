@@ -13,11 +13,6 @@
  * @link      http://3-magi.net/?CMSimple_XH/Twocents_XH
  */
 
-require_once './vendor/autoload.php';
-require_once '../../cmsimple/classes/CSRFProtection.php';
-require_once '../../cmsimple/functions.php';
-require_once '../utf8/utf8.php';
-
 /**
  * Testing the controllers.
  *
@@ -27,7 +22,7 @@ require_once '../utf8/utf8.php';
  * @license  http://www.gnu.org/licenses/gpl-3.0.en.html GNU GPLv3
  * @link     http://3-magi.net/?CMSimple_XH/Twocents_XH
  */
-class ControllerTest extends PHPUnit_Framework_TestCase
+class ControllerTest extends TestCase
 {
     /**
      * The test subject.
@@ -421,23 +416,6 @@ class ControllerTest extends PHPUnit_Framework_TestCase
         );
         $findMock->expects($this->never());
         $this->subject->renderComments('foo');
-    }
-
-    /**
-     * (Re)defines a constant.
-     *
-     * @param string $name  A name.
-     * @param string $value A value.
-     *
-     * @return void
-     */
-    protected function defineConstant($name, $value)
-    {
-        if (!defined($name)) {
-            define($name, $value);
-        } else {
-            runkit_constant_redefine($name, $value);
-        }
     }
 }
 

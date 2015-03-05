@@ -29,7 +29,7 @@
  * @license  http://www.gnu.org/licenses/gpl-3.0.en.html GNU GPLv3
  * @link     http://3-magi.net/?CMSimple_XH/Twocents_XH
  */
-class CSRFAttackTest extends PHPUnit_Framework_TestCase
+class CSRFAttackTest extends TestCase
 {
     /**
      * The URL of the CMSimple installation.

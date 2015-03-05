@@ -13,9 +13,6 @@
  * @link      http://3-magi.net/?CMSimple_XH/Twocents_XH
  */
 
-require_once './vendor/autoload.php';
-require_once '../../cmsimple/adminfuncs.php';
-
 /**
  * Testing the general plugin administration.
  *
@@ -25,7 +22,7 @@ require_once '../../cmsimple/adminfuncs.php';
  * @license  http://www.gnu.org/licenses/gpl-3.0.en.html GNU GPLv3
  * @link     http://3-magi.net/?CMSimple_XH/Twocents_XH
  */
-class AdministrationTest extends PHPUnit_Framework_TestCase
+class AdministrationTest extends TestCase
 {
     /**
      * The test subject.
@@ -92,23 +89,6 @@ class AdministrationTest extends PHPUnit_Framework_TestCase
     public function testStylesheet()
     {
         $this->subject->dispatch();
-    }
-
-    /**
-     * (Re)defines a constant.
-     *
-     * @param string $name  A name.
-     * @param string $value A value.
-     *
-     * @return void
-     */
-    protected function defineConstant($name, $value)
-    {
-        if (!defined($name)) {
-            define($name, $value);
-        } else {
-            runkit_constant_redefine($name, $value);
-        }
     }
 }
 
