@@ -1,7 +1,7 @@
 /**
  * @file      The plugin's JavaScript.
  * @author    Christoph M. Becker <cmbecker69@gmx.de>
- * @copyright 2014 Christoph M. Becker <http://3-magi.net/>
+ * @copyright 2014-2015 Christoph M. Becker <http://3-magi.net/>
  * @license   http://www.gnu.org/licenses/gpl-3.0.en.html GNU GPLv3
  */
 
