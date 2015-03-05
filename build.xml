@@ -1,12 +1,6 @@
 <?xml version="1.0" encoding="UTF-8"?>
 
-<project name="Twocents" default="default">
-
-    <!-- Properties -->
-
-    <property name="styledir" value="C:\xampp\php\data\phing\etc"/>
-
-    <!-- Filesets -->
+<project name="Twocents" default="help">
 
     <fileset id="php-sources" dir=".">
         <include name="classes/*.php"/>
@@ -25,23 +19,24 @@
         <include name="*Test.php"/>
     </fileset>
 
-    <!-- Checks -->
+    <target name="help" description="lists available targets">
+        <exec command="phing -l" outputProperty="help"/>
+        <echo>${help}</echo>
+    </target>
 
-    <target name="sniff">
+    <target name="sniff" description="checks adherence to PEAR CS">
         <phpcodesniffer standard="PEAR" format="full">
             <fileset refid="php-sources"/>
             <fileset refid="unit-tests"/>
-            <!--<fileset refid="attack-tests"/>-->
+            <fileset refid="attack-tests"/>
         </phpcodesniffer>
     </target>
 
-    <target name="compat">
+    <target name="compat" description="checks PHP requirements">
         <exec command="phpcompatinfo analyser:run ." logoutput="true"/>
     </target>
 
-    <!-- Tests -->
-
-    <target name="unit-tests">
+    <target name="unit-tests" description="runs all unit tests">
         <phpunit haltonerror="true" haltonfailure="true">
             <formatter type="plain" usefile="false"/>
             <batchtest>
@@ -50,7 +45,7 @@
         </phpunit>
     </target>
 
-    <target name="attack-tests">
+    <target name="attack-tests" description="runs all attack tests">
         <fail unless="env.CMSIMPLEDIR" message="CMSIMPLEDIR undefined!"/>
         <phpunit haltonerror="true" haltonfailure="true">
             <formatter type="plain" usefile="false"/>
@@ -60,18 +55,12 @@
         </phpunit>
     </target>
 
-    <target name="tests" depends="unit-tests,attack-tests"/>
-
-    <!-- Code coverage -->
-
-    <target name="coverage">
+    <target name="coverage" description="generates coverage report">
         <exec command="phpunit --configuration coverage.xml" logoutput="true"/>
     </target>
 
-    <!-- Documentation -->
-
-    <target name="php-doc">
-        <phpdoc title="Twocents_XH Developer Documentation" destdir="doc/php"
+    <target name="php-doc" description="generates the developer documentation">
+        <phpdoc title="Twocents_XH Developer Documentation" destdir="doc"
                 output="HTML:Smarty:HandS" defaultpackagename="Twocents"
                 defaultcategoryname="CMSimple_XH" parseprivate="true">
             <fileset refid="php-sources"/>
@@ -82,22 +71,11 @@
         </phpdoc>
     </target>
 
-    <target name="js-doc">
-        <apply executable="jsdoc" parallel="true" checkreturn="true">
-            <arg value="--destination"/>
-            <arg value="doc/js"/>
-            <arg value="--private"/>
-            <fileset refid="js-sources"/>
-        </apply>
-    </target>
-
-    <target name="doc" depends="php-doc,js-doc"/>
-
-    <!-- Build -->
-
-    <target name="build">
+    <target name="build" description="builds a distributable ZIP archive">
         <fail unless="version" message="version is not defined!"/>
-        <svnexport revision="" repositoryurl="." todir="export"/>
+        <exec command="git archive -o export.tar HEAD" checkreturn="true"/>
+        <untar file="export.tar" todir="export"/>
+        <delete file="export.tar"/>
         <move todir="dist">
             <fileset dir="export">
                 <include name="index.php"/>
