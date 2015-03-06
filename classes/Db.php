@@ -45,6 +45,7 @@ class Twocents_Db
         $foldername = $pth['folder']['content'] . 'twocents/';
         if (!file_exists($foldername)) {
             mkdir($foldername, 0777, true);
+            chmod($foldername, 0777);
         }
         $lockFilename = $foldername . '.lock';
         if (!file_exists($lockFilename)) {
