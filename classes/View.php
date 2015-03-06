@@ -43,4 +43,3 @@ abstract class Twocents_View
 }
 
 ?>
-
