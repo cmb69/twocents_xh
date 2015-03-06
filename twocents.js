@@ -1,10 +1,11 @@
 /**
- * @file      The plugin's JavaScript.
- * @author    Christoph M. Becker <cmbecker69@gmx.de>
- * @copyright 2014-2015 Christoph M. Becker <http://3-magi.net/>
- * @license   http://www.gnu.org/licenses/gpl-3.0.en.html GNU GPLv3
+ * Twocents_XH
+ *
+ * @author  Christoph M. Becker <cmbecker69@gmx.de>
+ * @license GPL-3.0+
  */
 
+/*jslint browser: true, maxlen: 80 */
 /*global TWOCENTS */
 
 (function () {
@@ -12,9 +13,21 @@
 
     var init;
 
+    /**
+     * Convert all relevant anchor elements to buttons.
+     *
+     * @returns {undefined}
+     */
     function convertAsToButtons() {
         var divs, i, as;
 
+        /**
+         * Convert a single anchor element to a button.
+         *
+         * @param {HTMLAnchorElement} a
+         *
+         * @returns {undefined}
+         */
         function convertAToButton(a) {
             var button;
 
@@ -42,13 +55,28 @@
         }
     }
 
+    /**
+     * Adds a delete confirmatio to all relevant elements.
+     *
+     * @returns {undefined}
+     */
     function addDeleteConfirmation() {
         var divs, i, form;
 
+        /**
+         * Displays a confirmation dialog.
+         *
+         * @returns {boolean}
+         */
         function confirmDeletion() {
             return window.confirm(TWOCENTS.message_delete);
         }
 
+        /**
+         * Removes the submit handler of the respective form.
+         *
+         * @returns {undefined}
+         */
         function removeSubmitHandler(event) {
             event = event || window.event;
             (event.target || event.srcElement).form.onsubmit = null;
@@ -65,15 +93,37 @@
         }
     }
 
+    /**
+     * Prepares the form.
+     *
+     * @returns {undefined}
+     */
     function prepareForm() {
         var buttons, i, button;
 
+        /**
+         * Submits a form.
+         *
+         * @param {HTMLFormElement} form
+         *
+         * @returns {undefined}
+         */
         function submit(form) {
             var request;
 
+            /**
+             * Serializes (application/x-www-form-urlencoded) the form data.
+             *
+             * @returns {string}
+             */
             function serialize() {
                 var params, pairs, prop;
 
+                /**
+                 * Returns an object with properties for relevant parameter.
+                 *
+                 * @returns {Object}
+                 */
                 function getParams() {
                     var params, elements, i, element;
 
@@ -100,6 +150,11 @@
                 return pairs.join("&");
             }
 
+            /**
+             * Ready state change callbak.
+             *
+             * @returns {undefined}
+             */
             function onreadystatechange() {
                 var commentsDiv, scrollMarker;
 
@@ -133,6 +188,13 @@
             return true;
         }
 
+        /**
+         * Updates the textarea from the content-editable.
+         *
+         * @param {Event} event
+         *
+         * @returns {boolean}
+         */
         function update(event) {
             var form, textarea, editor;
 
@@ -144,6 +206,13 @@
             return true;
         }
 
+        /**
+         * Event handler for form submit.
+         *
+         * @param {Event} event
+         *
+         * @returns {boolean}
+         */
         function onsubmit(event) {
             var form;
 
@@ -153,6 +222,13 @@
             return !submit(form);
         }
 
+        /**
+         * Hides a form.
+         *
+         * @param {HTMLFormElement} form
+         *
+         * @returns {undefined}
+         */
         function hideForm(form) {
             var button;
 
@@ -172,6 +248,13 @@
             }
         }
 
+        /**
+         * Resets the editor to the value of the textarea.
+         *
+         * @param {Event} event
+         *
+         * @returns {undefined}
+         */
         function reset(event) {
             var button, divs, i;
 
@@ -202,9 +285,21 @@
         }
     }
 
+    /**
+     * Makes the editors.
+     *
+     * @returns {undefined}
+     */
     function makeEditors() {
         var textareas, i, textarea, div;
 
+        /**
+         * Makes an editor.
+         *
+         * @param {HTMLTextAreaElement} textarea
+         *
+         * @returns {undefined}
+         */
         function makeEditor(textarea) {
             var div, button, div2, buttons, prop;
 
@@ -279,6 +374,11 @@
         }
     }
 
+    /**
+     * Initializes the plugin.
+     *
+     * @returns {undefined}
+     */
     init = function () {
         convertAsToButtons();
         addDeleteConfirmation();
@@ -287,6 +387,6 @@
             makeEditors();
         }
     };
-    init();
 
+    init();
 }());
