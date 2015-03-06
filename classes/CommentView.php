@@ -72,9 +72,10 @@ class Twocents_CommentView extends Twocents_View
             if (XH_ADM) {
                 $html .= $this->renderAdminTools();
             }
-            $html .= '<p>' . $this->renderHeading() . '</p>'
-                . '<blockquote>' . $this->renderMessage()
-                . '</blockquote>';
+            $html .= '<div class="twocents_attribution">'
+                . $this->renderAttribution() . '</div>'
+                . '<div class="twocents_message">' . $this->renderMessage()
+                . '</div>';
         }
         $html .= '</div>';
         return $html;
@@ -138,13 +139,13 @@ class Twocents_CommentView extends Twocents_View
     }
 
     /**
-     * Renders the comment heading.
+     * Renders the comment attribution.
      *
      * @return string (X)HTML.
      *
      * @global array The localization of the plugins.
      */
-    protected function renderHeading()
+    protected function renderAttribution()
     {
         global $plugin_tx;
 

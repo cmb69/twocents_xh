@@ -188,11 +188,11 @@ class CommentsViewTest extends TestCase
     }
 
     /**
-     * Tests that the comment heading is rendered.
+     * Tests that the comment attribution is rendered.
      *
      * @return void
      */
-    public function testRendersCommentHeading()
+    public function testRendersCommentAttribution()
     {
         @$this->assertTag(
             array(
@@ -200,7 +200,8 @@ class CommentsViewTest extends TestCase
                 'id' => 'twocents_comment_' . self::ID,
                 'attributes' => array('class' => 'twocents_comment'),
                 'child' => array(
-                    'tag' => 'p',
+                    'tag' => 'div',
+                    'attributes' => array('class' => 'twocents_attribution'),
                     'content' => 'On 7/29/2014 at 2:55pm >cmb< wrote'
                 )
             ),
@@ -220,7 +221,8 @@ class CommentsViewTest extends TestCase
                 'tag' => 'div',
                 'attributes' => array('class' => 'twocents_comment'),
                 'child' => array(
-                    'tag' => 'blockquote',
+                    'tag' => 'div',
+                    'attributes' => array('class' => 'twocents_message'),
                     'content' => 'blah < blah',
                     'child' => array('tag' => 'br')
                 )

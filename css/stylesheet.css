@@ -11,6 +11,12 @@
 .twocents_comment {
     overflow: hidden;
 }
+.twocents_attribution {
+
+}
+.twocents_message {
+    margin: 1em 0 1em 1em;
+}
 .twocents_hidden {
     opacity: 0.7;
     /*background: #fbb;*/
