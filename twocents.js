@@ -303,23 +303,48 @@
         function makeEditor(textarea) {
             var div, button, div2, buttons, prop;
 
+            /**
+             * Toggles bold on/off for the selection or at the insertion point.
+             *
+             * @returns {undefined}
+             */
             function bold() {
                 document.execCommand("bold");
+                div.focus();
             }
 
+            /**
+             * Toggles italics on/off for the selection or at the insertion
+             * point.
+             *
+             * @returns {undefined}
+             */
             function italic() {
                 document.execCommand("italic");
+                div.focus();
             }
 
+            /**
+             * Prompts for an URI and creates an anchor link from the selection.
+             *
+             * @returns {undefined}
+             */
             function link() {
                 var url;
 
                 url = window.prompt("URL");
                 document.execCommand("createLink", false, url);
+                div.focus();
             }
 
+            /**
+             * Removes the anchor element from a selected anchor link.
+             *
+             * @returns {undefined}
+             */
             function unlink() {
                 document.execCommand("unlink");
+                div.focus();
             }
 
             div2 = document.createElement("div");
