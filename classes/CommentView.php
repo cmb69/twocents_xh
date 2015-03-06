@@ -22,7 +22,7 @@
  * @license  http://www.gnu.org/licenses/gpl-3.0.en.html GNU GPLv3
  * @link     http://3-magi.net/?CMSimple_XH/Twocents_XH
  */
-class Twocents_CommentView
+class Twocents_CommentView extends Twocents_View
 {
     /**
      * The comment to render.
@@ -182,23 +182,6 @@ class Twocents_CommentView
                 '/(?:\r\n|\r|\n)/', tag('br'), XH_hsc($this->comment->getMessage())
             );
         }
-    }
-
-    /**
-     * Returns the URL to post or link to.
-     *
-     * @return string
-     *
-     * @global string The script name.
-     */
-    protected function getUrl()
-    {
-        global $sn;
-
-        $queryString = preg_replace(
-            '/&twocents_id=[^&]+/', '', $_SERVER['QUERY_STRING']
-        );
-        return $sn . '?' . $queryString;
     }
 
     /**
