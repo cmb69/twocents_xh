@@ -61,18 +61,6 @@
         <exec command="phpunit --configuration coverage.xml" logoutput="true"/>
     </target>
 
-    <target name="doc" description="generates the developer documentation">
-        <phpdoc title="Twocents_XH Developer Documentation" destdir="doc"
-                output="HTML:Smarty:HandS" defaultpackagename="Twocents"
-                defaultcategoryname="CMSimple_XH" parseprivate="true">
-            <fileset refid="php-sources"/>
-            <projdocfileset dir=".">
-               <include name="README"/>
-               <include name="CHANGELOG"/>
-            </projdocfileset>
-        </phpdoc>
-    </target>
-
     <target name="build" description="builds a distributable ZIP archive">
         <fail unless="version" message="version is not defined!"/>
         <exec command="git archive -o export.tar HEAD" checkreturn="true"/>
