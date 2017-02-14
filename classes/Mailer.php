@@ -12,7 +12,7 @@
  * @author    Christoph M. Becker <cmbecker69@gmx.de>
  * @copyright 1999-2009 <http://cmsimple.org/>
  * @copyright 2009-2014 The CMSimple_XH developers <http://cmsimple-xh.org/?The_Team>
- * @copyright 2014-2015 Christoph M. Becker <http://3-magi.net/>
+ * @copyright 2014-2017 Christoph M. Becker <http://3-magi.net/>
  * @license   http://www.gnu.org/licenses/gpl-3.0.en.html GNU GPLv3
  * @link      http://3-magi.net/?CMSimple_XH/Twocents_XH
  */
