@@ -36,13 +36,6 @@ EOT
 }
 
 /**
- * The Realblog_XH bridge
- */
-if (interface_exists('Realblog_CommentsBridge')) {
-    include_once $pth['folder']['plugin_classes'] . 'RealblogBridge.php';
-}
-
-/**
  * The plugin version
  */
 define('TWOCENTS_VERSION', '@TWOCENTS_VERSION@');
