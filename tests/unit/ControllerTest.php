@@ -1,69 +1,50 @@
 <?php
 
 /**
- * Testing the controllers.
+ * Copyright 2014-2017 Christoph M. Becker
  *
- * PHP version 5
+ * This file is part of Twocents_XH.
  *
- * @category  Testing
- * @package   Twocents
- * @author    Christoph M. Becker <cmbecker69@gmx.de>
- * @copyright 2014-2017 Christoph M. Becker <http://3-magi.net/>
- * @license   http://www.gnu.org/licenses/gpl-3.0.en.html GNU GPLv3
- * @link      http://3-magi.net/?CMSimple_XH/Twocents_XH
+ * Twocents_XH is free software: you can redistribute it and/or modify
+ * it under the terms of the GNU General Public License as published by
+ * the Free Software Foundation, either version 3 of the License, or
+ * (at your option) any later version.
+ *
+ * Twocents_XH is distributed in the hope that it will be useful,
+ * but WITHOUT ANY WARRANTY; without even the implied warranty of
+ * MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE.  See the
+ * GNU General Public License for more details.
+ *
+ * You should have received a copy of the GNU General Public License
+ * along with Twocents_XH.  If not, see <http://www.gnu.org/licenses/>.
  */
 
 namespace Twocents;
 
 use PHPUnit_Extensions_MockStaticMethod;
 
-/**
- * Testing the controllers.
- *
- * @category CMSimple_XH
- * @package  Twocents
- * @author   Christoph M. Becker <cmbecker69@gmx.de>
- * @license  http://www.gnu.org/licenses/gpl-3.0.en.html GNU GPLv3
- * @link     http://3-magi.net/?CMSimple_XH/Twocents_XH
- */
 class ControllerTest extends TestCase
 {
     /**
-     * The test subject.
-     *
      * @var Controller
      */
     protected $subject;
 
     /**
-     * The findByTopicname mock.
-     *
      * @var object
      */
     protected $findByTopicnameMock;
 
     /**
-     * The comments view mock.
-     *
      * @var CommentsView
      */
     protected $viewMock;
 
     /**
-     * The mailer mock.
-     *
      * @var Mailer
      */
     protected $mailerMock;
 
-    /**
-     * Sets up the test fixture.
-     *
-     * @return void
-     *
-     * @global array             The configuration of the plugins.
-     * @global XH_CSRFProtection The CSRF protection mock.
-     */
     public function setUp()
     {
         global $plugin_cf, $_XH_csrfProtection;
@@ -101,11 +82,6 @@ class ControllerTest extends TestCase
         );
     }
 
-    /**
-     * Tests that the comments are rendered.
-     *
-     * @return void
-     */
     public function testRenderComments()
     {
         $this->viewMock->expects($this->once())->method('render');
@@ -113,11 +89,6 @@ class ControllerTest extends TestCase
         $this->subject->renderComments('foo');
     }
 
-    /**
-     * Tests that an error is rendered for an invalid topicname.
-     *
-     * @return void
-     */
     public function testRendersErrorForInvalidTopicName()
     {
         @$this->assertTag(
@@ -128,11 +99,6 @@ class ControllerTest extends TestCase
         );
     }
 
-    /**
-     * Tests that a comment is added.
-     *
-     * @return void
-     */
     public function testAddComment()
     {
         $_POST = array(
@@ -154,11 +120,6 @@ class ControllerTest extends TestCase
         $this->subject->renderComments('foo');
     }
 
-    /**
-     * Tests that a comment with an invalid username is not added.
-     *
-     * @return void
-     */
     public function testDoesNotAddInvalidUserComment()
     {
         $_POST = array(
@@ -170,11 +131,6 @@ class ControllerTest extends TestCase
         $this->assertDoesNotAddInvalidComment();
     }
 
-    /**
-     * Tests that a comment with an invalid email address is not added.
-     *
-     * @return void
-     */
     public function testDoesNotAddInvalidEmailComment()
     {
         $_POST = array(
@@ -186,11 +142,6 @@ class ControllerTest extends TestCase
         $this->assertDoesNotAddInvalidComment();
     }
 
-    /**
-     * Tests that a comment with an invalid comment message is not added.
-     *
-     * @return void
-     */
     public function testDoesNotAddInvalidMessageComment()
     {
         $_POST = array(
@@ -202,11 +153,6 @@ class ControllerTest extends TestCase
         $this->assertDoesNotAddInvalidComment();
     }
 
-    /**
-     * Asserts that an invalid comment is not added.
-     *
-     * @return void
-     */
     protected function assertDoesNotAddInvalidComment()
     {
         $_SERVER['QUERY_STRING'] = 'Page';
@@ -220,11 +166,6 @@ class ControllerTest extends TestCase
         $this->subject->renderComments('foo');
     }
 
-    /**
-     * Tests that adding a comment sends an email notification.
-     *
-     * @return void
-     */
     public function testAddingCommentSendsEmailNotification()
     {
         $_POST = array(
@@ -246,11 +187,6 @@ class ControllerTest extends TestCase
         $this->subject->renderComments('foo');
     }
 
-    /**
-     * Tests that a comment is updated.
-     *
-     * @return void
-     */
     public function testUpdateComment()
     {
         $this->defineConstant('XH_ADM', true);
@@ -274,11 +210,6 @@ class ControllerTest extends TestCase
         $this->subject->renderComments('foo');
     }
 
-    /**
-     * Tests that a comment with an invalid username is not updated.
-     *
-     * @return void
-     */
     public function testDoesNotUpdateInvalidUserComment()
     {
         $this->defineConstant('XH_ADM', true);
@@ -292,11 +223,6 @@ class ControllerTest extends TestCase
         $this->assertDoesNotUpdateInvalidComment();
     }
 
-    /**
-     * Tests that a comment with an invalid email address is not updated.
-     *
-     * @return void
-     */
     public function testDoesNotUpdateInvalidEmailComment()
     {
         $this->defineConstant('XH_ADM', true);
@@ -310,11 +236,6 @@ class ControllerTest extends TestCase
         $this->assertDoesNotUpdateInvalidComment();
     }
 
-    /**
-     * Tests that a comment with an invalid comment message is not updated.
-     *
-     * @return void
-     */
     public function testDoesNotUpdateInvalidMessageComment()
     {
         $this->defineConstant('XH_ADM', true);
@@ -328,11 +249,6 @@ class ControllerTest extends TestCase
         $this->assertDoesNotUpdateInvalidComment();
     }
 
-    /**
-     * Asserts that an invalid comment is not updated.
-     *
-     * @return void
-     */
     protected function assertDoesNotUpdateInvalidComment()
     {
         $_SERVER['QUERY_STRING'] = 'Page';
@@ -346,11 +262,6 @@ class ControllerTest extends TestCase
         $this->subject->renderComments('foo');
     }
 
-    /**
-     * Tests that a comment is not updated from the front-end.
-     *
-     * @return void
-     */
     public function testDoesNotUpdateCommentFromFrontEnd()
     {
         $_POST = array(
@@ -366,11 +277,6 @@ class ControllerTest extends TestCase
         $this->subject->renderComments('foo');
     }
 
-    /**
-     * Tests that a comment is deleted.
-     *
-     * @return void
-     */
     public function testDeleteComment()
     {
         $this->defineConstant('XH_ADM', true);
@@ -386,11 +292,6 @@ class ControllerTest extends TestCase
         $this->subject->renderComments('foo');
     }
 
-    /**
-     * Tests that a comment is not deleted from the front-end.
-     *
-     * @return void
-     */
     public function testDoesNotDeleteCommentFromFrontEnd()
     {
         $this->defineConstant('XH_ADM', false);

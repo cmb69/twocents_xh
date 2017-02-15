@@ -1,45 +1,33 @@
 <?php
 
 /**
- * The comment form views.
+ * Copyright 2014-2017 Christoph M. Becker
  *
- * PHP version 5
+ * This file is part of Twocents_XH.
  *
- * @category  CMSimple_XH
- * @package   Twocents
- * @author    Christoph M. Becker <cmbecker69@gmx.de>
- * @copyright 2014-2017 Christoph M. Becker <http://3-magi.net/>
- * @license   http://www.gnu.org/licenses/gpl-3.0.en.html GNU GPLv3
- * @link      http://3-magi.net/?CMSimple_XH/Twocents_XH
+ * Twocents_XH is free software: you can redistribute it and/or modify
+ * it under the terms of the GNU General Public License as published by
+ * the Free Software Foundation, either version 3 of the License, or
+ * (at your option) any later version.
+ *
+ * Twocents_XH is distributed in the hope that it will be useful,
+ * but WITHOUT ANY WARRANTY; without even the implied warranty of
+ * MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE.  See the
+ * GNU General Public License for more details.
+ *
+ * You should have received a copy of the GNU General Public License
+ * along with Twocents_XH.  If not, see <http://www.gnu.org/licenses/>.
  */
 
 namespace Twocents;
 
-/**
- * The comment form views.
- *
- * @category CMSimple_XH
- * @package  Twocents
- * @author   Christoph M. Becker <cmbecker69@gmx.de>
- * @license  http://www.gnu.org/licenses/gpl-3.0.en.html GNU GPLv3
- * @link     http://3-magi.net/?CMSimple_XH/Twocents_XH
- */
 class CommentFormView extends View
 {
     /**
-     * The comment.
-     *
      * @var Comment
      */
     protected $comment;
 
-    /**
-     * Initializes a new instance.
-     *
-     * @param Comment $comment A comment.
-     *
-     * @return void
-     */
     public function __construct(Comment $comment = null)
     {
         if (isset($comment)) {
@@ -50,9 +38,7 @@ class CommentFormView extends View
     }
 
     /**
-     * Renders the view.
-     *
-     * @return string (X)HTML.
+     * @return string
      */
     public function render()
     {
@@ -68,11 +54,7 @@ class CommentFormView extends View
     }
 
     /**
-     * Renders the hidden form fields.
-     *
-     * @return string (X)HTML.
-     *
-     * @global XH_CSRFProtection The CSRF protector.
+     * @return string
      */
     protected function renderHiddenFormFields()
     {
@@ -90,11 +72,7 @@ class CommentFormView extends View
     }
 
     /**
-     * Renders the user input field.
-     *
-     * @return string (X)HTML.
-     *
-     * @global array The localization of the plugins.
+     * @return string
      */
     protected function renderUserInput()
     {
@@ -111,11 +89,7 @@ class CommentFormView extends View
     }
 
     /**
-     * Renders the email input field.
-     *
-     * @return string (X)HTML.
-     *
-     * @global array The localization of the plugins.
+     * @return string
      */
     protected function renderEmailInput()
     {
@@ -132,11 +106,7 @@ class CommentFormView extends View
     }
 
     /**
-     * Renders the message textarea.
-     *
      * @return string
-     *
-     * @global array The localization of the plugins.
      */
     protected function renderMessageTextarea()
     {
@@ -150,12 +120,7 @@ class CommentFormView extends View
     }
 
     /**
-     * Renders the CAPTCHA, if configured and available.
-     *
-     * @return string (X)HTML.
-     *
-     * @global array The paths of system files and folders.
-     * @global array The configuration of the plugins.
+     * @return string
      */
     protected function renderCaptcha()
     {
@@ -172,11 +137,7 @@ class CommentFormView extends View
     }
 
     /**
-     * Renders the form buttons.
-     *
-     * @return string (X)HTML.
-     *
-     * @global array The localization of the plugins.
+     * @return string
      */
     protected function renderButtons()
     {

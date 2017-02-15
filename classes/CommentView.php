@@ -1,53 +1,38 @@
 <?php
 
 /**
- * The comment views.
+ * Copyright 2014-2017 Christoph M. Becker
  *
- * PHP version 5
+ * This file is part of Twocents_XH.
  *
- * @category  CMSimple_XH
- * @package   Twocents
- * @author    Christoph M. Becker <cmbecker69@gmx.de>
- * @copyright 2014-2017 Christoph M. Becker <http://3-magi.net/>
- * @license   http://www.gnu.org/licenses/gpl-3.0.en.html GNU GPLv3
- * @link      http://3-magi.net/?CMSimple_XH/Twocents_XH
+ * Twocents_XH is free software: you can redistribute it and/or modify
+ * it under the terms of the GNU General Public License as published by
+ * the Free Software Foundation, either version 3 of the License, or
+ * (at your option) any later version.
+ *
+ * Twocents_XH is distributed in the hope that it will be useful,
+ * but WITHOUT ANY WARRANTY; without even the implied warranty of
+ * MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE.  See the
+ * GNU General Public License for more details.
+ *
+ * You should have received a copy of the GNU General Public License
+ * along with Twocents_XH.  If not, see <http://www.gnu.org/licenses/>.
  */
 
 namespace Twocents;
 
-/**
- * The comment views.
- *
- * @category CMSimple_XH
- * @package  Twocents
- * @author   Christoph M. Becker <cmbecker69@gmx.de>
- * @license  http://www.gnu.org/licenses/gpl-3.0.en.html GNU GPLv3
- * @link     http://3-magi.net/?CMSimple_XH/Twocents_XH
- */
 class CommentView extends View
 {
     /**
-     * The comment to render.
-     *
      * @var Comment
      */
     protected $comment;
 
     /**
-     * The current comment, if any.
-     *
-     * @var Comment
+     * @var ?Comment
      */
     protected $currentComment;
 
-    /**
-     * Initializes a new instance.
-     *
-     * @param Comment $comment        A comment to render.
-     * @param Comment $currentComment The posted comment.
-     *
-     * @return void
-     */
     public function __construct(Comment $comment, Comment $currentComment = null)
     {
         $this->comment = $comment;
@@ -55,9 +40,7 @@ class CommentView extends View
     }
 
     /**
-     * Renders a certain comment.
-     *
-     * @return string (X)HTML.
+     * @return string
      */
     public function render()
     {
@@ -83,9 +66,7 @@ class CommentView extends View
     }
 
     /**
-     * Renders the admin tools.
-     *
-     * @return string (X)HTML.
+     * @return string
      */
     protected function renderAdminTools()
     {
@@ -96,12 +77,7 @@ class CommentView extends View
     }
 
     /**
-     * Renders the delete form.
-     *
-     * @return string (X)HTML.
-     *
-     * @global array             The localization of the plugins.
-     * @global XH_CSRFProtection The CSRF protector.
+     * @return string
      */
     protected function renderDeleteForm()
     {
@@ -124,11 +100,7 @@ class CommentView extends View
     }
 
     /**
-     * Renders the edit link.
-     *
-     * @return string (X)HTML.
-     *
-     * @global array The localization of the plugins.
+     * @return string
      */
     protected function renderEditLink()
     {
@@ -140,11 +112,7 @@ class CommentView extends View
     }
 
     /**
-     * Renders the comment attribution.
-     *
-     * @return string (X)HTML.
-     *
-     * @global array The localization of the plugins.
+     * @return string
      */
     protected function renderAttribution()
     {
@@ -163,11 +131,7 @@ class CommentView extends View
     }
 
     /**
-     * Renders the comment message.
-     *
-     * @return string (X)HTML.
-     *
-     * @global array The configuration of the plugins.
+     * @return string
      */
     protected function renderMessage()
     {
@@ -181,8 +145,6 @@ class CommentView extends View
     }
 
     /**
-     * Returns whether a comment is the current comment.
-     *
      * @return bool
      */
     protected function isCurrentComment()

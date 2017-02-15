@@ -1,48 +1,43 @@
 <?php
 
 /**
- * The service layer.
+ * Copyright 1999-2009 Gert Ebersbach
+ * Copyright 2009-2014 The CMSimple_XH developers
+ * Copyright 2014-2017 Christoph M. Becker
  *
- * PHP version 5
+ * This file is part of Twocents_XH.
  *
- * @category  CMSimple_XH
- * @package   Twocents
- * @author    Peter Harteg <peter@harteg.dk>
- * @author    The CMSimple_XH developers <devs@cmsimple-xh.org>
- * @author    Christoph M. Becker <cmbecker69@gmx.de>
+ * Twocents_XH is free software: you can redistribute it and/or modify
+ * it under the terms of the GNU General Public License as published by
+ * the Free Software Foundation, either version 3 of the License, or
+ * (at your option) any later version.
+ *
+ * Twocents_XH is distributed in the hope that it will be useful,
+ * but WITHOUT ANY WARRANTY; without even the implied warranty of
+ * MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE.  See the
+ * GNU General Public License for more details.
+ *
+ * You should have received a copy of the GNU General Public License
+ * along with Twocents_XH.  If not, see <http://www.gnu.org/licenses/>.
+ */
+/**
  * @copyright 1999-2009 <http://cmsimple.org/>
  * @copyright 2009-2014 The CMSimple_XH developers <http://cmsimple-xh.org/?The_Team>
  * @copyright 2014-2017 Christoph M. Becker <http://3-magi.net/>
  * @license   http://www.gnu.org/licenses/gpl-3.0.en.html GNU GPLv3
- * @link      http://3-magi.net/?CMSimple_XH/Twocents_XH
  */
 
 namespace Twocents;
 
-/**
- * The mailers.
- *
- * @category CMSimple_XH
- * @package  Twocents
- * @author   The CMSimple_XH developers <devs@cmsimple-xh.org>
- * @author   Christoph M. Becker <cmbecker69@gmx.de>
- * @license  http://www.gnu.org/licenses/gpl-3.0.en.html GNU GPLv3
- * @link     http://3-magi.net/?CMSimple_XH/Twocents_XH
- */
 class Mailer
 {
     /**
-     * The line break characters.
-     *
      * @var string
      */
     protected $lineBreak;
 
     /**
-     * Makes and returns a new mailer.
-     *
-     * @param string $lineBreak A line break string.
-     *
+     * @param string $lineBreak
      * @return Mailer
      */
     public static function make($lineBreak = "\r\n")
@@ -51,11 +46,7 @@ class Mailer
     }
 
     /**
-     * Initializes a new instance.
-     *
-     * @param string $lineBreak A line break string.
-     *
-     * @return void
+     * @param string $lineBreak
      */
     protected function __construct($lineBreak)
     {
@@ -69,8 +60,7 @@ class Mailer
      * The local-part must be a dot-atom-text. The domain is checked with
      * gethostbyname() after applying idn_to_ascii(), if the latter is available.
      *
-     * @param string $address An email address.
-     *
+     * @param string $address
      * @return bool
      */
     public function isValidAddress($address)
@@ -94,15 +84,11 @@ class Mailer
     }
 
     /**
-     * Sends a UTF-8 encoded mail.
-     *
-     * @param string $to                Receiver, or receivers of the mail.
-     * @param string $subject           Subject of the email to be sent.
-     * @param string $message           Message to be sent.
-     * @param string $additionalHeaders String to be inserted at the end of the
-     *                                  email header.
-     *
-     * @return bool Whether the mail was accepted for delivery.
+     * @param string $to
+     * @param string $subject
+     * @param string $message
+     * @param string $additionalHeaders
+     * @return bool
      */
     public function send($to, $subject, $message, $additionalHeaders = '')
     {
@@ -121,10 +107,8 @@ class Mailer
      * Returns the body of an email header field as "encoded word" (RFC 2047)
      * with "folding" (RFC 5322), if necessary.
      *
-     * @param string $text The body of the MIME field.
-     *
+     * @param string $text
      * @return string
-     *
      * @todo Don't we have to fold overlong pure ASCII texts also?
      */
     protected function encodeMIMEFieldBody($text)

@@ -1,16 +1,22 @@
 <?php
 
 /**
- * Testing the topics.
+ * Copyright 2014-2017 Christoph M. Becker
  *
- * PHP version 5
+ * This file is part of Twocents_XH.
  *
- * @category  Testing
- * @package   Twocents
- * @author    Christoph M. Becker <cmbecker69@gmx.de>
- * @copyright 2014-2017 Christoph M. Becker <http://3-magi.net/>
- * @license   http://www.gnu.org/licenses/gpl-3.0.en.html GNU GPLv3
- * @link      http://3-magi.net/?CMSimple_XH/Twocents_XH
+ * Twocents_XH is free software: you can redistribute it and/or modify
+ * it under the terms of the GNU General Public License as published by
+ * the Free Software Foundation, either version 3 of the License, or
+ * (at your option) any later version.
+ *
+ * Twocents_XH is distributed in the hope that it will be useful,
+ * but WITHOUT ANY WARRANTY; without even the implied warranty of
+ * MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE.  See the
+ * GNU General Public License for more details.
+ *
+ * You should have received a copy of the GNU General Public License
+ * along with Twocents_XH.  If not, see <http://www.gnu.org/licenses/>.
  */
 
 namespace Twocents;
@@ -19,56 +25,26 @@ use org\bovigo\vfs\vfsStreamWrapper;
 use org\bovigo\vfs\vfsStreamDirectory;
 use org\bovigo\vfs\vfsStream;
 
-/**
- * Testing the topics.
- *
- * @category CMSimple_XH
- * @package  Twocents
- * @author   Christoph M. Becker <cmbecker69@gmx.de>
- * @license  http://www.gnu.org/licenses/gpl-3.0.en.html GNU GPLv3
- * @link     http://3-magi.net/?CMSimple_XH/Twocents_XH
- *
- * @todo Test via controller.
- */
 class TopicTest extends TestCase
 {
-    /**
-     * The topic name.
-     */
     const TOPIC = 'foo';
 
     /**
-     * The test subject.
-     *
      * @var Topic
      */
     protected $subject;
 
     /**
-     * The path of the data file.
-     *
      * @var string
      */
     protected $filename;
 
-    /**
-     * Sets up the test fixture.
-     *
-     * @return void
-     */
     public function setUp()
     {
         $this->setUpFilesystem();
         $this->subject = new Topic(self::TOPIC);
     }
 
-    /**
-     * Sets up the test filesystem.
-     *
-     * @return void
-     *
-     * @global array The paths of system files and folders.
-     */
     protected function setUpFilesystem()
     {
         global $pth;
@@ -83,21 +59,11 @@ class TopicTest extends TestCase
         $pth['folder']['content'] = vfsStream::url('test/');
     }
 
-    /**
-     * Tests that the topicname is correct.
-     *
-     * @return void
-     */
     public function testNameIsCorrect()
     {
         $this->assertEquals(self::TOPIC, $this->subject->getName());
     }
 
-    /**
-     * Tests that insert() creates the data file.
-     *
-     * @return void
-     */
     public function testInsertionCreatesFile()
     {
         $this->subject->delete();
@@ -106,11 +72,6 @@ class TopicTest extends TestCase
         $this->assertFileExists($this->filename);
     }
 
-    /**
-     * Tests that delete() removes the data file.
-     *
-     * @return void
-     */
     public function testDeletionRemovesFile()
     {
         $this->subject->insert();
@@ -119,11 +80,6 @@ class TopicTest extends TestCase
         $this->assertFileNotExists($this->filename);
     }
 
-    /**
-     * Tests that 3 topics are found.
-     *
-     * @return void
-     */
     public function testFinds3Topics()
     {
         $topics = Topic::findAll();
@@ -131,11 +87,6 @@ class TopicTest extends TestCase
         $this->assertCount(3, $topics);
     }
 
-    /**
-     * Tests that the correct topic is found.
-     *
-     * @return void
-     */
     public function testFindsCorrectTopic()
     {
         $topic = Topic::findByName(self::TOPIC);
@@ -143,23 +94,11 @@ class TopicTest extends TestCase
         $this->assertEquals(self::TOPIC, $topic->getName());
     }
 
-    /**
-     * Tests that a non existing topic is not found.
-     *
-     * @return void
-     */
     public function testDoesNotFindNonExistingTopic()
     {
         $this->assertNull(Topic::findByName('unknown'));
     }
 
-    /**
-     * Tests that the data folder is created if it doesn't exist.
-     *
-     * @return void
-     *
-     * @global array The paths of system files and folders.
-     */
     public function testCreatesFolderIfNotExisting()
     {
         global $pth;

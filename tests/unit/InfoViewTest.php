@@ -1,50 +1,35 @@
 <?php
 
 /**
- * Testing the info view.
+ * Copyright 2014-2017 Christoph M. Becker
  *
- * PHP version 5
+ * This file is part of Twocents_XH.
  *
- * @category  Testing
- * @package   Twocents
- * @author    Christoph M. Becker <cmbecker69@gmx.de>
- * @copyright 2014-2017 Christoph M. Becker <http://3-magi.net>
- * @license   http://www.gnu.org/licenses/gpl-3.0.en.html GNU GPLv3
- * @link      http://3-magi.net/?CMSimple_XH/Twocents_XH
+ * Twocents_XH is free software: you can redistribute it and/or modify
+ * it under the terms of the GNU General Public License as published by
+ * the Free Software Foundation, either version 3 of the License, or
+ * (at your option) any later version.
+ *
+ * Twocents_XH is distributed in the hope that it will be useful,
+ * but WITHOUT ANY WARRANTY; without even the implied warranty of
+ * MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE.  See the
+ * GNU General Public License for more details.
+ *
+ * You should have received a copy of the GNU General Public License
+ * along with Twocents_XH.  If not, see <http://www.gnu.org/licenses/>.
  */
 
 namespace Twocents;
 
 use PHPUnit_Extensions_MockFunction;
 
-/**
- * Testing the info view.
- *
- * @category Testing
- * @package  Twocents
- * @author   Christoph M. Becker <cmbecker69@gmx.de>
- * @license  http://www.gnu.org/licenses/gpl-3.0.en.html GNU GPLv3
- * @link     http://3-magi.net/?CMSimple_XH/Twocents_XH
- */
 class InfoViewTest extends TestCase
 {
     /**
-     * The subject under test.
-     *
      * @var Controller
      */
     protected $subject;
 
-    /**
-     * Sets up the test fixture.
-     *
-     * @return void
-     *
-     * @global string Whether the plugin administration is requested.
-     * @global string The (X)HTML of the contents area.
-     * @global array  The paths of system files and folders.
-     * @global array  The localization of the plugins.
-     */
     public function setUp()
     {
         global $twocents, $o, $pth, $plugin_tx;
@@ -65,13 +50,6 @@ class InfoViewTest extends TestCase
         $this->subject->dispatch();
     }
 
-    /**
-     * Tests that the heading is rendered.
-     *
-     * @return void
-     *
-     * @global string The (X)HTML of the contents area.
-     */
     public function testRendersHeading()
     {
         global $o;
@@ -85,13 +63,6 @@ class InfoViewTest extends TestCase
         );
     }
 
-    /**
-     * Tests that the plugin icon is rendered.
-     *
-     * @return void
-     *
-     * @global string The (X)HTML of the contents area.
-     */
     public function testRendersIcon()
     {
         global $o;
@@ -109,13 +80,6 @@ class InfoViewTest extends TestCase
         );
     }
 
-    /**
-     * Tests that the version info is rendered.
-     *
-     * @return void
-     *
-     * @global string The (X)HTML of the contents area.
-     */
     public function testRendersVersion()
     {
         global $o;
@@ -129,13 +93,6 @@ class InfoViewTest extends TestCase
         );
     }
 
-    /**
-     * Tests that the copyright info is rendered.
-     *
-     * @return void
-     *
-     * @global string The (X)HTML of the contents area.
-     */
     public function testRendersCopyright()
     {
         global $o;
@@ -157,13 +114,6 @@ class InfoViewTest extends TestCase
         );
     }
 
-    /**
-     * Tests that the license info is rendered.
-     *
-     * @return void
-     *
-     * @global string The (X)HTML of the contents area.
-     */
     public function testRendersLicense()
     {
         global $o;

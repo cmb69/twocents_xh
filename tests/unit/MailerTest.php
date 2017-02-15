@@ -1,59 +1,45 @@
 <?php
 
 /**
- * Testing the mailer.
+ * Copyright 2014-2017 Christoph M. Becker
  *
- * PHP version 5
+ * This file is part of Twocents_XH.
  *
- * @category  Testing
- * @package   Twocents
- * @author    Christoph M. Becker <cmbecker69@gmx.de>
- * @copyright 2014-2017 Christoph M. Becker <http://3-magi.net>
- * @license   http://www.gnu.org/licenses/gpl-3.0.en.html GNU GPLv3
- * @link      http://3-magi.net/?CMSimple_XH/Twocents_XH
+ * Twocents_XH is free software: you can redistribute it and/or modify
+ * it under the terms of the GNU General Public License as published by
+ * the Free Software Foundation, either version 3 of the License, or
+ * (at your option) any later version.
+ *
+ * Twocents_XH is distributed in the hope that it will be useful,
+ * but WITHOUT ANY WARRANTY; without even the implied warranty of
+ * MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE.  See the
+ * GNU General Public License for more details.
+ *
+ * You should have received a copy of the GNU General Public License
+ * along with Twocents_XH.  If not, see <http://www.gnu.org/licenses/>.
  */
 
 namespace Twocents;
 
 use PHPUnit_Extensions_MockFunction;
 
-/**
- * Testing the mailer.
- *
- * @category Testing
- * @package  Twocents
- * @author   Christoph M. Becker <cmbecker69@gmx.de>
- * @license  http://www.gnu.org/licenses/gpl-3.0.en.html GNU GPLv3
- * @link     http://3-magi.net/?CMSimple_XH/Twocents_XH
- */
 class MailerTest extends TestCase
 {
     /**
-     * The test subject.
-     *
      * @var Mailer
      */
     protected $subject;
 
     /**
-     * The gethostbyname() mock.
-     *
      * @var object
      */
     protected $gethostbynameMock;
 
     /**
-     * The mail() mock.
-     *
      * @var object
      */
     protected $mailMock;
 
-    /**
-     * Sets up the test fixture.
-     *
-     * @return void
-     */
     public function setUp()
     {
         $this->subject = Mailer::make();
@@ -61,11 +47,6 @@ class MailerTest extends TestCase
         $this->mailMock = new PHPUnit_Extensions_MockFunction('mail', $this->subject);
     }
 
-    /**
-     * Tests a valid address.
-     *
-     * @return void
-     */
     public function testValidAddress()
     {
         $this->gethostbynameMock->expects($this->any())->will(
@@ -74,21 +55,11 @@ class MailerTest extends TestCase
         $this->assertTrue($this->subject->isValidAddress('me@example.com'));
     }
 
-    /**
-     * Tests the a local part with a space is an invalid address.
-     *
-     * @return void
-     */
     public function testLocalPartWithSpaceIsInvalidAddress()
     {
         $this->assertFalse($this->subject->isValidAddress('c b@example.com'));
     }
 
-    /**
-     * Tests that a not existing domain is an invalid address.
-     *
-     * @return void
-     */
     public function testNotExistingDomainIsInvalidAddress()
     {
         $this->gethostbynameMock->expects($this->any())->will(
@@ -97,11 +68,6 @@ class MailerTest extends TestCase
         $this->assertFalse($this->subject->isValidAddress('me@test.invalid'));
     }
 
-    /**
-     * Tests that sending an ASCII subject calls mail with correct arguments.
-     *
-     * @return void
-     */
     public function testSendAsciiSubjectCallsMailWithCorrectArguments()
     {
         $this->mailMock->expects($this->once())->with(
@@ -121,11 +87,6 @@ class MailerTest extends TestCase
         );
     }
 
-    /**
-     * Tests that sending an UTF-8 subject calls mail with correct arguments.
-     *
-     * @return void
-     */
     public function testSendUtf8SubjectCallsMailWithCorrectArguments()
     {
         $this->mailMock->expects($this->once())->with(

@@ -1,45 +1,33 @@
 <?php
 
 /**
- * The controllers.
+ * Copyright 2014-2017 Christoph M. Becker
  *
- * PHP version 5
+ * This file is part of Twocents_XH.
  *
- * @category  CMSimple_XH
- * @package   Twocents
- * @author    Christoph M. Becker <cmbecker69@gmx.de>
- * @copyright 2014-2017 Christoph M. Becker <http://3-magi.net/>
- * @license   http://www.gnu.org/licenses/gpl-3.0.en.html GNU GPLv3
- * @link      http://3-magi.net/?CMSimple_XH/Twocents_XH
+ * Twocents_XH is free software: you can redistribute it and/or modify
+ * it under the terms of the GNU General Public License as published by
+ * the Free Software Foundation, either version 3 of the License, or
+ * (at your option) any later version.
+ *
+ * Twocents_XH is distributed in the hope that it will be useful,
+ * but WITHOUT ANY WARRANTY; without even the implied warranty of
+ * MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE.  See the
+ * GNU General Public License for more details.
+ *
+ * You should have received a copy of the GNU General Public License
+ * along with Twocents_XH.  If not, see <http://www.gnu.org/licenses/>.
  */
 
 namespace Twocents;
 
-/**
- * The controllers.
- *
- * @category CMSimple_XH
- * @package  Twocents
- * @author   Christoph M. Becker <cmbecker69@gmx.de>
- * @license  http://www.gnu.org/licenses/gpl-3.0.en.html GNU GPLv3
- * @link     http://3-magi.net/?CMSimple_XH/Twocents_XH
- */
 class Controller
 {
     /**
-     * The current comment, if any.
-     *
      * @var Comment
      */
     protected $comment;
 
-    /**
-     * Dispatches according to the request.
-     *
-     * @return void
-     *
-     * @global string Whether the plugin administration is requested.
-     */
     public function dispatch()
     {
         global $twocents;
@@ -54,15 +42,6 @@ class Controller
         }
     }
 
-    /**
-     * Handles the plugin administration.
-     *
-     * @return void
-     *
-     * @global string The value of the <var>admin</var> GP parameter.
-     * @global string The value of the <var>action</var> GP parameter.
-     * @global string The (X)HTML fragment to insert into the contents area.
-     */
     protected function handleAdministration()
     {
         global $admin, $action, $o;
@@ -81,9 +60,7 @@ class Controller
     }
 
     /**
-     * Renders the plugin info.
-     *
-     * @return string (X)HTML.
+     * @return string
      */
     protected function renderInfo()
     {
@@ -94,12 +71,7 @@ class Controller
     }
 
     /**
-     * Renders the plugin icon.
-     *
-     * @return string (X)HTML.
-     *
-     * @global array The paths of system files and folders.
-     * @global array The localization of the plugins.
+     * @return string
      */
     protected function renderIcon()
     {
@@ -113,9 +85,7 @@ class Controller
     }
 
     /**
-     * Renders the copyright info.
-     *
-     * @return string (X)HTML.
+     * @return string
      */
     protected function renderCopyright()
     {
@@ -127,9 +97,7 @@ EOT;
     }
 
     /**
-     * Renders the license info.
-     *
-     * @return string (X)HTML.
+     * @return string
      */
     protected function renderLicense()
     {
@@ -149,15 +117,6 @@ target="_blank">http://www.gnu.org/licenses/</a>. </p>
 EOT;
     }
 
-    /**
-     * Handles the main administration.
-     *
-     * @return void
-     *
-     * @global string            The value of the <var>action</var> GP parameter.
-     * @global string            The (X)HTML for the contents area.
-     * @global XH_CSRFProtection The CSRF protector.
-     */
     protected function handleMainAdministration()
     {
         global $action, $o, $_XH_csrfProtection;
@@ -186,13 +145,8 @@ EOT;
     }
 
     /**
-     * Converts all comments to another markup format.
-     *
      * @param string $to A markup format ('html' or 'plain').
-     *
-     * @return string (X)HTML.
-     *
-     * @global array The localization of the plugins.
+     * @return string
      */
     protected function convertCommentsTo($to)
     {
@@ -217,12 +171,7 @@ EOT;
     }
 
     /**
-     * Imports all comments from the Comments plugin.
-     *
-     * @return string (X)HTML.
-     *
-     * @global array The configuration of the plugins.
-     * @global array The localization of the plugins.
+     * @return string
      */
     protected function importComments()
     {
@@ -248,12 +197,7 @@ EOT;
     }
 
     /**
-     * Imports all comments from the GBook plugin.
-     *
-     * @return string (X)HTML.
-     *
-     * @global array The localization of the plugins.
-     *
+     * @return string
      * @todo Implement!
      */
     protected function importGbook()
@@ -265,13 +209,7 @@ EOT;
     }
 
     /**
-     * Renders the main administration view.
-     *
-     * @return string (X)HTML.
-     *
-     * @global string            The script name.
-     * @global array             The plugin configuration.
-     * @global XH_CSRFProtection The CSRF protector.
+     * @return string
      */
     protected function renderMainAdministration()
     {
@@ -292,11 +230,8 @@ EOT;
     }
 
     /**
-     * Renders a button of the main administration.
-     *
-     * @param string $name A feature name.
-     *
-     * @return string (X)HTML.
+     * @param string $name
+     * @return string
      */
     protected function renderMainAdminButton($name)
     {
@@ -307,15 +242,8 @@ EOT;
     }
 
     /**
-     * Renders the comments on a certain topic.
-     *
-     * @param string $topicname A topicname.
-     *
-     * @return string (X)HTML.
-     *
-     * @global array             The configuration of the plugins.
-     * @global array             The localization of the plugins.
-     * @global XH_CSRFProtection The CSRF protector.
+     * @param string $topicname
+     * @return string
      */
     public function renderComments($topicname)
     {
@@ -367,10 +295,7 @@ EOT;
     }
 
     /**
-     * Returns whether a topicname is valid.
-     *
-     * @param string $topicname A topicname.
-     *
+     * @param string $topicname
      * @return bool
      */
     protected function isValidTopicname($topicname)
@@ -379,14 +304,8 @@ EOT;
     }
 
     /**
-     * Adds a comment and returns error messages.
-     *
-     * @param string $topicname A topicname.
-     *
-     * @return string (X)HTML.
-     *
-     * @global array The configuration of the plugins.
-     * @global array The localization of the core.
+     * @param string $topicname
+     * @return string
      */
     protected function addComment($topicname)
     {
@@ -423,14 +342,8 @@ EOT;
     }
 
     /**
-     * Purifies a message.
-     *
-     * @param string $message A message.
-     *
+     * @param string $message
      * @return string
-     *
-     * @global array The paths of system files and folders.
-     * @global array The configuration of the core.
      */
     protected function purify($message)
     {
@@ -455,11 +368,8 @@ EOT;
     }
 
     /**
-     * Returns a HTMLified text.
-     *
-     * @param string $text A text.
-     *
-     * @return string (X)HTML.
+     * @param string $text
+     * @return string
      */
     protected function htmlify($text)
     {
@@ -471,10 +381,7 @@ EOT;
     }
 
     /**
-     * Returns plainified HTML.
-     *
-     * @param string $html (X)HTML.
-     *
+     * @param string $html
      * @return string
      */
     protected function plainify($html)
@@ -493,8 +400,6 @@ EOT;
     }
 
     /**
-     * Returns whether the added comment is moderated.
-     *
      * @return bool
      */
     protected function isModerated()
@@ -504,15 +409,6 @@ EOT;
         return $plugin_cf['twocents']['comments_moderated'] && !XH_ADM;
     }
 
-    /**
-     * Sends an email notification if an address is configured and we're not in
-     * admin mode.
-     *
-     * @return void
-     *
-     * @global array The configuration of the plugins.
-     * @global array The localization of the plugins.
-     */
     protected function sendNotificationEmail()
     {
         global $plugin_cf, $plugin_tx;
@@ -539,8 +435,6 @@ EOT;
     }
 
     /**
-     * Returns the URL that the new comment was posted to.
-     *
      * @return string
      */
     protected function getUrl()
@@ -549,11 +443,8 @@ EOT;
     }
 
     /**
-     * Updates a comment and returns error messages.
-     *
-     * @param string $topicname A topicname.
-     *
-     * @return string (X)HTML.
+     * @param string $topicname
+     * @return string
      */
     protected function updateComment($topicname)
     {
@@ -570,11 +461,7 @@ EOT;
     }
 
     /**
-     * Toggles the visibility of a comment.
-     *
-     * @param string $topicname A topicname.
-     *
-     * @return void
+     * @param string $topicname
      */
     protected function toggleVisibility($topicname)
     {
@@ -588,11 +475,7 @@ EOT;
     }
 
     /**
-     * Deletes a comment.
-     *
-     * @param string $topicname A topicname.
-     *
-     * @return void
+     * @param string $topicname
      */
     protected function deleteComment($topicname)
     {
@@ -603,11 +486,7 @@ EOT;
     }
 
     /**
-     * Renders error messages.
-     *
-     * @return string (X)HTML.
-     *
-     * @global array The localization of the plugins.
+     * @return string
      */
     protected function renderErrorMessages()
     {
@@ -629,13 +508,7 @@ EOT;
     }
 
     /**
-     * Renders the CAPTCHA error message, if any.
-     *
-     * @return string (X)HTML.
-     *
-     * @global array The paths of system files and folders.
-     * @global array The configuration of the plugins.
-     * @global array The localization of the plugins.
+     * @return string
      */
     protected function renderCaptchaError()
     {

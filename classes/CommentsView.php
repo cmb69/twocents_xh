@@ -1,38 +1,31 @@
 <?php
 
 /**
- * The comments views.
+ * Copyright 2014-2017 Christoph M. Becker
  *
- * PHP version 5
+ * This file is part of Twocents_XH.
  *
- * @category  CMSimple_XH
- * @package   Twocents
- * @author    Christoph M. Becker <cmbecker69@gmx.de>
- * @copyright 2014-2017 Christoph M. Becker <http://3-magi.net/>
- * @license   http://www.gnu.org/licenses/gpl-3.0.en.html GNU GPLv3
- * @link      http://3-magi.net/?CMSimple_XH/Twocents_XH
+ * Twocents_XH is free software: you can redistribute it and/or modify
+ * it under the terms of the GNU General Public License as published by
+ * the Free Software Foundation, either version 3 of the License, or
+ * (at your option) any later version.
+ *
+ * Twocents_XH is distributed in the hope that it will be useful,
+ * but WITHOUT ANY WARRANTY; without even the implied warranty of
+ * MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE.  See the
+ * GNU General Public License for more details.
+ *
+ * You should have received a copy of the GNU General Public License
+ * along with Twocents_XH.  If not, see <http://www.gnu.org/licenses/>.
  */
 
 namespace Twocents;
 
-/**
- * The comments views.
- *
- * @category CMSimple_XH
- * @package  Twocents
- * @author   Christoph M. Becker <cmbecker69@gmx.de>
- * @license  http://www.gnu.org/licenses/gpl-3.0.en.html GNU GPLv3
- * @link     http://3-magi.net/?CMSimple_XH/Twocents_XH
- */
 class CommentsView
 {
     /**
-     * Makes and returns a new comments view.
-     *
-     * @param array            $comments       An array of comments.
-     * @param Comment $currentComment The current comment.
-     * @param string           $messages       (X)HTML messages.
-     *
+     * @param Comment[] $comments
+     * @param string $messages
      * @return CommentsView
      */
     public static function make($comments, Comment $currentComment = null, $messages = '')
@@ -41,34 +34,23 @@ class CommentsView
     }
 
     /**
-     * The comments.
-     *
-     * @var array
+     * @var Comment[]
      */
     protected $comments;
 
     /**
-     * The current comment, if any.
-     *
-     * @var Comment
+     * @var ?Comment
      */
     protected $currentComment;
 
     /**
-     * (X)HTML messages.
-     *
      * @var string
      */
     protected $messages;
 
     /**
-     * Initializes a new instance.
-     *
-     * @param array            $comments       An array of comments.
-     * @param Comment $currentComment The current comment.
-     * @param string           $messages       (X)HTML messages.
-     *
-     * @return void
+     * @param Comment[] $comments
+     * @param string $messages
      */
     protected function __construct($comments, Comment $currentComment = null, $messages = '')
     {
@@ -78,9 +60,7 @@ class CommentsView
     }
 
     /**
-     * Renders the view.
-     *
-     * @return string (X)HTML.
+     * @return string
      */
     public function render()
     {
@@ -107,15 +87,6 @@ class CommentsView
         return $html;
     }
 
-    /**
-     * Writes the scripts to $bjs.
-     *
-     * @return void
-     *
-     * @global array  The paths of system files and folders.
-     * @global string The (X)HTML fragment to insert at the bottom of the body.
-     * @global array  The localization of the plugins.
-     */
     protected function writeScriptsToBjs()
     {
         global $pth, $bjs, $plugin_cf, $plugin_tx;

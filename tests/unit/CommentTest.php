@@ -1,16 +1,22 @@
 <?php
 
 /**
- * Testing the comments.
+ * Copyright 2014-2017 Christoph M. Becker
  *
- * PHP version 5
+ * This file is part of Twocents_XH.
  *
- * @category  Testing
- * @package   Twocents
- * @author    Christoph M. Becker <cmbecker69@gmx.de>
- * @copyright 2014-2017 Christoph M. Becker <http://3-magi.net/>
- * @license   http://www.gnu.org/licenses/gpl-3.0.en.html GNU GPLv3
- * @link      http://3-magi.net/?CMSimple_XH/Twocents_XH
+ * Twocents_XH is free software: you can redistribute it and/or modify
+ * it under the terms of the GNU General Public License as published by
+ * the Free Software Foundation, either version 3 of the License, or
+ * (at your option) any later version.
+ *
+ * Twocents_XH is distributed in the hope that it will be useful,
+ * but WITHOUT ANY WARRANTY; without even the implied warranty of
+ * MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE.  See the
+ * GNU General Public License for more details.
+ *
+ * You should have received a copy of the GNU General Public License
+ * along with Twocents_XH.  If not, see <http://www.gnu.org/licenses/>.
  */
 
 namespace Twocents;
@@ -20,61 +26,28 @@ use org\bovigo\vfs\vfsStreamWrapper;
 use org\bovigo\vfs\vfsStreamDirectory;
 use org\bovigo\vfs\vfsStream;
 
-/**
- * Testing the comments.
- *
- * @category CMSimple_XH
- * @package  Twocents
- * @author   Christoph M. Becker <cmbecker69@gmx.de>
- * @license  http://www.gnu.org/licenses/gpl-3.0.en.html GNU GPLv3
- * @link     http://3-magi.net/?CMSimple_XH/Twocents_XH
- */
 class CommentTest extends TestCase
 {
-    /**
-     * The comment ID.
-     */
     const ID = '1a2b3c';
 
-    /**
-     * The comment topicname.
-     */
     const TOPICNAME = 'foo';
 
-    /**
-     * The comment timestamp.
-     */
     const TIME = 123456;
 
-    /**
-     * A CSV line.
-     */
     const LINE1 = "1a2b3c,123456,cmb,,,\n";
 
-    /**
-     * Another CSV line.
-     */
     const LINE2 = "4d5e6f,234567,john,,\n";
 
     /**
-     * The test subject.
-     *
      * @var Comment
      */
     protected $subject;
 
     /**
-     * The comments filename.
-     *
      * @var string
      */
     protected $filename;
 
-    /**
-     * Sets up the test fixture.
-     *
-     * @return void
-     */
     public function setUp()
     {
         $this->setUpFilesystem();
@@ -82,13 +55,6 @@ class CommentTest extends TestCase
         $this->setupMocks();
     }
 
-    /**
-     * Sets up the test filesystem.
-     *
-     * @return void
-     *
-     * @global array The paths of system files and folders.
-     */
     protected function setUpFilesystem()
     {
         global $pth;
@@ -101,52 +67,27 @@ class CommentTest extends TestCase
         $pth['folder']['content'] = vfsStream::url('test/');
     }
 
-    /**
-     * Sets up the test mocks.
-     *
-     * @return void
-     */
     protected function setUpMocks()
     {
         $uniqidStub = new PHPUnit_Extensions_MockFunction('uniqid', $this->subject);
         $uniqidStub->expects($this->any())->will($this->returnValue(self::ID));
     }
 
-    /**
-     * Tests that the ID is null.
-     *
-     * @return void
-     */
     public function testIdIsNull()
     {
         $this->assertNull($this->subject->getId());
     }
 
-    /**
-     * Tests that the topicname is correct.
-     *
-     * @return void
-     */
     public function testTopicnameIsCorrect()
     {
         $this->assertEquals(self::TOPICNAME, $this->subject->getTopicname());
     }
 
-    /**
-     * Tests that the timestamp is correct.
-     *
-     * @return void
-     */
     public function testTimeIsCorrect()
     {
         $this->assertEquals(self::TIME, $this->subject->getTime());
     }
 
-    /**
-     * Tests that the username is correct.
-     *
-     * @return void
-     */
     public function testUserIsCorrect()
     {
         $user = 'cmb';
@@ -154,11 +95,6 @@ class CommentTest extends TestCase
         $this->assertEquals($user, $this->subject->getUser());
     }
 
-    /**
-     * Tests that the email address is correct.
-     *
-     * @return void
-     */
     public function testEmailIsCorrect()
     {
         $email = 'me@example.com';
@@ -166,11 +102,6 @@ class CommentTest extends TestCase
         $this->assertEquals($email, $this->subject->getEmail());
     }
 
-    /**
-     * Tests that the comment message is correct.
-     *
-     * @return void
-     */
     public function testMessageIsCorrect()
     {
         $message = 'blah blah';
@@ -178,43 +109,23 @@ class CommentTest extends TestCase
         $this->assertEquals($message, $this->subject->getMessage());
     }
 
-    /**
-     * Tests that the comment is visible.
-     *
-     * @return void
-     */
     public function testIsVisible()
     {
         $this->assertTrue($this->subject->isVisible());
     }
 
-    /**
-     * Tests that the comment can be hidden.
-     *
-     * @return void
-     */
     public function testCanHide()
     {
         $this->subject->hide();
         $this->assertFalse($this->subject->isVisible());
     }
 
-    /**
-     * Tests that the comment can be shown.
-     *
-     * @return void
-     */
     public function testCanShow()
     {
         $this->subject->show();
         $this->assertTrue($this->subject->isVisible());
     }
 
-    /**
-     * Tests that insert() saves the comment to the data file.
-     *
-     * @return void
-     */
     public function testInsertSavesToFile()
     {
         unlink($this->filename);
@@ -224,11 +135,6 @@ class CommentTest extends TestCase
         $this->assertStringEqualsFile($this->filename, self::LINE1);
     }
 
-    /**
-     * Tests that update() saves the comment to the data file.
-     *
-     * @return void
-     */
     public function testUpdateSavesToFile()
     {
         $this->subject->insert();
@@ -237,11 +143,6 @@ class CommentTest extends TestCase
         $this->assertStringEqualsFile($this->filename, self::LINE2 . self::LINE1);
     }
 
-    /**
-     * Tests that delete() removes the comment from the data file.
-     *
-     * @return void
-     */
     public function testDeleteRemovesFromFile()
     {
         $this->subject->insert();
@@ -249,11 +150,6 @@ class CommentTest extends TestCase
         $this->assertStringEqualsFile($this->filename, self::LINE2);
     }
 
-    /**
-     * Tests that 2 comments are found by topicname.
-     *
-     * @return void
-     */
     public function testFinds2CommentsByTopicname()
     {
         $this->subject->insert();
@@ -262,33 +158,18 @@ class CommentTest extends TestCase
         $this->assertCount(2, $comments);
     }
 
-    /**
-     * Tests that no comments are found for a not existing topicname.
-     *
-     * @return void
-     */
     public function testFindsNoCommentsForNotExistingTopicname()
     {
         $comments = Comment::findByTopicname('bar');
         $this->assertEmpty($comments);
     }
 
-    /**
-     * Tests that an inserted comment is found.
-     *
-     * @return void
-     */
     public function testFindsInsertedComment()
     {
         $this->subject->insert();
         $this->assertEquals($this->subject, Comment::find(self::ID, self::TOPICNAME));
     }
 
-    /**
-     * Tests that a deleted comment is not found.
-     *
-     * @return void
-     */
     public function testDoesNotFindDeletedComment()
     {
         $this->subject->insert();

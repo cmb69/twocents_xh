@@ -1,42 +1,33 @@
 <?php
 
 /**
- * The comments.
+ * Copyright 2014-2017 Christoph M. Becker
  *
- * PHP version 5
+ * This file is part of Twocents_XH.
  *
- * @category  CMSimple_XH
- * @package   Twocents
- * @author    Christoph M. Becker <cmbecker69@gmx.de>
- * @copyright 2014-2017 Christoph M. Becker <http://3-magi.net/>
- * @license   http://www.gnu.org/licenses/gpl-3.0.en.html GNU GPLv3
- * @link      http://3-magi.net/?CMSimple_XH/Twocents_XH
+ * Twocents_XH is free software: you can redistribute it and/or modify
+ * it under the terms of the GNU General Public License as published by
+ * the Free Software Foundation, either version 3 of the License, or
+ * (at your option) any later version.
+ *
+ * Twocents_XH is distributed in the hope that it will be useful,
+ * but WITHOUT ANY WARRANTY; without even the implied warranty of
+ * MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE.  See the
+ * GNU General Public License for more details.
+ *
+ * You should have received a copy of the GNU General Public License
+ * along with Twocents_XH.  If not, see <http://www.gnu.org/licenses/>.
  */
 
 namespace Twocents;
 
-/**
- * The comments.
- *
- * @category CMSimple_XH
- * @package  Twocents
- * @author   Christoph M. Becker <cmbecker69@gmx.de>
- * @license  http://www.gnu.org/licenses/gpl-3.0.en.html GNU GPLv3
- * @link     http://3-magi.net/?CMSimple_XH/Twocents_XH
- */
 class Comment
 {
-    /**
-     * The file extension.
-     */
     const EXT = 'csv';
 
     /**
-     * Finds all comments for a certain topic and returns them.
-     *
-     * @param string $name A topicname.
-     *
-     * @return array
+     * @param string $name
+     * @return Comment[]
      */
     public static function findByTopicname($name)
     {
@@ -54,13 +45,9 @@ class Comment
     }
 
     /**
-     * Finds a comment and returns it; returns <var>null</var> if topic does not
-     * exist.
-     *
-     * @param string $id        A comment ID.
-     * @param string $topicname A topicname.
-     *
-     * @return Comment
+     * @param string $id
+     * @param string $topicname
+     * @return ?Comment
      */
     public static function find($id, $topicname)
     {
@@ -74,11 +61,8 @@ class Comment
     }
 
     /**
-     * Loads a comment and returns it.
-     *
-     * @param string $topicname A topicname.
-     * @param array  $record    A record.
-     *
+     * @param string $topicname
+     * @param array $record
      * @return Comment
      */
     protected static function load($topicname, $record)
@@ -93,60 +77,43 @@ class Comment
     }
 
     /**
-     * The comment ID.
-     *
      * @var string
      */
     protected $id;
 
     /**
-     * The topicname.
-     *
      * @var string
      */
     protected $topicname;
 
     /**
-     * The timestamp of the original post.
-     *
      * @var int
      */
     protected $time;
 
     /**
-     * The name of the poster.
-     *
      * @var string
      */
     protected $user;
 
     /**
-     * The email address of the poster.
-     *
      * @var string
      */
     protected $email;
 
     /**
-     * The comment message.
-     *
      * @var string
      */
     protected $message;
 
     /**
-     * Whether the comment is hidden.
-     *
      * @var bool
      */
     protected $hidden;
 
     /**
-     * Makes and returns a comment.
-     *
-     * @param string $topicname A topicname.
-     * @param int    $time      A timestamp.
-     *
+     * @param string $topicname
+     * @param int $time
      * @return Comment
      */
     public static function make($topicname, $time)
@@ -155,12 +122,8 @@ class Comment
     }
 
     /**
-     * Initializes a new instance.
-     *
-     * @param string $topicname A topicname.
-     * @param int    $time      A timestamp.
-     *
-     * @return void
+     * @param string $topicname
+     * @param int $time
      */
     protected function __construct($topicname, $time)
     {
@@ -170,8 +133,6 @@ class Comment
     }
 
     /**
-     * Returns the comment ID.
-     *
      * @return string
      */
     public function getId()
@@ -180,8 +141,6 @@ class Comment
     }
 
     /**
-     * Returns the topicname.
-     *
      * @return string
      */
     public function getTopicname()
@@ -190,8 +149,6 @@ class Comment
     }
 
     /**
-     * Returns the timestamp.
-     *
      * @return int
      */
     public function getTime()
@@ -200,8 +157,6 @@ class Comment
     }
 
     /**
-     * Returns the user.
-     *
      * @return string
      */
     public function getUser()
@@ -210,8 +165,6 @@ class Comment
     }
 
     /**
-     * Returns the email address.
-     *
      * @return string
      */
     public function getEmail()
@@ -220,8 +173,6 @@ class Comment
     }
 
     /**
-     * Returns the comment message.
-     *
      * @return string
      */
     public function getMessage()
@@ -230,8 +181,6 @@ class Comment
     }
 
     /**
-     * Returns whether the comment is visible.
-     *
      * @return bool
      */
     public function isVisible()
@@ -240,11 +189,7 @@ class Comment
     }
 
     /**
-     * Sets the username.
-     *
-     * @param string $user A username.
-     *
-     * @return void
+     * @param string $user
      */
     public function setUser($user)
     {
@@ -252,11 +197,7 @@ class Comment
     }
 
     /**
-     * Sets the email address.
-     *
-     * @param string $email An email address.
-     *
-     * @return void
+     * @param string $email
      */
     public function setEmail($email)
     {
@@ -264,11 +205,7 @@ class Comment
     }
 
     /**
-     * Sets the comment message.
-     *
-     * @param string $message A comment message.
-     *
-     * @return void
+     * @param string $message
      */
     public function setMessage($message)
     {
@@ -276,8 +213,6 @@ class Comment
     }
 
     /**
-     * Hides this comment.
-     *
      * @return void
      */
     public function hide()
@@ -286,8 +221,6 @@ class Comment
     }
 
     /**
-     * Shows this comment.
-     *
      * @return void
      */
     public function show()
@@ -295,11 +228,6 @@ class Comment
         $this->hidden = false;
     }
 
-    /**
-     * Inserts this comment to the data store.
-     *
-     * @return void
-     */
     public function insert()
     {
         $this->id = uniqid();
@@ -310,11 +238,6 @@ class Comment
         Db::lock(LOCK_UN);
     }
 
-    /**
-     * Updates this comment in the data store.
-     *
-     * @return void
-     */
     public function update()
     {
         Db::lock(LOCK_EX);
@@ -336,11 +259,6 @@ class Comment
         Db::lock(LOCK_UN);
     }
 
-    /**
-     * Deletes this comment from the data store.
-     *
-     * @return void
-     */
     public function delete()
     {
         Db::lock(LOCK_EX);
@@ -361,8 +279,6 @@ class Comment
     }
 
     /**
-     * Returns this comment as record.
-     *
      * @return array
      */
     protected function toRecord()

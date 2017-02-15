@@ -1,40 +1,32 @@
 <?php
 
 /**
- * The topics.
+ * Copyright 2014-2017 Christoph M. Becker
  *
- * PHP version 5
+ * This file is part of Twocents_XH.
  *
- * @category  CMSimple_XH
- * @package   Twocents
- * @author    Christoph M. Becker <cmbecker69@gmx.de>
- * @copyright 2014-2017 Christoph M. Becker <http://3-magi.net/>
- * @license   http://www.gnu.org/licenses/gpl-3.0.en.html GNU GPLv3
- * @link      http://3-magi.net/?CMSimple_XH/Twocents_XH
+ * Twocents_XH is free software: you can redistribute it and/or modify
+ * it under the terms of the GNU General Public License as published by
+ * the Free Software Foundation, either version 3 of the License, or
+ * (at your option) any later version.
+ *
+ * Twocents_XH is distributed in the hope that it will be useful,
+ * but WITHOUT ANY WARRANTY; without even the implied warranty of
+ * MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE.  See the
+ * GNU General Public License for more details.
+ *
+ * You should have received a copy of the GNU General Public License
+ * along with Twocents_XH.  If not, see <http://www.gnu.org/licenses/>.
  */
 
 namespace Twocents;
 
-/**
- * The topics.
- *
- * @category CMSimple_XH
- * @package  Twocents
- * @author   Christoph M. Becker <cmbecker69@gmx.de>
- * @license  http://www.gnu.org/licenses/gpl-3.0.en.html GNU GPLv3
- * @link     http://3-magi.net/?CMSimple_XH/Twocents_XH
- */
 class Topic
 {
-    /**
-     * The file extension.
-     */
     const EXT = 'csv';
 
     /**
-     * Returns all topics.
-     *
-     * @return array
+     * @return Topic[]
      */
     public static function findAll()
     {
@@ -53,12 +45,8 @@ class Topic
     }
 
     /**
-     * Finds a topic by name and returns it; returns <var>null</var> if topic
-     * does not exist.
-     *
-     * @param string $name A topicname.
-     *
-     * @return Topic
+     * @param string $name
+     * @return ?Topic
      */
     public static function findByName($name)
     {
@@ -70,10 +58,7 @@ class Topic
     }
 
     /**
-     * Loads a topic and returns it.
-     *
-     * @param string $name A topicname.
-     *
+     * @param string $name
      * @return Topic
      */
     protected static function load($name)
@@ -82,18 +67,12 @@ class Topic
     }
 
     /**
-     * The topicname.
-     *
      * @var string
      */
     protected $name;
 
     /**
-     * Initializes a new instance.
-     *
-     * @param string $name A topicname.
-     *
-     * @return void
+     * @param string $name
      */
     public function __construct($name)
     {
@@ -101,8 +80,6 @@ class Topic
     }
 
     /**
-     * Returns the topicname.
-     *
      * @return string
      */
     public function getName()
@@ -110,11 +87,6 @@ class Topic
         return $this->name;
     }
 
-    /**
-     * Inserts this topic to the data store.
-     *
-     * @return void
-     */
     public function insert()
     {
         Db::lock(LOCK_EX);
@@ -122,11 +94,6 @@ class Topic
         Db::lock(LOCK_UN);
     }
 
-    /**
-     * Deletes this topic from the data store including all comments.
-     *
-     * @return void
-     */
     public function delete()
     {
         Db::lock(LOCK_EX);

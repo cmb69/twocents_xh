@@ -1,38 +1,32 @@
 <?php
 
 /**
- * The Realblog_XH bridge.
+ * Copyright 2014-2017 Christoph M. Becker
  *
- * PHP version 5
+ * This file is part of Twocents_XH.
  *
- * @category  CMSimple_XH
- * @package   Twocents
- * @author    Christoph M. Becker <cmbecker69@gmx.de>
- * @copyright 2014-2017 Christoph M. Becker <http://3-magi.net/>
- * @license   http://www.gnu.org/licenses/gpl-3.0.en.html GNU GPLv3
- * @link      http://3-magi.net/?CMSimple_XH/Twocents_XH
+ * Twocents_XH is free software: you can redistribute it and/or modify
+ * it under the terms of the GNU General Public License as published by
+ * the Free Software Foundation, either version 3 of the License, or
+ * (at your option) any later version.
+ *
+ * Twocents_XH is distributed in the hope that it will be useful,
+ * but WITHOUT ANY WARRANTY; without even the implied warranty of
+ * MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE.  See the
+ * GNU General Public License for more details.
+ *
+ * You should have received a copy of the GNU General Public License
+ * along with Twocents_XH.  If not, see <http://www.gnu.org/licenses/>.
  */
 
 namespace Twocents;
 
 use Realblog\CommentsBridge;
 
-/**
- * The Realblog_XH bridge.
- *
- * @category CMSimple_XH
- * @package  Twocents
- * @author   Christoph M. Becker <cmbecker69@gmx.de>
- * @license  http://www.gnu.org/licenses/gpl-3.0.en.html GNU GPLv3
- * @link     http://3-magi.net/?CMSimple_XH/Twocents_XH
- */
 class RealblogBridge implements CommentsBridge
 {
     /**
-     * Returns the number of comments on a certain topic.
-     *
-     * @param string $topic A topic ID.
-     *
+     * @param string $topic
      * @return int
      */
     public static function count($topic)
@@ -41,11 +35,8 @@ class RealblogBridge implements CommentsBridge
     }
 
     /**
-     * Handles the comment functionality of a certain topic.
-     *
-     * @param string $topic A topic ID.
-     *
-     * @return string (X)HTML.
+     * @param string $topic
+     * @return string
      */
     public static function handle($topic)
     {
@@ -55,11 +46,8 @@ class RealblogBridge implements CommentsBridge
     }
 
     /**
-     * Returns false, as there is no sensible URL for editing the comments.
-     *
-     * @param string $topic A topic ID.
-     *
-     * @return false
+     * @param string $topic
+     * @return string|false
      */
     public static function getEditUrl($topic)
     {

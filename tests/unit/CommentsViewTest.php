@@ -1,73 +1,43 @@
 <?php
 
 /**
- * Testing the comments views.
+ * Copyright 2014-2017 Christoph M. Becker
  *
- * PHP version 5
+ * This file is part of Twocents_XH.
  *
- * @category  Testing
- * @package   Twocents
- * @author    Christoph M. Becker <cmbecker69@gmx.de>
- * @copyright 2014-2017 Christoph M. Becker <http://3-magi.net/>
- * @license   http://www.gnu.org/licenses/gpl-3.0.en.html GNU GPLv3
- * @link      http://3-magi.net/?CMSimple_XH/Twocents_XH
+ * Twocents_XH is free software: you can redistribute it and/or modify
+ * it under the terms of the GNU General Public License as published by
+ * the Free Software Foundation, either version 3 of the License, or
+ * (at your option) any later version.
+ *
+ * Twocents_XH is distributed in the hope that it will be useful,
+ * but WITHOUT ANY WARRANTY; without even the implied warranty of
+ * MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE.  See the
+ * GNU General Public License for more details.
+ *
+ * You should have received a copy of the GNU General Public License
+ * along with Twocents_XH.  If not, see <http://www.gnu.org/licenses/>.
  */
 
 namespace Twocents;
 
-/**
- * Testing the comments views.
- *
- * @category CMSimple_XH
- * @package  Twocents
- * @author   Christoph M. Becker <cmbecker69@gmx.de>
- * @license  http://www.gnu.org/licenses/gpl-3.0.en.html GNU GPLv3
- * @link     http://3-magi.net/?CMSimple_XH/Twocents_XH
- *
- * @todo Test via controller.
- */
 class CommentsViewTest extends TestCase
 {
-    /**
-     * The comment ID.
-     */
     const ID = '1a2b3c';
 
-    /**
-     * The comment timestamp.
-     */
     const TIME = 1406638537;
 
-    /**
-     * The username of the poster.
-     */
     const USER = '>cmb<';
 
-    /**
-     * The email address of the poster.
-     */
     const EMAIL = 'me@example.com';
 
-    /**
-     * The comment message.
-     */
     const MESSAGE = "blah < blah\nblah";
 
     /**
-     * The test subject.
-     *
      * @var CommentsView
      */
     protected $subject;
 
-    /**
-     * Sets up the test fixture.
-     *
-     * @return void
-     *
-     * @global array             The localization of the plugins.
-     * @global XH_CSRFProtection The CSRF protection mock.
-     */
     public function setUp()
     {
         global $plugin_tx, $_XH_csrfProtection;
@@ -118,13 +88,6 @@ class CommentsViewTest extends TestCase
             ->disableOriginalConstructor()->getMock();
     }
 
-    /**
-     * Tests that a script is rendered to $bjs.
-     *
-     * @return void
-     *
-     * @global string The (X)HTML fragment to be inserted into the body element.
-     */
     public function testRendersMainScriptToBjs()
     {
         global $bjs;
@@ -142,13 +105,6 @@ class CommentsViewTest extends TestCase
         );
     }
 
-    /**
-     * Tests that the configuration script is rendered to $bjs.
-     *
-     * @return void
-     *
-     * @global string The (X)HTML fragment to be inserted into the body element.
-     */
     public function testRendersConfigScriptToBjs()
     {
         global $bjs;
@@ -164,11 +120,6 @@ class CommentsViewTest extends TestCase
         );
     }
 
-    /**
-     * Tests that a div element with 3 children is rendered.
-     *
-     * @return void
-     */
     public function testRendersDivWith3Children()
     {
         @$this->assertTag(
@@ -187,11 +138,6 @@ class CommentsViewTest extends TestCase
         );
     }
 
-    /**
-     * Tests that the comment attribution is rendered.
-     *
-     * @return void
-     */
     public function testRendersCommentAttribution()
     {
         @$this->assertTag(
@@ -209,11 +155,6 @@ class CommentsViewTest extends TestCase
         );
     }
 
-    /**
-     * Tests that the comment message is rendered.
-     *
-     * @return void
-     */
     public function testRendersCommentMessage()
     {
         @$this->assertTag(
@@ -231,11 +172,6 @@ class CommentsViewTest extends TestCase
         );
     }
 
-    /**
-     * Tests that the admin tools are rendered.
-     *
-     * @return void
-     */
     public function testRendersAdminTools()
     {
         $this->defineConstant('XH_ADM', true);
@@ -248,11 +184,6 @@ class CommentsViewTest extends TestCase
         );
     }
 
-    /**
-     * Tests that an edit link is rendered.
-     *
-     * @return void
-     */
     public function testRendersEditLink()
     {
         $this->defineConstant('XH_ADM', true);
@@ -265,11 +196,6 @@ class CommentsViewTest extends TestCase
         );
     }
 
-    /**
-     * Tests that a delete form is rendered.
-     *
-     * @return void
-     */
     public function testRendersDeleteForm()
     {
         $this->defineConstant('XH_ADM', true);
@@ -284,11 +210,6 @@ class CommentsViewTest extends TestCase
         );
     }
 
-    /**
-     * Tests that a delete button is rendered.
-     *
-     * @return void
-     */
     public function testRendersDeleteButton()
     {
         $this->defineConstant('XH_ADM', true);
@@ -305,11 +226,6 @@ class CommentsViewTest extends TestCase
         );
     }
 
-    /**
-     * Tests that a delete id input is rendered.
-     *
-     * @return void
-     */
     public function testRendersDeleteId()
     {
         $this->defineConstant('XH_ADM', true);
@@ -326,11 +242,6 @@ class CommentsViewTest extends TestCase
         );
     }
 
-    /**
-     * Tests that the comment form is rendered.
-     *
-     * @return void
-     */
     public function testRendersCommentForm()
     {
         @$this->assertTag(
@@ -345,11 +256,6 @@ class CommentsViewTest extends TestCase
         );
     }
 
-    /**
-     * Tests that a id input is rendered.
-     *
-     * @return void
-     */
     public function testRendersIdInput()
     {
         @$this->assertTag(
@@ -382,11 +288,6 @@ class CommentsViewTest extends TestCase
     //    );
     //}
 
-    /**
-     * Tests that a user input is rendered.
-     *
-     * @return void
-     */
     public function testRendersUserInput()
     {
         @$this->assertTag(
@@ -428,11 +329,6 @@ class CommentsViewTest extends TestCase
     //    );
     //}
 
-    /**
-     * Tests that an email input is rendered.
-     *
-     * @return void
-     */
     public function testRendersEmailInput()
     {
         @$this->assertTag(
@@ -474,11 +370,6 @@ class CommentsViewTest extends TestCase
     //    );
     //}
 
-    /**
-     * Tests that a message textarea is rendered.
-     *
-     * @return void
-     */
     public function testRendersMessageTextarea()
     {
         @$this->assertTag(
@@ -517,11 +408,6 @@ class CommentsViewTest extends TestCase
     //    );
     //}
 
-    /**
-     * Tests that a submit button is rendered.
-     *
-     * @return void
-     */
     public function testRendersSubmitButton()
     {
         @$this->assertTag(
@@ -553,11 +439,6 @@ class CommentsViewTest extends TestCase
     //    );
     //}
 
-    /**
-     * Tests that a reset button is rendered.
-     *
-     * @return void
-     */
     public function testRendersResetButton()
     {
         @$this->assertTag(

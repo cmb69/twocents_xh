@@ -1,66 +1,51 @@
 <?php
 
 /**
- * Testing the CSRF protection.
+ * Copyright 2013-2014 The CMSimple_XH developers
+ * Copyright 2014-2017 Christoph M. Becker
  *
- * PHP version 5
+ * This file is part of Twocents_XH.
  *
+ * Twocents_XH is free software: you can redistribute it and/or modify
+ * it under the terms of the GNU General Public License as published by
+ * the Free Software Foundation, either version 3 of the License, or
+ * (at your option) any later version.
+ *
+ * Twocents_XH is distributed in the hope that it will be useful,
+ * but WITHOUT ANY WARRANTY; without even the implied warranty of
+ * MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE.  See the
+ * GNU General Public License for more details.
+ *
+ * You should have received a copy of the GNU General Public License
+ * along with Twocents_XH.  If not, see <http://www.gnu.org/licenses/>.
+ */
+
+/*
  * The environment variable CMSIMPLEDIR has to be set to the installation folder
  * (e.g. / or /cmsimple_xh/).
- * A page "Twocents" with a Twocents_XH widget has to be there.
  *
- * @category  Testing
- * @package   Twocents
- * @author    The CMSimple_XH developers <devs@cmsimple-xh.org>
- * @author    Christoph M. Becker <cmbecker69@gmx.de>
- * @copyright 2013-2014 The CMSimple_XH developers <http://cmsimple-xh.org/?The_Team>
- * @copyright 2014-2017 Christoph M. Becker <http://3-magi.net/>
- * @license   http://www.gnu.org/licenses/gpl-3.0.en.html GNU GPLv3
- * @link      http://3-magi.net/?CMSimple_XH/Twocents_XH
+ * A page "Twocents" with a Twocents_XH widget has to be there.
  */
 
 namespace Twocents;
 
-/**
- * A test case to actually check the CSRF protection.
- *
- * @category Testing
- * @package  Twocents
- * @author   The CMSimple_XH developers <devs@cmsimple-xh.org>
- * @author   Christoph M. Becker <cmbecker69@gmx.de>
- * @license  http://www.gnu.org/licenses/gpl-3.0.en.html GNU GPLv3
- * @link     http://3-magi.net/?CMSimple_XH/Twocents_XH
- */
 class CSRFAttackTest extends TestCase
 {
     /**
-     * The URL of the CMSimple installation.
-     *
      * @var string
      */
     protected $url;
 
     /**
-     * The cURL handle.
-     *
      * @var resource
      */
     protected $curlHandle;
 
     /**
-     * The filename of the cookie file.
-     *
      * @var string
      */
     protected $cookieFile;
 
-    /**
-     * Sets up the test fixture.
-     *
-     * Logs in to back-end and stores cookies in a temp file.
-     *
-     * @return void
-     */
     public function setUp()
     {
         $this->url = 'http://localhost' . getenv('CMSIMPLEDIR');
@@ -74,11 +59,7 @@ class CSRFAttackTest extends TestCase
     }
 
     /**
-     * Sets the cURL options.
-     *
-     * @param array $fields A map of post fields.
-     *
-     * @return void
+     * @param array $fields
      */
     protected function setCurlOptions($fields)
     {
@@ -92,13 +73,8 @@ class CSRFAttackTest extends TestCase
     }
 
     /**
-     * Tests an attack.
-     *
-     * @param array  $fields      A map of post fields.
-     * @param string $queryString A query string.
-     *
-     * @return void
-     *
+     * @param array $fields
+     * @param string $queryString
      * @dataProvider dataForAttack
      */
     public function testAttack($fields, $queryString = null)
@@ -113,8 +89,6 @@ class CSRFAttackTest extends TestCase
     }
 
     /**
-     * Provides data for testAttack().
-     *
      * @return array
      */
     public function dataForAttack()
