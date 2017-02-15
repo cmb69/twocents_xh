@@ -21,6 +21,9 @@
 
 namespace Twocents;
 
+use HTMLPurifier;
+use HTMLPurifier_Config;
+
 class Controller
 {
     /**
