@@ -13,17 +13,7 @@
  * @link      http://3-magi.net/?CMSimple_XH/Twocents_XH
  */
 
-/**
- * Autoloads the plugin classes.
- *
- * @param string $class A class name.
- *
- * @return void
- *
- * @global array The paths of system files and folders.
- */
-function Twocents_autoload($class)
-{
+spl_autoload_register(function ($class) {
     global $pth;
 
     $parts = explode('\\', $class, 2);
@@ -31,6 +21,4 @@ function Twocents_autoload($class)
         include_once $pth['folder']['plugins'] . 'twocents/classes/'
             . $parts[1] . '.php';
     }
-}
-
-spl_autoload_register('Twocents_autoload');
+});

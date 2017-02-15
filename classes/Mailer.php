@@ -147,7 +147,9 @@ class Mailer
                     $text = '';
                 }
             } while ($text != '');
-            $func = create_function('$l', 'return \'=?UTF-8?B?\' . base64_encode($l) . \'?=\';');
+            $func = function ($l) {
+                return '=?UTF-8?B?' . base64_encode($l) . '?=';
+            };
             return implode($this->lineBreak . ' ', array_map($func, $lines));
         }
     }
