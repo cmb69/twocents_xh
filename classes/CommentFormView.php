@@ -53,13 +53,9 @@ class CommentFormView extends View
      * Renders the view.
      *
      * @return string (X)HTML.
-     *
-     * @global array The localization of the plugins.
      */
     public function render()
     {
-        global $plugin_tx;
-
         $url = XH_hsc($this->getUrl());
         return '<form class="twocents_form" method="post" action="' . $url . '">'
             . $this->renderHiddenFormFields()

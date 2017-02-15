@@ -60,8 +60,8 @@ class InfoViewTest extends TestCase
             'twocents' => array('alt_icon' => 'Speech bubble')
         );
         $this->subject = new Controller();
-        $rspmiMock = new PHPUnit_Extensions_MockFunction('XH_registerStandardPluginMenuItems', $this->subject);
-        $printPluginAdminMock = new PHPUnit_Extensions_MockFunction('print_plugin_admin', $this->subject);
+        new PHPUnit_Extensions_MockFunction('XH_registerStandardPluginMenuItems', $this->subject);
+        new PHPUnit_Extensions_MockFunction('print_plugin_admin', $this->subject);
         $this->subject->dispatch();
     }
 
