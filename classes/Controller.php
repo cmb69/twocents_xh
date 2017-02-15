@@ -322,7 +322,7 @@ EOT;
             $message = $this->purify($message);
         }
         $this->comment->setMessage($message);
-        if ($this->isModerated()) {
+        if ($this->isModerated() || ($isSpam = !XH_ADM && $this->isSpam($message))) {
             $this->comment->hide();
         }
         $marker = '<div id="twocents_scroll_marker" class="twocents_scroll_marker">'
@@ -332,7 +332,7 @@ EOT;
             $this->comment->insert();
             $this->sendNotificationEmail();
             $this->comment = null;
-            if ($this->isModerated()) {
+            if ($this->isModerated() || $isSpam) {
                 $html .= XH_message('info', $plugin_tx['twocents']['message_moderated']);
             } else {
                 $html .= XH_message('success', $plugin_tx['twocents']['message_added']);
@@ -410,6 +410,24 @@ EOT;
         global $plugin_cf;
 
         return $plugin_cf['twocents']['comments_moderated'] && !XH_ADM;
+    }
+
+    /**
+     * @param string $message
+     * @return bool
+     */
+    private function isSpam($message)
+    {
+        global $plugin_tx;
+
+        $words = array_map(
+            function ($word) {
+                return preg_quote(trim($word), '/');
+            },
+            explode(',', $plugin_tx['twocents']['spam_words'])
+        );
+        $pattern = implode('|', $words);
+        return preg_match("/$pattern/ui", $message);
     }
 
     protected function sendNotificationEmail()

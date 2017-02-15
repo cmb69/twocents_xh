@@ -22,7 +22,7 @@ with a simple WYSIWYG editor.</p>
 published automatically), be notified about new comments via email, and you can
 add spam prevention by using a <a
 href="http://www.cmsimple-xh.org/wiki/doku.php/captcha_plugins">conforming
-CAPTCHA plugin</a>.</p>
+CAPTCHA plugin</a> and a simple bad-word list.</p>
 
 <ul id="nav">
 <li><a href="#notice">Important Notice</a></li>
@@ -95,6 +95,12 @@ you can display the comments for the same topic on different pages.</p>
 <pre>{{{twocents('guestbook');}}}
 {{{twocents('article-1');}}}</pre>
 <p>Note that there must be at most one call of twocents on a single page.</p>
+<p>
+    You can configure the very simplistic spam protection in the language
+    settings under <em>Spam→Words</em> which a list of comma separated words. If
+    any of these words are contained in the message (the actual case of the
+    letters doesn't matter), the comment will automatically be hidden.
+</p>
 <div class="toplink"><a href="#">back to top</a></div>
 
 <h3 id="usage-admin">Administration</h2>

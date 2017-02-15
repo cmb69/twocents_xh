@@ -3,6 +3,7 @@
 $plugin_tx['twocents']['format_heading']="On {DATE} at {TIME} {USER} wrote:";
 $plugin_tx['twocents']['format_date']="n/d/Y";
 $plugin_tx['twocents']['format_time']="g:ia";
+$plugin_tx['twocents']['spam_words']="porn,viagra";
 $plugin_tx['twocents']['label_edit']="Edit";
 $plugin_tx['twocents']['label_hide']="Hide";
 $plugin_tx['twocents']['label_show']="Show";

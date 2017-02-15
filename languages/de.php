@@ -3,6 +3,7 @@
 $plugin_tx['twocents']['format_heading']="Am {DATE} um {TIME} schrieb {USER}:";
 $plugin_tx['twocents']['format_date']="d.n.Y";
 $plugin_tx['twocents']['format_time']="G:i";
+$plugin_tx['twocents']['spam_words']="porno,viagra";
 $plugin_tx['twocents']['label_edit']="Bearbeiten";
 $plugin_tx['twocents']['label_hide']="Verstecken";
 $plugin_tx['twocents']['label_show']="Anzeigen";
