@@ -28,7 +28,7 @@ class CommentsView
      * @param string $messages
      * @return CommentsView
      */
-    public static function make($comments, Comment $currentComment = null, $messages = '')
+    public static function make(array $comments, Comment $currentComment = null, $messages = '')
     {
         return new self($comments, $currentComment, $messages);
     }
@@ -52,7 +52,7 @@ class CommentsView
      * @param Comment[] $comments
      * @param string $messages
      */
-    protected function __construct($comments, Comment $currentComment = null, $messages = '')
+    protected function __construct(array $comments, Comment $currentComment = null, $messages = '')
     {
         $this->comments = (array) $comments;
         $this->currentComment = $currentComment;

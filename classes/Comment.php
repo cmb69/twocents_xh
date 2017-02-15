@@ -62,10 +62,9 @@ class Comment
 
     /**
      * @param string $topicname
-     * @param array $record
      * @return Comment
      */
-    protected static function load($topicname, $record)
+    protected static function load($topicname, array $record)
     {
         $comment = new self($topicname, $record[1]);
         $comment->id = $record[0];

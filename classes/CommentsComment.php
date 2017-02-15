@@ -49,10 +49,9 @@ class CommentsComment extends Comment
 
     /**
      * @param string $topicname
-     * @param array $record
      * @return Comment
      */
-    protected static function load($topicname, $record)
+    protected static function load($topicname, array $record)
     {
         // image is $record[6]
         $comment = new parent($topicname, $record[5]);
