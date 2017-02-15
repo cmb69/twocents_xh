@@ -48,9 +48,8 @@ class CommentView extends View
      *
      * @return void
      */
-    public function __construct(
-        Comment $comment, Comment $currentComment = null
-    ) {
+    public function __construct(Comment $comment, Comment $currentComment = null)
+    {
         $this->comment = $comment;
         $this->currentComment = $currentComment;
     }
@@ -151,12 +150,8 @@ class CommentView extends View
     {
         global $plugin_tx;
 
-        $date = date(
-            $plugin_tx['twocents']['format_date'], $this->comment->getTime()
-        );
-        $time = date(
-            $plugin_tx['twocents']['format_time'], $this->comment->getTime()
-        );
+        $date = date($plugin_tx['twocents']['format_date'], $this->comment->getTime());
+        $time = date($plugin_tx['twocents']['format_time'], $this->comment->getTime());
         return strtr(
             $plugin_tx['twocents']['format_heading'],
             array(
@@ -181,9 +176,7 @@ class CommentView extends View
         if ($plugin_cf['twocents']['comments_markup'] == 'HTML') {
             return $this->comment->getMessage();
         } else {
-            return preg_replace(
-                '/(?:\r\n|\r|\n)/', tag('br'), XH_hsc($this->comment->getMessage())
-            );
+            return preg_replace('/(?:\r\n|\r|\n)/', tag('br'), XH_hsc($this->comment->getMessage()));
         }
     }
 
@@ -198,5 +191,3 @@ class CommentView extends View
             && $this->currentComment->getId() == $this->comment->getId();
     }
 }
-
-?>

@@ -75,5 +75,3 @@ class CommentsComment extends Comment
         return $comment;
     }
 }
-
-?>

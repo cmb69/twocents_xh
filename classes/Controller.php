@@ -69,14 +69,14 @@ class Controller
 
         $o .= print_plugin_admin('on');
         switch ($admin) {
-        case '':
-            $o .= $this->renderInfo();
-            break;
-        case 'plugin_main':
-            $o .= $this->handleMainAdministration();
-            break;
-        default:
-            $o .= plugin_admin_common($action, $admin, 'twocents');
+            case '':
+                $o .= $this->renderInfo();
+                break;
+            case 'plugin_main':
+                $o .= $this->handleMainAdministration();
+                break;
+            default:
+                $o .= plugin_admin_common($action, $admin, 'twocents');
         }
     }
 
@@ -164,24 +164,24 @@ EOT;
 
         $o .= '<h1>Twocents &ndash; Conversion</h1>';
         switch ($action) {
-        case 'convert_html':
-            $_XH_csrfProtection->check();
-            $o .= $this->convertCommentsTo('html');
-            break;
-        case 'convert_plain':
-            $_XH_csrfProtection->check();
-            $o .= $this->convertCommentsTo('plain');
-            break;
-        case 'import_comments':
-            $_XH_csrfProtection->check();
-            $o .= $this->importComments();
-            break;
-        case 'import_gbook':
-            $_XH_csrfProtection->check();
-            $o .= $this->importGbook();
-            break;
-        default:
-            $o .= $this->renderMainAdministration();
+            case 'convert_html':
+                $_XH_csrfProtection->check();
+                $o .= $this->convertCommentsTo('html');
+                break;
+            case 'convert_plain':
+                $_XH_csrfProtection->check();
+                $o .= $this->convertCommentsTo('plain');
+                break;
+            case 'import_comments':
+                $_XH_csrfProtection->check();
+                $o .= $this->importComments();
+                break;
+            case 'import_gbook':
+                $_XH_csrfProtection->check();
+                $o .= $this->importGbook();
+                break;
+            default:
+                $o .= $this->renderMainAdministration();
         }
     }
 
@@ -328,32 +328,30 @@ EOT;
             ? stsl($_POST['twocents_action']) : '';
         $html = '';
         switch ($action) {
-        case 'add_comment':
-            $html .= $this->addComment($topicname);
-            break;
-        case 'update_comment':
-            if (XH_ADM) {
-                $_XH_csrfProtection->check();
-                $html .= $this->updateComment($topicname);
-            }
-            break;
-        case 'toggle_visibility':
-            if (XH_ADM) {
-                $_XH_csrfProtection->check();
-                $this->toggleVisibility($topicname);
-            }
-            break;
-        case 'remove_comment':
-            if (XH_ADM) {
-                $_XH_csrfProtection->check();
-                $this->deleteComment($topicname);
-            }
-            break;
+            case 'add_comment':
+                $html .= $this->addComment($topicname);
+                break;
+            case 'update_comment':
+                if (XH_ADM) {
+                    $_XH_csrfProtection->check();
+                    $html .= $this->updateComment($topicname);
+                }
+                break;
+            case 'toggle_visibility':
+                if (XH_ADM) {
+                    $_XH_csrfProtection->check();
+                    $this->toggleVisibility($topicname);
+                }
+                break;
+            case 'remove_comment':
+                if (XH_ADM) {
+                    $_XH_csrfProtection->check();
+                    $this->deleteComment($topicname);
+                }
+                break;
         }
         if (isset($_GET['twocents_id'])) {
-            $this->comment = Comment::find(
-                stsl($_GET['twocents_id']), $topicname
-            );
+            $this->comment = Comment::find(stsl($_GET['twocents_id']), $topicname);
         }
         $comments = Comment::findByTopicname($topicname);
         if ($plugin_cf['twocents']['comments_order'] == 'DESC') {
@@ -394,9 +392,7 @@ EOT;
     {
         global $plugin_cf, $plugin_tx;
 
-        $this->comment = Comment::make(
-            $topicname, time()
-        );
+        $this->comment = Comment::make($topicname, time());
         $this->comment->setUser(trim(stsl($_POST['twocents_user'])));
         $this->comment->setEmail(trim(stsl($_POST['twocents_email'])));
         $message = trim(stsl($_POST['twocents_message']));
@@ -415,13 +411,9 @@ EOT;
             $this->sendNotificationEmail();
             $this->comment = null;
             if ($this->isModerated()) {
-                $html .= XH_message(
-                    'info', $plugin_tx['twocents']['message_moderated']
-                );
+                $html .= XH_message('info', $plugin_tx['twocents']['message_moderated']);
             } else {
-                $html .= XH_message(
-                    'success', $plugin_tx['twocents']['message_added']
-                );
+                $html .= XH_message('success', $plugin_tx['twocents']['message_added']);
             }
             $html .= $marker;
         } else {
@@ -495,7 +487,8 @@ EOT;
                     $html
                 )
             ),
-            ENT_QUOTES, 'UTF-8'
+            ENT_QUOTES,
+            'UTF-8'
         );
     }
 
@@ -541,9 +534,7 @@ EOT;
             $mailer = Mailer::make(
                 ($plugin_cf['twocents']['email_linebreak'] == 'LF') ? "\n" : "\r\n"
             );
-            $mailer->send(
-                $email, $ptx['email_subject'], $message, 'From: ' . $email
-            );
+            $mailer->send($email, $ptx['email_subject'], $message, 'From: ' . $email);
         }
     }
 
@@ -566,9 +557,7 @@ EOT;
      */
     protected function updateComment($topicname)
     {
-        $this->comment = Comment::find(
-            stsl($_POST['twocents_id']), $topicname
-        );
+        $this->comment = Comment::find(stsl($_POST['twocents_id']), $topicname);
         $this->comment->setUser(trim(stsl($_POST['twocents_user'])));
         $this->comment->setEmail(trim(stsl($_POST['twocents_email'])));
         $this->comment->setMessage(trim(stsl($_POST['twocents_message'])));
@@ -589,9 +578,7 @@ EOT;
      */
     protected function toggleVisibility($topicname)
     {
-        $comment = Comment::find(
-            stsl($_POST['twocents_id']), $topicname
-        );
+        $comment = Comment::find(stsl($_POST['twocents_id']), $topicname);
         if ($comment->isVisible()) {
             $comment->hide();
         } else {
@@ -609,9 +596,7 @@ EOT;
      */
     protected function deleteComment($topicname)
     {
-        $comment = Comment::find(
-            stsl($_POST['twocents_id']), $topicname
-        );
+        $comment = Comment::find(stsl($_POST['twocents_id']), $topicname);
         if (isset($comment)) {
             $comment->delete();
         }
@@ -667,5 +652,3 @@ EOT;
         return '';
     }
 }
-
-?>

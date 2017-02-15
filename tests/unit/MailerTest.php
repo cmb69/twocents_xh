@@ -57,12 +57,8 @@ class MailerTest extends TestCase
     public function setUp()
     {
         $this->subject = Mailer::make();
-        $this->gethostbynameMock = new PHPUnit_Extensions_MockFunction(
-            'gethostbyname', $this->subject
-        );
-        $this->mailMock = new PHPUnit_Extensions_MockFunction(
-            'mail', $this->subject
-        );
+        $this->gethostbynameMock = new PHPUnit_Extensions_MockFunction('gethostbyname', $this->subject);
+        $this->mailMock = new PHPUnit_Extensions_MockFunction('mail', $this->subject);
     }
 
     /**
@@ -150,5 +146,3 @@ class MailerTest extends TestCase
         );
     }
 }
-
-?>

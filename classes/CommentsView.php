@@ -35,9 +35,8 @@ class CommentsView
      *
      * @return CommentsView
      */
-    public static function make(
-        $comments, Comment $currentComment = null, $messages = ''
-    ) {
+    public static function make($comments, Comment $currentComment = null, $messages = '')
+    {
         return new self($comments, $currentComment, $messages);
     }
 
@@ -71,9 +70,8 @@ class CommentsView
      *
      * @return void
      */
-    protected function __construct(
-        $comments, Comment $currentComment = null, $messages = ''
-    ) {
+    protected function __construct($comments, Comment $currentComment = null, $messages = '')
+    {
         $this->comments = (array) $comments;
         $this->currentComment = $currentComment;
         $this->messages = (string) $messages;
@@ -136,7 +134,4 @@ class CommentsView
 <script type="text/javascript" src="$filename"></script>
 EOT;
     }
-
 }
-
-?>

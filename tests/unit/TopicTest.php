@@ -169,5 +169,3 @@ class TopicTest extends TestCase
         $this->assertFileExists($pth['folder']['content']);
     }
 }
-
-?>

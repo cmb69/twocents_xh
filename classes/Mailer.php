@@ -113,9 +113,7 @@ class Mailer
             . 'Content-Transfer-Encoding: base64' . $this->lineBreak
             . $additionalHeaders;
         $subject = $this->encodeMIMEFieldBody($subject);
-        $message = preg_replace(
-            '/(?:\r\n|\r|\n)/', $this->lineBreak, trim($message)
-        );
+        $message = preg_replace('/(?:\r\n|\r|\n)/', $this->lineBreak, trim($message));
         $message = chunk_split(base64_encode($message));
         return mail($to, $subject, $message, $header);
     }
@@ -149,12 +147,8 @@ class Mailer
                     $text = '';
                 }
             } while ($text != '');
-            $func = create_function(
-                '$l', 'return \'=?UTF-8?B?\' . base64_encode($l) . \'?=\';'
-            );
+            $func = create_function('$l', 'return \'=?UTF-8?B?\' . base64_encode($l) . \'?=\';');
             return implode($this->lineBreak . ' ', array_map($func, $lines));
         }
     }
 }
-
-?>

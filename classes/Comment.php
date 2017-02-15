@@ -304,9 +304,7 @@ class Comment
     {
         $this->id = uniqid();
         Db::lock(LOCK_EX);
-        $file = fopen(
-            Db::getFoldername() . $this->topicname . '.' . self::EXT, 'a'
-        );
+        $file = fopen(Db::getFoldername() . $this->topicname . '.' . self::EXT, 'a');
         fputcsv($file, $this->toRecord());
         fclose($file);
         Db::lock(LOCK_UN);
@@ -320,9 +318,7 @@ class Comment
     public function update()
     {
         Db::lock(LOCK_EX);
-        $file = fopen(
-            Db::getFoldername() . $this->topicname . '.' . self::EXT, 'r+'
-        );
+        $file = fopen(Db::getFoldername() . $this->topicname . '.' . self::EXT, 'r+');
         $temp = fopen('php://temp', 'w+');
         while (($record = fgetcsv($file)) !== false) {
             if ($record[0] != $this->id) {
@@ -348,9 +344,7 @@ class Comment
     public function delete()
     {
         Db::lock(LOCK_EX);
-        $file = fopen(
-            Db::getFoldername() . $this->topicname . '.' . self::EXT, 'r+'
-        );
+        $file = fopen(Db::getFoldername() . $this->topicname . '.' . self::EXT, 'r+');
         $temp = fopen('php://temp', 'w+');
         while (($record = fgetcsv($file)) !== false) {
             if ($record[0] != $this->id) {
@@ -379,5 +373,3 @@ class Comment
         );
     }
 }
-
-?>

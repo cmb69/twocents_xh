@@ -35,7 +35,7 @@ class RealblogBridge implements CommentsBridge
      *
      * @return int
      */
-    static public function count($topic)
+    public static function count($topic)
     {
         return count(Comment::findByTopicname($topic));
     }
@@ -47,7 +47,7 @@ class RealblogBridge implements CommentsBridge
      *
      * @return string (X)HTML.
      */
-    static public function handle($topic)
+    public static function handle($topic)
     {
         global $_Twocents_controller;
 
@@ -61,10 +61,8 @@ class RealblogBridge implements CommentsBridge
      *
      * @return false
      */
-    static public function getEditUrl($topic)
+    public static function getEditUrl($topic)
     {
         return false;
     }
 }
-
-?>

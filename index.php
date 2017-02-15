@@ -64,5 +64,3 @@ function twocents($topicname)
  */
 $_Twocents_controller = new Twocents\Controller();
 $_Twocents_controller->dispatch();
-
-?>

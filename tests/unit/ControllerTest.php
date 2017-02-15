@@ -82,13 +82,12 @@ class ControllerTest extends TestCase
         $this->defineConstant('XH_ADM', false);
         $this->subject = new Controller();
         $this->findByTopicnameMock = new PHPUnit_Extensions_MockStaticMethod(
-            'Twocents\\Comment::findByTopicname', $this->subject
+            'Twocents\\Comment::findByTopicname',
+            $this->subject
         );
         $this->viewMock = $this->getMockBuilder('Twocents\\CommentsView')
             ->disableOriginalConstructor()->getMock();
-        $viewMakeStub = new PHPUnit_Extensions_MockStaticMethod(
-            'Twocents\\CommentsView::make', $this->subject
-        );
+        $viewMakeStub = new PHPUnit_Extensions_MockStaticMethod('Twocents\\CommentsView::make', $this->subject);
         $viewMakeStub->expects($this->any())->will(
             $this->returnValue($this->viewMock)
         );
@@ -96,9 +95,7 @@ class ControllerTest extends TestCase
             ->disableOriginalConstructor()->getMock();
         $this->mailerMock = $this->getMockBuilder('Twocents\\Mailer')
             ->disableOriginalConstructor()->getMock();
-        $mailerMakeMock = new PHPUnit_Extensions_MockStaticMethod(
-            'Twocents\\Mailer::make', $this->subject
-        );
+        $mailerMakeMock = new PHPUnit_Extensions_MockStaticMethod('Twocents\\Mailer::make', $this->subject);
         $mailerMakeMock->expects($this->any())->will(
             $this->returnValue($this->mailerMock)
         );
@@ -152,9 +149,7 @@ class ControllerTest extends TestCase
             ->setMethods(array('insert'))
             ->getMock();
         $commentSpy->expects($this->once())->method('insert');
-        $makeMock = new PHPUnit_Extensions_MockStaticMethod(
-            'Twocents\\Comment::make', $this->subject
-        );
+        $makeMock = new PHPUnit_Extensions_MockStaticMethod('Twocents\\Comment::make', $this->subject);
         $makeMock->expects($this->once())->will($this->returnValue($commentSpy));
         $this->subject->renderComments('foo');
     }
@@ -220,9 +215,7 @@ class ControllerTest extends TestCase
             ->setMethods(array('insert'))
             ->getMock();
         $commentSpy->expects($this->never())->method('insert');
-        $makeMock = new PHPUnit_Extensions_MockStaticMethod(
-            'Twocents\\Comment::make', $this->subject
-        );
+        $makeMock = new PHPUnit_Extensions_MockStaticMethod('Twocents\\Comment::make', $this->subject);
         $makeMock->expects($this->once())->will($this->returnValue($commentSpy));
         $this->subject->renderComments('foo');
     }
@@ -248,9 +241,7 @@ class ControllerTest extends TestCase
             ->disableOriginalConstructor()
             ->setMethods(array('insert'))
             ->getMock();
-        $makeMock = new PHPUnit_Extensions_MockStaticMethod(
-            'Twocents\\Comment::make', $this->subject
-        );
+        $makeMock = new PHPUnit_Extensions_MockStaticMethod('Twocents\\Comment::make', $this->subject);
         $makeMock->expects($this->once())->will($this->returnValue($commentSpy));
         $this->subject->renderComments('foo');
     }
@@ -278,9 +269,7 @@ class ControllerTest extends TestCase
             ->setMethods(array('update'))
             ->getMock();
         $commentSpy->expects($this->once())->method('update');
-        $makeMock = new PHPUnit_Extensions_MockStaticMethod(
-            'Twocents\\Comment::find', $this->subject
-        );
+        $makeMock = new PHPUnit_Extensions_MockStaticMethod('Twocents\\Comment::find', $this->subject);
         $makeMock->expects($this->once())->will($this->returnValue($commentSpy));
         $this->subject->renderComments('foo');
     }
@@ -352,9 +341,7 @@ class ControllerTest extends TestCase
             ->setMethods(array('update'))
             ->getMock();
         $commentSpy->expects($this->never())->method('update');
-        $makeMock = new PHPUnit_Extensions_MockStaticMethod(
-            'Twocents\\Comment::find', $this->subject
-        );
+        $makeMock = new PHPUnit_Extensions_MockStaticMethod('Twocents\\Comment::find', $this->subject);
         $makeMock->expects($this->once())->will($this->returnValue($commentSpy));
         $this->subject->renderComments('foo');
     }
@@ -374,9 +361,7 @@ class ControllerTest extends TestCase
             'twocents_message' => 'blah blah'
         );
         $_SERVER['QUERY_STRING'] = 'Page';
-        $makeMock = new PHPUnit_Extensions_MockStaticMethod(
-            'Twocents\\Comment::find', $this->subject
-        );
+        $makeMock = new PHPUnit_Extensions_MockStaticMethod('Twocents\\Comment::find', $this->subject);
         $makeMock->expects($this->never());
         $this->subject->renderComments('foo');
     }
@@ -396,9 +381,7 @@ class ControllerTest extends TestCase
         $commentSpy = $this->getMockBuilder('Twocents\\Comment')
             ->disableOriginalConstructor()->getMock();
         $commentSpy->expects($this->once())->method('delete');
-        $findMock = new PHPUnit_Extensions_MockStaticMethod(
-            'Twocents\\Comment::find', $this->subject
-        );
+        $findMock = new PHPUnit_Extensions_MockStaticMethod('Twocents\\Comment::find', $this->subject);
         $findMock->expects($this->any())->will($this->returnValue($commentSpy));
         $this->subject->renderComments('foo');
     }
@@ -415,12 +398,8 @@ class ControllerTest extends TestCase
             'twocents_action' => 'remove_comment',
             'twocents_id' => '1a2b3c'
         );
-        $findMock = new PHPUnit_Extensions_MockStaticMethod(
-            'Twocents\\Comment::find', $this->subject
-        );
+        $findMock = new PHPUnit_Extensions_MockStaticMethod('Twocents\\Comment::find', $this->subject);
         $findMock->expects($this->never());
         $this->subject->renderComments('foo');
     }
 }
-
-?>

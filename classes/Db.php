@@ -66,15 +66,15 @@ class Db
     public static function lock($operation)
     {
         switch ($operation) {
-        case LOCK_SH:
-        case LOCK_EX:
-            self::$lockFile = fopen(self::getLockFilename(), 'r');
-            flock(self::$lockFile, $operation);
-            break;
-        case LOCK_UN:
-            flock(self::$lockFile, $operation);
-            fclose(self::$lockFile);
-            break;
+            case LOCK_SH:
+            case LOCK_EX:
+                self::$lockFile = fopen(self::getLockFilename(), 'r');
+                flock(self::$lockFile, $operation);
+                break;
+            case LOCK_UN:
+                flock(self::$lockFile, $operation);
+                fclose(self::$lockFile);
+                break;
         }
     }
 
@@ -87,7 +87,4 @@ class Db
     {
         return self::getFoldername() . '.lock';
     }
-
 }
-
-?>

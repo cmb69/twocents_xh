@@ -108,9 +108,7 @@ class CommentTest extends TestCase
      */
     protected function setUpMocks()
     {
-        $uniqidStub = new PHPUnit_Extensions_MockFunction(
-            'uniqid', $this->subject
-        );
+        $uniqidStub = new PHPUnit_Extensions_MockFunction('uniqid', $this->subject);
         $uniqidStub->expects($this->any())->will($this->returnValue(self::ID));
     }
 
@@ -283,9 +281,7 @@ class CommentTest extends TestCase
     public function testFindsInsertedComment()
     {
         $this->subject->insert();
-        $this->assertEquals(
-            $this->subject, Comment::find(self::ID, self::TOPICNAME)
-        );
+        $this->assertEquals($this->subject, Comment::find(self::ID, self::TOPICNAME));
     }
 
     /**
@@ -300,5 +296,3 @@ class CommentTest extends TestCase
         $this->assertNull(Comment::find(self::ID, self::TOPICNAME));
     }
 }
-
-?>

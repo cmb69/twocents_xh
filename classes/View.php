@@ -37,11 +37,7 @@ abstract class View
     {
         global $sn;
 
-        $queryString = preg_replace(
-            '/&twocents_id=[^&]+/', '', $_SERVER['QUERY_STRING']
-        );
+        $queryString = preg_replace('/&twocents_id=[^&]+/', '', $_SERVER['QUERY_STRING']);
         return $sn . '?' . $queryString;
     }
 }
-
-?>

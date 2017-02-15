@@ -34,5 +34,3 @@ function Twocents_autoload($class)
 }
 
 spl_autoload_register('Twocents_autoload');
-
-?>

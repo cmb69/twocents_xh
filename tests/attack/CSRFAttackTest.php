@@ -175,5 +175,3 @@ class CSRFAttackTest extends TestCase
         );
     }
 }
-
-?>

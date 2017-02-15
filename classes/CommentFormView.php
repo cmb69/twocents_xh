@@ -200,5 +200,3 @@ class CommentFormView extends View
         return $html;
     }
 }
-
-?>

@@ -60,16 +60,10 @@ class AdministrationTest extends TestCase
         $admin = 'plugin_stylesheet';
         $action = 'plugin_text';
         $this->subject = new Controller();
-        $this->rspmiMock = new PHPUnit_Extensions_MockFunction(
-            'XH_registerStandardPluginMenuItems', $this->subject
-        );
-        $printPluginAdminMock = new PHPUnit_Extensions_MockFunction(
-            'print_plugin_admin', $this->subject
-        );
+        $this->rspmiMock = new PHPUnit_Extensions_MockFunction('XH_registerStandardPluginMenuItems', $this->subject);
+        $printPluginAdminMock = new PHPUnit_Extensions_MockFunction('print_plugin_admin', $this->subject);
         $printPluginAdminMock->expects($this->once())->with('on');
-        $pluginAdminCommonMock = new PHPUnit_Extensions_MockFunction(
-            'plugin_admin_common', $this->subject
-        );
+        $pluginAdminCommonMock = new PHPUnit_Extensions_MockFunction('plugin_admin_common', $this->subject);
         $pluginAdminCommonMock->expects($this->once())
             ->with($action, $admin, 'twocents');
     }
@@ -95,5 +89,3 @@ class AdministrationTest extends TestCase
         $this->subject->dispatch();
     }
 }
-
-?>

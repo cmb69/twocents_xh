@@ -134,5 +134,3 @@ class Topic
         Db::lock(LOCK_UN);
     }
 }
-
-?>

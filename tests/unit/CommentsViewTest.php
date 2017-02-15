@@ -113,9 +113,7 @@ class CommentsViewTest extends TestCase
         $commentStub->expects($this->any())->method('isVisible')->will(
             $this->returnValue(true)
         );
-        $this->subject = CommentsView::make(
-            array($commentStub, $commentStub, $commentStub), null
-        );
+        $this->subject = CommentsView::make(array($commentStub, $commentStub, $commentStub), null);
         $_XH_csrfProtection = $this->getMockBuilder('XH_CSRFProtection')
             ->disableOriginalConstructor()->getMock();
     }
@@ -572,5 +570,3 @@ class CommentsViewTest extends TestCase
         );
     }
 }
-
-?>

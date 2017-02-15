@@ -64,5 +64,3 @@ class CommentsTopic extends Topic
         return new self($name);
     }
 }
-
-?>
