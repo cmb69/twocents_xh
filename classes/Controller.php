@@ -13,6 +13,8 @@
  * @link      http://3-magi.net/?CMSimple_XH/Twocents_XH
  */
 
+namespace Twocents;
+
 /**
  * The controllers.
  *
@@ -22,12 +24,12 @@
  * @license  http://www.gnu.org/licenses/gpl-3.0.en.html GNU GPLv3
  * @link     http://3-magi.net/?CMSimple_XH/Twocents_XH
  */
-class Twocents_Controller
+class Controller
 {
     /**
      * The current comment, if any.
      *
-     * @var Twocents_Comment
+     * @var Comment
      */
     protected $comment;
 
@@ -196,9 +198,9 @@ EOT;
     {
         global $plugin_tx;
 
-        $topics = Twocents_Topic::findAll();
+        $topics = Topic::findAll();
         foreach ($topics as $topic) {
-            $comments = Twocents_Comment::findByTopicname($topic->getName());
+            $comments = Comment::findByTopicname($topic->getName());
             foreach ($comments as $comment) {
                 if ($to == 'html') {
                     $message = $this->htmlify(XH_hsc($comment->getMessage()));
@@ -226,9 +228,9 @@ EOT;
     {
         global $plugin_cf, $plugin_tx;
 
-        $topics = Twocents_CommentsTopic::findAll();
+        $topics = CommentsTopic::findAll();
         foreach ($topics as $topic) {
-            $comments = Twocents_CommentsComment::findByTopicname($topic->getName());
+            $comments = CommentsComment::findByTopicname($topic->getName());
             foreach ($comments as $comment) {
                 $message = $comment->getMessage();
                 if ($plugin_cf['twocents']['comments_markup'] == 'HTML') {
@@ -349,15 +351,15 @@ EOT;
             break;
         }
         if (isset($_GET['twocents_id'])) {
-            $this->comment = Twocents_Comment::find(
+            $this->comment = Comment::find(
                 stsl($_GET['twocents_id']), $topicname
             );
         }
-        $comments = Twocents_Comment::findByTopicname($topicname);
+        $comments = Comment::findByTopicname($topicname);
         if ($plugin_cf['twocents']['comments_order'] == 'DESC') {
             $comments = array_reverse($comments);
         }
-        $view = Twocents_CommentsView::make($comments, $this->comment, $html);
+        $view = CommentsView::make($comments, $this->comment, $html);
         if (!isset($_POST['twocents_ajax'])) {
             return '<div>' . $view->render() . '</div>';
         } else {
@@ -392,7 +394,7 @@ EOT;
     {
         global $plugin_cf, $plugin_tx;
 
-        $this->comment = Twocents_Comment::make(
+        $this->comment = Comment::make(
             $topicname, time()
         );
         $this->comment->setUser(trim(stsl($_POST['twocents_user'])));
@@ -536,7 +538,7 @@ EOT;
                 . '>' . PHP_EOL
                 . $ptx['label_message'] . ':' . PHP_EOL . PHP_EOL
                 . $message . PHP_EOL;
-            $mailer = Twocents_Mailer::make(
+            $mailer = Mailer::make(
                 ($plugin_cf['twocents']['email_linebreak'] == 'LF') ? "\n" : "\r\n"
             );
             $mailer->send(
@@ -564,7 +566,7 @@ EOT;
      */
     protected function updateComment($topicname)
     {
-        $this->comment = Twocents_Comment::find(
+        $this->comment = Comment::find(
             stsl($_POST['twocents_id']), $topicname
         );
         $this->comment->setUser(trim(stsl($_POST['twocents_user'])));
@@ -587,7 +589,7 @@ EOT;
      */
     protected function toggleVisibility($topicname)
     {
-        $comment = Twocents_Comment::find(
+        $comment = Comment::find(
             stsl($_POST['twocents_id']), $topicname
         );
         if ($comment->isVisible()) {
@@ -607,7 +609,7 @@ EOT;
      */
     protected function deleteComment($topicname)
     {
-        $comment = Twocents_Comment::find(
+        $comment = Comment::find(
             stsl($_POST['twocents_id']), $topicname
         );
         if (isset($comment)) {
@@ -630,7 +632,7 @@ EOT;
         if (utf8_strlen($this->comment->getUser()) < 2) {
             $html .= XH_message('fail', $plugin_tx['twocents']['error_user']);
         }
-        $mailer = Twocents_Mailer::make();
+        $mailer = Mailer::make();
         if (!$mailer->isValidAddress($this->comment->getEmail())) {
             $html .= XH_message('fail', $plugin_tx['twocents']['error_email']);
         }

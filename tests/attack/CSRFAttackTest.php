@@ -19,6 +19,8 @@
  * @link      http://3-magi.net/?CMSimple_XH/Twocents_XH
  */
 
+namespace Twocents;
+
 /**
  * A test case to actually check the CSRF protection.
  *

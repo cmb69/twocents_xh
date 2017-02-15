@@ -13,6 +13,8 @@
  * @link      http://3-magi.net/?CMSimple_XH/Twocents_XH
  */
 
+namespace Twocents;
+
 /**
  * The topics of the Comments Plugin.
  *
@@ -22,7 +24,7 @@
  * @license  http://www.gnu.org/licenses/gpl-3.0.en.html GNU GPLv3
  * @link     http://3-magi.net/?CMSimple_XH/Twocents_XH
  */
-class Twocents_CommentsTopic extends Twocents_Topic
+class CommentsTopic extends Topic
 {
     /**
      * The file extension.
@@ -37,8 +39,8 @@ class Twocents_CommentsTopic extends Twocents_Topic
     public static function findAll()
     {
         $topics = array();
-        Twocents_Db::lock(LOCK_SH);
-        if ($dir = opendir(Twocents_Db::getFoldername())) {
+        Db::lock(LOCK_SH);
+        if ($dir = opendir(Db::getFoldername())) {
             while (($entry = readdir($dir)) !== false) {
                 if (pathinfo($entry, PATHINFO_EXTENSION) == self::EXT) {
                     $topics[] = self::load(basename($entry, '.' . self::EXT));
@@ -46,7 +48,7 @@ class Twocents_CommentsTopic extends Twocents_Topic
             }
         }
         closedir($dir);
-        Twocents_Db::lock(LOCK_UN);
+        Db::lock(LOCK_UN);
         return $topics;
     }
 
@@ -55,7 +57,7 @@ class Twocents_CommentsTopic extends Twocents_Topic
      *
      * @param string $name A topicname.
      *
-     * @return Twocents_Topic
+     * @return Topic
      */
     protected static function load($name)
     {

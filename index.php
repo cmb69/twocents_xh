@@ -48,7 +48,7 @@ define('TWOCENTS_VERSION', '@TWOCENTS_VERSION@');
  *
  * @return string (X)HTML.
  *
- * @global Twocents_Controller The plugin controller.
+ * @global Twocents\Controller The plugin controller.
  */
 function twocents($topicname)
 {
@@ -60,9 +60,9 @@ function twocents($topicname)
 /**
  * The plugin controller.
  *
- * @var Twocents_Controller
+ * @var Twocents\Controller
  */
-$_Twocents_controller = new Twocents_Controller();
+$_Twocents_controller = new Twocents\Controller();
 $_Twocents_controller->dispatch();
 
 ?>

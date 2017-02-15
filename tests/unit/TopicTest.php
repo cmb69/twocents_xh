@@ -13,6 +13,8 @@
  * @link      http://3-magi.net/?CMSimple_XH/Twocents_XH
  */
 
+namespace Twocents;
+
 use org\bovigo\vfs\vfsStreamWrapper;
 use org\bovigo\vfs\vfsStreamDirectory;
 use org\bovigo\vfs\vfsStream;
@@ -38,7 +40,7 @@ class TopicTest extends TestCase
     /**
      * The test subject.
      *
-     * @var Twocents_Topic
+     * @var Topic
      */
     protected $subject;
 
@@ -57,7 +59,7 @@ class TopicTest extends TestCase
     public function setUp()
     {
         $this->setUpFilesystem();
-        $this->subject = new Twocents_Topic(self::TOPIC);
+        $this->subject = new Topic(self::TOPIC);
     }
 
     /**
@@ -124,8 +126,8 @@ class TopicTest extends TestCase
      */
     public function testFinds3Topics()
     {
-        $topics = Twocents_Topic::findAll();
-        $this->assertContainsOnlyInstancesOf('Twocents_Topic', $topics);
+        $topics = Topic::findAll();
+        $this->assertContainsOnlyInstancesOf('Twocents\\Topic', $topics);
         $this->assertCount(3, $topics);
     }
 
@@ -136,8 +138,8 @@ class TopicTest extends TestCase
      */
     public function testFindsCorrectTopic()
     {
-        $topic = Twocents_Topic::findByName(self::TOPIC);
-        $this->assertInstanceOf('Twocents_Topic', $topic);
+        $topic = Topic::findByName(self::TOPIC);
+        $this->assertInstanceOf('Twocents\\Topic', $topic);
         $this->assertEquals(self::TOPIC, $topic->getName());
     }
 
@@ -148,7 +150,7 @@ class TopicTest extends TestCase
      */
     public function testDoesNotFindNonExistingTopic()
     {
-        $this->assertNull(Twocents_Topic::findByName('unknown'));
+        $this->assertNull(Topic::findByName('unknown'));
     }
 
     /**
@@ -163,7 +165,7 @@ class TopicTest extends TestCase
         global $pth;
 
         $pth['folder']['content'] = vfsStream::url('test/dummy/');
-        Twocents_Topic::findAll();
+        Topic::findAll();
         $this->assertFileExists($pth['folder']['content']);
     }
 }

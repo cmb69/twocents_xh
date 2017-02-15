@@ -13,6 +13,8 @@
  * @link      http://3-magi.net/?CMSimple_XH/Twocents_XH
  */
 
+namespace Twocents;
+
 /**
  * The comment views.
  *
@@ -22,32 +24,32 @@
  * @license  http://www.gnu.org/licenses/gpl-3.0.en.html GNU GPLv3
  * @link     http://3-magi.net/?CMSimple_XH/Twocents_XH
  */
-class Twocents_CommentView extends Twocents_View
+class CommentView extends View
 {
     /**
      * The comment to render.
      *
-     * @var Twocents_Comment
+     * @var Comment
      */
     protected $comment;
 
     /**
      * The current comment, if any.
      *
-     * @var Twocents_Comment
+     * @var Comment
      */
     protected $currentComment;
 
     /**
      * Initializes a new instance.
      *
-     * @param Twocents_Comment $comment        A comment to render.
-     * @param Twocents_Comment $currentComment The posted comment.
+     * @param Comment $comment        A comment to render.
+     * @param Comment $currentComment The posted comment.
      *
      * @return void
      */
     public function __construct(
-        Twocents_Comment $comment, Twocents_Comment $currentComment = null
+        Comment $comment, Comment $currentComment = null
     ) {
         $this->comment = $comment;
         $this->currentComment = $currentComment;
@@ -66,7 +68,7 @@ class Twocents_CommentView extends Twocents_View
         $class = $this->comment->isVisible() ? '' : ' twocents_hidden';
         $html = '<div' . $id . ' class="twocents_comment' . $class . '">';
         if ($this->isCurrentComment()) {
-            $view = new Twocents_CommentFormView($this->currentComment);
+            $view = new CommentFormView($this->currentComment);
             $html .= $view->render();
         } else {
             if (XH_ADM) {

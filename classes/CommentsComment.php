@@ -13,6 +13,8 @@
  * @link      http://3-magi.net/?CMSimple_XH/Twocents_XH
  */
 
+namespace Twocents;
+
 /**
  * The comments of the Comments plugin.
  *
@@ -22,7 +24,7 @@
  * @license  http://www.gnu.org/licenses/gpl-3.0.en.html GNU GPLv3
  * @link     http://3-magi.net/?CMSimple_XH/Twocents_XH
  */
-class Twocents_CommentsComment extends Twocents_Comment
+class CommentsComment extends Comment
 {
     /**
      * The file extension.
@@ -39,8 +41,8 @@ class Twocents_CommentsComment extends Twocents_Comment
     public static function findByTopicname($name)
     {
         $comments = array();
-        Twocents_Db::lock(LOCK_SH);
-        $filename = Twocents_Db::getFoldername() . $name . '.' . self::EXT;
+        Db::lock(LOCK_SH);
+        $filename = Db::getFoldername() . $name . '.' . self::EXT;
         if (is_readable($filename) && ($file = fopen($filename, 'r'))) {
             if (fgets($file) !== false) {
                 while (($line = fgets($file)) !== false) {
@@ -50,7 +52,7 @@ class Twocents_CommentsComment extends Twocents_Comment
             }
             fclose($file);
         }
-        Twocents_Db::lock(LOCK_UN);
+        Db::lock(LOCK_UN);
         return $comments;
     }
 
@@ -60,7 +62,7 @@ class Twocents_CommentsComment extends Twocents_Comment
      * @param string $topicname A topicname.
      * @param array  $record    A record.
      *
-     * @return Twocents_Comment
+     * @return Comment
      */
     protected static function load($topicname, $record)
     {

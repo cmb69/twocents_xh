@@ -13,6 +13,8 @@
  * @link      http://3-magi.net/?CMSimple_XH/Twocents_XH
  */
 
+namespace Twocents;
+
 /**
  * The comments.
  *
@@ -22,7 +24,7 @@
  * @license  http://www.gnu.org/licenses/gpl-3.0.en.html GNU GPLv3
  * @link     http://3-magi.net/?CMSimple_XH/Twocents_XH
  */
-class Twocents_Comment
+class Comment
 {
     /**
      * The file extension.
@@ -39,15 +41,15 @@ class Twocents_Comment
     public static function findByTopicname($name)
     {
         $comments = array();
-        Twocents_Db::lock(LOCK_SH);
-        $filename = Twocents_Db::getFoldername() . $name . '.' . self::EXT;
+        Db::lock(LOCK_SH);
+        $filename = Db::getFoldername() . $name . '.' . self::EXT;
         if (is_readable($filename) && ($file = fopen($filename, 'r'))) {
             while (($record = fgetcsv($file)) !== false) {
                 $comments[] = self::load($name, $record);
             }
             fclose($file);
         }
-        Twocents_Db::lock(LOCK_UN);
+        Db::lock(LOCK_UN);
         return $comments;
     }
 
@@ -58,7 +60,7 @@ class Twocents_Comment
      * @param string $id        A comment ID.
      * @param string $topicname A topicname.
      *
-     * @return Twocents_Comment
+     * @return Comment
      */
     public static function find($id, $topicname)
     {
@@ -77,7 +79,7 @@ class Twocents_Comment
      * @param string $topicname A topicname.
      * @param array  $record    A record.
      *
-     * @return Twocents_Comment
+     * @return Comment
      */
     protected static function load($topicname, $record)
     {
@@ -145,7 +147,7 @@ class Twocents_Comment
      * @param string $topicname A topicname.
      * @param int    $time      A timestamp.
      *
-     * @return Twocents_Comment
+     * @return Comment
      */
     public static function make($topicname, $time)
     {
@@ -301,13 +303,13 @@ class Twocents_Comment
     public function insert()
     {
         $this->id = uniqid();
-        Twocents_Db::lock(LOCK_EX);
+        Db::lock(LOCK_EX);
         $file = fopen(
-            Twocents_Db::getFoldername() . $this->topicname . '.' . self::EXT, 'a'
+            Db::getFoldername() . $this->topicname . '.' . self::EXT, 'a'
         );
         fputcsv($file, $this->toRecord());
         fclose($file);
-        Twocents_Db::lock(LOCK_UN);
+        Db::lock(LOCK_UN);
     }
 
     /**
@@ -317,9 +319,9 @@ class Twocents_Comment
      */
     public function update()
     {
-        Twocents_Db::lock(LOCK_EX);
+        Db::lock(LOCK_EX);
         $file = fopen(
-            Twocents_Db::getFoldername() . $this->topicname . '.' . self::EXT, 'r+'
+            Db::getFoldername() . $this->topicname . '.' . self::EXT, 'r+'
         );
         $temp = fopen('php://temp', 'w+');
         while (($record = fgetcsv($file)) !== false) {
@@ -335,7 +337,7 @@ class Twocents_Comment
         stream_copy_to_stream($temp, $file);
         fclose($file);
         fclose($temp);
-        Twocents_Db::lock(LOCK_UN);
+        Db::lock(LOCK_UN);
     }
 
     /**
@@ -345,9 +347,9 @@ class Twocents_Comment
      */
     public function delete()
     {
-        Twocents_Db::lock(LOCK_EX);
+        Db::lock(LOCK_EX);
         $file = fopen(
-            Twocents_Db::getFoldername() . $this->topicname . '.' . self::EXT, 'r+'
+            Db::getFoldername() . $this->topicname . '.' . self::EXT, 'r+'
         );
         $temp = fopen('php://temp', 'w+');
         while (($record = fgetcsv($file)) !== false) {
@@ -361,7 +363,7 @@ class Twocents_Comment
         stream_copy_to_stream($temp, $file);
         fclose($file);
         fclose($temp);
-        Twocents_Db::lock(LOCK_UN);
+        Db::lock(LOCK_UN);
     }
 
     /**

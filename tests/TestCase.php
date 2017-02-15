@@ -13,6 +13,10 @@
  * @link      http://3-magi.net/?CMSimple_XH/Twocents_XH
  */
 
+namespace Twocents;
+
+use PHPUnit_Framework_TestCase;
+
 /**
  * The test cases.
  *

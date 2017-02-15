@@ -13,6 +13,8 @@
  * @link      http://3-magi.net/?CMSimple_XH/Twocents_XH
  */
 
+namespace Twocents;
+
 /**
  * The comments views.
  *
@@ -22,19 +24,19 @@
  * @license  http://www.gnu.org/licenses/gpl-3.0.en.html GNU GPLv3
  * @link     http://3-magi.net/?CMSimple_XH/Twocents_XH
  */
-class Twocents_CommentsView
+class CommentsView
 {
     /**
      * Makes and returns a new comments view.
      *
      * @param array            $comments       An array of comments.
-     * @param Twocents_Comment $currentComment The current comment.
+     * @param Comment $currentComment The current comment.
      * @param string           $messages       (X)HTML messages.
      *
-     * @return Twocents_CommentsView.
+     * @return CommentsView
      */
     public static function make(
-        $comments, Twocents_Comment $currentComment = null, $messages = ''
+        $comments, Comment $currentComment = null, $messages = ''
     ) {
         return new self($comments, $currentComment, $messages);
     }
@@ -49,7 +51,7 @@ class Twocents_CommentsView
     /**
      * The current comment, if any.
      *
-     * @var Twocents_Comment
+     * @var Comment
      */
     protected $currentComment;
 
@@ -64,13 +66,13 @@ class Twocents_CommentsView
      * Initializes a new instance.
      *
      * @param array            $comments       An array of comments.
-     * @param Twocents_Comment $currentComment The current comment.
+     * @param Comment $currentComment The current comment.
      * @param string           $messages       (X)HTML messages.
      *
      * @return void
      */
     protected function __construct(
-        $comments, Twocents_Comment $currentComment = null, $messages = ''
+        $comments, Comment $currentComment = null, $messages = ''
     ) {
         $this->comments = (array) $comments;
         $this->currentComment = $currentComment;
@@ -93,7 +95,7 @@ class Twocents_CommentsView
                 ) {
                     $html .= $this->messages;
                 }
-                $view = new Twocents_CommentView($comment, $this->currentComment);
+                $view = new CommentView($comment, $this->currentComment);
                 $html .= $view->render();
             }
         }
@@ -101,7 +103,7 @@ class Twocents_CommentsView
         if (!isset($this->currentComment)
             || $this->currentComment->getId() == null
         ) {
-            $view = new Twocents_CommentFormView($this->currentComment);
+            $view = new CommentFormView($this->currentComment);
             $html .= $this->messages . $view->render();
         }
         return $html;

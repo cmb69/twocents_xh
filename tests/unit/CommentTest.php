@@ -13,6 +13,9 @@
  * @link      http://3-magi.net/?CMSimple_XH/Twocents_XH
  */
 
+namespace Twocents;
+
+use PHPUnit_Extensions_MockFunction;
 use org\bovigo\vfs\vfsStreamWrapper;
 use org\bovigo\vfs\vfsStreamDirectory;
 use org\bovigo\vfs\vfsStream;
@@ -56,7 +59,7 @@ class CommentTest extends TestCase
     /**
      * The test subject.
      *
-     * @var Twocents_Comment
+     * @var Comment
      */
     protected $subject;
 
@@ -75,7 +78,7 @@ class CommentTest extends TestCase
     public function setUp()
     {
         $this->setUpFilesystem();
-        $this->subject = Twocents_Comment::make(self::TOPICNAME, self::TIME);
+        $this->subject = Comment::make(self::TOPICNAME, self::TIME);
         $this->setupMocks();
     }
 
@@ -256,8 +259,8 @@ class CommentTest extends TestCase
     public function testFinds2CommentsByTopicname()
     {
         $this->subject->insert();
-        $comments = Twocents_Comment::findByTopicname(self::TOPICNAME);
-        $this->assertContainsOnlyInstancesOf('Twocents_Comment', $comments);
+        $comments = Comment::findByTopicname(self::TOPICNAME);
+        $this->assertContainsOnlyInstancesOf('Twocents\\Comment', $comments);
         $this->assertCount(2, $comments);
     }
 
@@ -268,7 +271,7 @@ class CommentTest extends TestCase
      */
     public function testFindsNoCommentsForNotExistingTopicname()
     {
-        $comments = Twocents_Comment::findByTopicname('bar');
+        $comments = Comment::findByTopicname('bar');
         $this->assertEmpty($comments);
     }
 
@@ -281,7 +284,7 @@ class CommentTest extends TestCase
     {
         $this->subject->insert();
         $this->assertEquals(
-            $this->subject, Twocents_Comment::find(self::ID, self::TOPICNAME)
+            $this->subject, Comment::find(self::ID, self::TOPICNAME)
         );
     }
 
@@ -294,7 +297,7 @@ class CommentTest extends TestCase
     {
         $this->subject->insert();
         $this->subject->delete();
-        $this->assertNull(Twocents_Comment::find(self::ID, self::TOPICNAME));
+        $this->assertNull(Comment::find(self::ID, self::TOPICNAME));
     }
 }
 

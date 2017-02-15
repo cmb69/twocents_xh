@@ -13,6 +13,10 @@
  * @link      http://3-magi.net/?CMSimple_XH/Twocents_XH
  */
 
+namespace Twocents;
+
+use PHPUnit_Extensions_MockFunction;
+
 /**
  * Testing the info view.
  *
@@ -27,7 +31,7 @@ class InfoViewTest extends TestCase
     /**
      * The subject under test.
      *
-     * @var Twocents_Controller
+     * @var Controller
      */
     protected $subject;
 
@@ -55,7 +59,7 @@ class InfoViewTest extends TestCase
         $plugin_tx = array(
             'twocents' => array('alt_icon' => 'Speech bubble')
         );
-        $this->subject = new Twocents_Controller();
+        $this->subject = new Controller();
         $rspmiMock = new PHPUnit_Extensions_MockFunction(
             'XH_registerStandardPluginMenuItems', $this->subject
         );

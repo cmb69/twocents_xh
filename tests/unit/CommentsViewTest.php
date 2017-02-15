@@ -13,6 +13,8 @@
  * @link      http://3-magi.net/?CMSimple_XH/Twocents_XH
  */
 
+namespace Twocents;
+
 /**
  * Testing the comments views.
  *
@@ -54,7 +56,7 @@ class CommentsViewTest extends TestCase
     /**
      * The test subject.
      *
-     * @var Twocents_CommentsView
+     * @var CommentsView
      */
     protected $subject;
 
@@ -91,7 +93,7 @@ class CommentsViewTest extends TestCase
                 'message_delete' => 'Delete?'
             )
         );
-        $commentStub = $this->getMockBuilder('Twocents_Comment')
+        $commentStub = $this->getMockBuilder('Twocents\\Comment')
             ->disableOriginalConstructor()->getMock();
         $commentStub->expects($this->any())->method('getId')->will(
             $this->returnValue(self::ID)
@@ -111,7 +113,7 @@ class CommentsViewTest extends TestCase
         $commentStub->expects($this->any())->method('isVisible')->will(
             $this->returnValue(true)
         );
-        $this->subject = Twocents_CommentsView::make(
+        $this->subject = CommentsView::make(
             array($commentStub, $commentStub, $commentStub), null
         );
         $_XH_csrfProtection = $this->getMockBuilder('XH_CSRFProtection')

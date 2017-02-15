@@ -13,6 +13,8 @@
  * @link      http://3-magi.net/?CMSimple_XH/Twocents_XH
  */
 
+namespace Twocents;
+
 /**
  * The comment form views.
  *
@@ -22,28 +24,28 @@
  * @license  http://www.gnu.org/licenses/gpl-3.0.en.html GNU GPLv3
  * @link     http://3-magi.net/?CMSimple_XH/Twocents_XH
  */
-class Twocents_CommentFormView extends Twocents_View
+class CommentFormView extends View
 {
     /**
      * The comment.
      *
-     * @var Twocents_Comment
+     * @var Comment
      */
     protected $comment;
 
     /**
      * Initializes a new instance.
      *
-     * @param Twocents_Comment $comment A comment.
+     * @param Comment $comment A comment.
      *
      * @return void
      */
-    public function __construct(Twocents_Comment $comment = null)
+    public function __construct(Comment $comment = null)
     {
         if (isset($comment)) {
             $this->comment = $comment;
         } else {
-            $this->comment = Twocents_Comment::make(null, null);
+            $this->comment = Comment::make(null, null);
         }
     }
 

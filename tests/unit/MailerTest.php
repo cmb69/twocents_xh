@@ -13,6 +13,10 @@
  * @link      http://3-magi.net/?CMSimple_XH/Twocents_XH
  */
 
+namespace Twocents;
+
+use PHPUnit_Extensions_MockFunction;
+
 /**
  * Testing the mailer.
  *
@@ -27,7 +31,7 @@ class MailerTest extends TestCase
     /**
      * The test subject.
      *
-     * @var Twocents_Mailer
+     * @var Mailer
      */
     protected $subject;
 
@@ -52,7 +56,7 @@ class MailerTest extends TestCase
      */
     public function setUp()
     {
-        $this->subject = Twocents_Mailer::make();
+        $this->subject = Mailer::make();
         $this->gethostbynameMock = new PHPUnit_Extensions_MockFunction(
             'gethostbyname', $this->subject
         );

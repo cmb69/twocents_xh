@@ -17,6 +17,8 @@
  * @link      http://3-magi.net/?CMSimple_XH/Twocents_XH
  */
 
+namespace Twocents;
+
 /**
  * The mailers.
  *
@@ -27,7 +29,7 @@
  * @license  http://www.gnu.org/licenses/gpl-3.0.en.html GNU GPLv3
  * @link     http://3-magi.net/?CMSimple_XH/Twocents_XH
  */
-class Twocents_Mailer
+class Mailer
 {
     /**
      * The line break characters.
@@ -41,7 +43,7 @@ class Twocents_Mailer
      *
      * @param string $lineBreak A line break string.
      *
-     * @return Twocents_Mailer
+     * @return Mailer
      */
     public static function make($lineBreak = "\r\n")
     {

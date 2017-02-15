@@ -13,6 +13,10 @@
  * @link      http://3-magi.net/?CMSimple_XH/Twocents_XH
  */
 
+namespace Twocents;
+
+use Realblog\CommentsBridge;
+
 /**
  * The Realblog_XH bridge.
  *
@@ -22,7 +26,7 @@
  * @license  http://www.gnu.org/licenses/gpl-3.0.en.html GNU GPLv3
  * @link     http://3-magi.net/?CMSimple_XH/Twocents_XH
  */
-class Twocents_RealblogBridge implements Realblog_CommentsBridge
+class RealblogBridge implements CommentsBridge
 {
     /**
      * Returns the number of comments on a certain topic.
@@ -33,7 +37,7 @@ class Twocents_RealblogBridge implements Realblog_CommentsBridge
      */
     static public function count($topic)
     {
-        return count(Twocents_Comment::findByTopicname($topic));
+        return count(Comment::findByTopicname($topic));
     }
 
     /**

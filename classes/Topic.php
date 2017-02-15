@@ -13,6 +13,8 @@
  * @link      http://3-magi.net/?CMSimple_XH/Twocents_XH
  */
 
+namespace Twocents;
+
 /**
  * The topics.
  *
@@ -22,7 +24,7 @@
  * @license  http://www.gnu.org/licenses/gpl-3.0.en.html GNU GPLv3
  * @link     http://3-magi.net/?CMSimple_XH/Twocents_XH
  */
-class Twocents_Topic
+class Topic
 {
     /**
      * The file extension.
@@ -37,8 +39,8 @@ class Twocents_Topic
     public static function findAll()
     {
         $topics = array();
-        Twocents_Db::lock(LOCK_SH);
-        if ($dir = opendir(Twocents_Db::getFoldername())) {
+        Db::lock(LOCK_SH);
+        if ($dir = opendir(Db::getFoldername())) {
             while (($entry = readdir($dir)) !== false) {
                 if (pathinfo($entry, PATHINFO_EXTENSION) == self::EXT) {
                     $topics[] = self::load(basename($entry, '.' . self::EXT));
@@ -46,7 +48,7 @@ class Twocents_Topic
             }
         }
         closedir($dir);
-        Twocents_Db::lock(LOCK_UN);
+        Db::lock(LOCK_UN);
         return $topics;
     }
 
@@ -56,11 +58,11 @@ class Twocents_Topic
      *
      * @param string $name A topicname.
      *
-     * @return Twocents_Topic
+     * @return Topic
      */
     public static function findByName($name)
     {
-        if (file_exists(Twocents_Db::getFoldername() . $name . '.' . self::EXT)) {
+        if (file_exists(Db::getFoldername() . $name . '.' . self::EXT)) {
             return self::load($name);
         } else {
             return null;
@@ -72,7 +74,7 @@ class Twocents_Topic
      *
      * @param string $name A topicname.
      *
-     * @return Twocents_Topic
+     * @return Topic
      */
     protected static function load($name)
     {
@@ -115,9 +117,9 @@ class Twocents_Topic
      */
     public function insert()
     {
-        Twocents_Db::lock(LOCK_EX);
-        touch(Twocents_Db::getFoldername() . $this->name . '.' . self::EXT);
-        Twocents_Db::lock(LOCK_UN);
+        Db::lock(LOCK_EX);
+        touch(Db::getFoldername() . $this->name . '.' . self::EXT);
+        Db::lock(LOCK_UN);
     }
 
     /**
@@ -127,9 +129,9 @@ class Twocents_Topic
      */
     public function delete()
     {
-        Twocents_Db::lock(LOCK_EX);
-        unlink(Twocents_Db::getFoldername() . $this->name . '.' . self::EXT);
-        Twocents_Db::lock(LOCK_UN);
+        Db::lock(LOCK_EX);
+        unlink(Db::getFoldername() . $this->name . '.' . self::EXT);
+        Db::lock(LOCK_UN);
     }
 }
 

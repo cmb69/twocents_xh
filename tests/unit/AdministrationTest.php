@@ -13,6 +13,10 @@
  * @link      http://3-magi.net/?CMSimple_XH/Twocents_XH
  */
 
+namespace Twocents;
+
+use PHPUnit_Extensions_MockFunction;
+
 /**
  * Testing the general plugin administration.
  *
@@ -27,7 +31,7 @@ class AdministrationTest extends TestCase
     /**
      * The test subject.
      *
-     * @var Twocents_Controller
+     * @var Controller
      */
     protected $subject;
 
@@ -55,7 +59,7 @@ class AdministrationTest extends TestCase
         $twocents = 'true';
         $admin = 'plugin_stylesheet';
         $action = 'plugin_text';
-        $this->subject = new Twocents_Controller();
+        $this->subject = new Controller();
         $this->rspmiMock = new PHPUnit_Extensions_MockFunction(
             'XH_registerStandardPluginMenuItems', $this->subject
         );

@@ -26,7 +26,7 @@ function Twocents_autoload($class)
 {
     global $pth;
 
-    $parts = explode('_', $class, 2);
+    $parts = explode('\\', $class, 2);
     if ($parts[0] == 'Twocents') {
         include_once $pth['folder']['plugins'] . 'twocents/classes/'
             . $parts[1] . '.php';
