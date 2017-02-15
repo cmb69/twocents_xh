@@ -35,10 +35,7 @@ EOT
     );
 }
 
-/**
- * The plugin version
- */
-define('TWOCENTS_VERSION', '@TWOCENTS_VERSION@');
+const TWOCENTS_VERSION = '@TWOCENTS_VERSION@';
 
 /**
  * @param string $topicname
