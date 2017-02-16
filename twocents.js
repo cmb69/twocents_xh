@@ -196,13 +196,15 @@
          * @returns {boolean}
          */
         function update(event) {
-            var form, textarea, editor;
+            var form, textarea, editor, nextSibling;
 
             event = event || window.event;
             form = event.target || event.srcElement;
             textarea = form.getElementsByTagName("textarea")[0];
-            editor = textarea.parentNode.nextSibling.nextSibling;
-            textarea.value = editor.innerHTML;
+            if ((nextSibling = textarea.parentNode.nextSibling)) {
+                editor = nextSibling.nextSibling;
+                textarea.value = editor.innerHTML;
+            }
             return true;
         }
 
