@@ -114,7 +114,7 @@ class CommentsViewTest extends TestCase
             array(
                 'tag' => 'script',
                 'attributes' => array('type' => 'text/javascript'),
-                'content' => 'TWOCENTS = {'
+                'content' => 'var TWOCENTS = {'
             ),
             $bjs
         );

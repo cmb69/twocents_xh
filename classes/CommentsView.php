@@ -101,7 +101,7 @@ class CommentsView
         $json = XH_encodeJson($config);
         $filename = $pth['folder']['plugins'] . 'twocents/twocents.js';
         $bjs .= <<<EOT
-<script type="text/javascript">/* <[CDATA[ */TWOCENTS = $json;/* ]]> */</script>
+<script type="text/javascript">/* <[CDATA[ */var TWOCENTS = $json;/* ]]> */</script>
 <script type="text/javascript" src="$filename"></script>
 EOT;
     }
