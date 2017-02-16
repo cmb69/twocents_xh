@@ -289,7 +289,7 @@ EOT;
             $comments = array_reverse($comments);
         }
         $view = CommentsView::make($comments, $this->comment, $html);
-        if (!isset($_POST['twocents_ajax'])) {
+        if (!$this->isXmlHttpRequest()) {
             return '<div>' . $view->render() . '</div>';
         } else {
             echo $view->render();
@@ -544,5 +544,14 @@ EOT;
             }
         }
         return '';
+    }
+
+    /**
+     * @return bool
+     */
+    private function isXmlHttpRequest()
+    {
+        return isset($_SERVER['HTTP_X_REQUESTED_WITH'])
+            && $_SERVER['HTTP_X_REQUESTED_WITH'] === 'XMLHttpRequest';
     }
 }

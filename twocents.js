@@ -135,7 +135,6 @@
                             params[element.name] = element.value;
                         }
                     }
-                    params.twocents_ajax = '';
                     return params;
                 }
 
@@ -182,6 +181,7 @@
             request.open("POST", window.location.href);
             request.setRequestHeader("Content-Type",
                     "application/x-www-form-urlencoded");
+            request.setRequestHeader("X-Requested-With", "XMLHttpRequest");
             request.onreadystatechange = onreadystatechange;
             request.send(serialize());
             form.parentNode.className = "twocents_loading";
