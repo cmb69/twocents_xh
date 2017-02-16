@@ -95,7 +95,16 @@ class CommentsView
         foreach (array('comments_markup') as $property) {
             $config[$property] = $plugin_cf['twocents'][$property];
         }
-        foreach (array('label_new', 'message_delete') as $property) {
+        $properties = array(
+            'label_new',
+            'label_bold',
+            'label_italic',
+            'label_link',
+            'label_unlink',
+            'message_delete',
+            'message_link'
+        );
+        foreach ($properties as $property) {
             $config[$property] = $plugin_tx['twocents'][$property];
         }
         $json = XH_encodeJson($config);

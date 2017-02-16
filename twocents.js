@@ -334,7 +334,7 @@
             function link() {
                 var url;
 
-                url = window.prompt("URL", "");
+                url = window.prompt(TWOCENTS.message_link, "");
                 if (url) {
                     document.execCommand("createLink", false, url);
                 }
@@ -360,17 +360,17 @@
             textarea.parentNode.parentNode.appendChild(div);
             textarea.style.display = "none";
             buttons = {
-                "bold": bold,
-                "italic": italic,
-                "link": link,
-                "unlink": unlink
+                bold: bold,
+                italic: italic,
+                link: link,
+                unlink: unlink
             };
             for (prop in buttons) {
                 if (buttons.hasOwnProperty(prop)) {
                     button = document.createElement("button");
                     //button.type = "button";
                     button.setAttribute("type", "button");
-                    button.innerHTML = prop;
+                    button.innerHTML = TWOCENTS["label_" + prop];
                     button.onclick = buttons[prop];
                     div2.appendChild(button);
                 }
