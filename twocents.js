@@ -334,8 +334,10 @@
             function link() {
                 var url;
 
-                url = window.prompt("URL");
-                document.execCommand("createLink", false, url);
+                url = window.prompt("URL", "");
+                if (url) {
+                    document.execCommand("createLink", false, url);
+                }
                 div.focus();
             }
 
