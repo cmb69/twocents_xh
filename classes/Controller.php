@@ -358,7 +358,7 @@ EOT;
         if (!$cf['xhtml']['endtags']) {
             $config->set('HTML.Doctype', 'HTML 4.01 Transitional');
         }
-        $config->set('HTML.Allowed', 'p,blockquote,br,b,i,a[href]');
+        $config->set('HTML.Allowed', 'p,blockquote,br,b,strong,i,em,a[href]');
         $config->set('AutoFormat.AutoParagraph', true);
         $config->set('AutoFormat.RemoveEmpty', true);
         $config->set('AutoFormat.RemoveEmpty.RemoveNbsp', true);
