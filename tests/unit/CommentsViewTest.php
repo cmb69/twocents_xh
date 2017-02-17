@@ -60,7 +60,12 @@ class CommentsViewTest extends TestCase
                 'label_reset' => 'Reset',
                 'label_update' => 'Update Comment',
                 'label_user' => 'Username',
-                'message_delete' => 'Delete?'
+                'label_bold' => 'Bold',
+                'label_italic' => 'Italic',
+                'label_link' => 'Link',
+                'label_unlink' => 'Unlink',
+                'message_delete' => 'Delete?',
+                'message_link' => 'URL to link'
             )
         );
         $commentStub = $this->getMockBuilder('Twocents\\Comment')
