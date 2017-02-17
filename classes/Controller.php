@@ -292,6 +292,9 @@ EOT;
         if (!$this->isXmlHttpRequest()) {
             return '<div>' . $view->render() . '</div>';
         } else {
+            while (ob_get_level()) {
+                ob_end_clean();
+            }
             echo $view->render();
             exit;
         }
