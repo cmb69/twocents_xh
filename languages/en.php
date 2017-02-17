@@ -38,6 +38,7 @@ $plugin_tx['twocents']['message_converted_plain']="All comments have been conver
 $plugin_tx['twocents']['message_imported_comments']="All comments of the Comments plugin have been imported.";
 $plugin_tx['twocents']['message_nyi']="Sorry\xE2\x80\x94this feature is not yet implemented.";
 $plugin_tx['twocents']['message_link']="Enter the URL to link to:";
+$plugin_tx['twocents']['realblog_heading']="Comments";
 $plugin_tx['twocents']['alt_icon']="empty speech bubble";
 $plugin_tx['twocents']['menu_main']="Conversion";
 $plugin_tx['twocents']['cf_comments_moderated']="Hide new comments initially?";
@@ -46,5 +47,6 @@ $plugin_tx['twocents']['cf_comments_markup']="The markup type for comments. Leav
 $plugin_tx['twocents']['cf_email_address']="An email address where notifications about new comments will be send. Leave empty if you don't want to be notified.";
 $plugin_tx['twocents']['cf_email_linebreak']="The linebreaks to use for the emails. Set to \"LF\" when you receive broken emails.";
 $plugin_tx['twocents']['cf_captcha_plugin']="The (folder)name of a conforming CAPTCHA plugin. Leave empty to eschew the CAPTCHA test.";
+$plugin_tx['twocents']['cf_realblog_heading']="The heading level for Realblog_XH comments.";
 
 ?>

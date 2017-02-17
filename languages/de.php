@@ -38,6 +38,7 @@ $plugin_tx['twocents']['message_converted_plain']="Alle Kommentare wurden in ein
 $plugin_tx['twocents']['message_imported_comments']="Alle Kommentare des Comments Plugins wurden importiert.";
 $plugin_tx['twocents']['message_nyi']="Bedaure \xE2\x80\x93 dieses Feature ist noch nicht implementiert.";
 $plugin_tx['twocents']['message_link']="Geben Sie die zu verlinkende URL ein:";
+$plugin_tx['twocents']['realblog_heading']="Kommentare";
 $plugin_tx['twocents']['alt_icon']="leere Sprechblase";
 $plugin_tx['twocents']['menu_main']="Konvertierung";
 $plugin_tx['twocents']['cf_comments_moderated']="Neue Kommentare zunächst verstecken?";
@@ -46,5 +47,6 @@ $plugin_tx['twocents']['cf_comments_markup']="Die Art des Markup für Kommentare
 $plugin_tx['twocents']['cf_email_address']="Eine E-Mail-Adresse, an die Benachrichtigungen über neue Kommentare gesendet werden. Leer lassen, wenn Sie nicht benachrichtigt werden wollen.";
 $plugin_tx['twocents']['cf_email_linebreak']="Die Zeilenumbrüche, die für die E-Mails verwendet werden sollen. Schalten Sie auf \"LF\" um, wenn Sie korrupte E-Mails erhalten.";
 $plugin_tx['twocents']['cf_captcha_plugin']="Der (Ordner-)Name eines spezifikationsgerechten CAPTCHA-Plugins. Leer lassen, um auf den CAPTCHA-Test zu verzichten.";
+$plugin_tx['twocents']['cf_realblog_heading']="Die Überschriftenebene für Realblog_XH Kommentare.";
 
 ?>

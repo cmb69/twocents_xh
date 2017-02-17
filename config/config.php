@@ -6,5 +6,6 @@ $plugin_cf['twocents']['comments_markup']="";
 $plugin_cf['twocents']['email_address']="";
 $plugin_cf['twocents']['email_linebreak']="CRLF";
 $plugin_cf['twocents']['captcha_plugin']="";
+$plugin_cf['twocents']['realblog_heading']="h5";
 
 ?>
