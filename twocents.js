@@ -142,8 +142,8 @@
                 pairs = [];
                 for (prop in params) {
                     if (params.hasOwnProperty(prop)) {
-                        pairs.push(encodeURIComponent(prop) + "="
-                                + encodeURIComponent(params[prop]));
+                        pairs.push(encodeURIComponent(prop) + "=" +
+                                   encodeURIComponent(params[prop]));
                     }
                 }
                 return pairs.join("&");
@@ -234,17 +234,19 @@
         function hideForm(form) {
             var button;
 
+            function showForm() {
+                form.style.display = "";
+                button.parentNode.removeChild(button);
+                form.elements.twocents_user.focus();
+            }
+
             if (form.previousSibling.nodeName.toLowerCase() !== "p") {
                 form.style.display = "none";
                 button = document.createElement("button");
                 //button.type = "button";
                 button.setAttribute("type", "button");
                 button.className = "twocents_write_button";
-                button.onclick = function () {
-                    form.style.display = "";
-                    button.parentNode.removeChild(button);
-                    form.elements.twocents_user.focus();
-                };
+                button.onclick = showForm;
                 button.innerHTML = TWOCENTS.label_new;
                 form.parentNode.appendChild(button);
             }
@@ -304,6 +306,18 @@
          */
         function makeEditor(textarea) {
             var div, button, div2, buttons, prop;
+
+            function onkeypress() {
+                var textContent = div.textContent || div.innerText;
+
+                if (!textContent) {
+                    document.execCommand("formatBlock", false, "P");
+                }
+            }
+
+            function focus() {
+                div.focus();
+            }
 
             /**
              * Toggles bold on/off for the selection or at the insertion point.
@@ -376,22 +390,14 @@
                 }
             }
             div.contentEditable = true;
-            div.onkeypress = function () {
-                var textContent = div.textContent || div.innerText;
-
-                if (!textContent) {
-                    document.execCommand("formatBlock", false, "P");
-                }
-            };
+            div.onkeypress = onkeypress;
             textarea.required = false;
-            textarea.parentNode.onclick = function () {
-                div.focus();
-            };
+            textarea.parentNode.onclick = focus;
         }
 
         div = document.createElement("div");
-        if (typeof div.contentEditable === "undefined"
-                || typeof document.execCommand === "undefined") {
+        if (typeof div.contentEditable === "undefined" ||
+            typeof document.execCommand === "undefined") {
             return;
         }
         textareas = document.getElementsByTagName("textarea");
