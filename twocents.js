@@ -315,6 +315,23 @@
                 }
             }
 
+            function setButtonStates() {
+                var button, state;
+
+                button = document.getElementById("twocents_tool_bold");
+                button.disabled = !document.queryCommandEnabled("bold");
+                state = document.queryCommandState("bold");
+                button.style.borderStyle = state ? "inset" : "";
+                button = document.getElementById("twocents_tool_italic");
+                button.disabled = !document.queryCommandEnabled("italic");
+                state = document.queryCommandState("italic");
+                button.style.borderStyle = state ? "inset" : "";
+                button = document.getElementById("twocents_tool_link");
+                button.disabled = !document.queryCommandEnabled("createLink");
+                button = document.getElementById("twocents_tool_unlink");
+                button.disabled = !document.queryCommandEnabled("unlink");
+            }
+
             function focus() {
                 div.focus();
             }
@@ -327,6 +344,7 @@
             function bold() {
                 document.execCommand("bold");
                 div.focus();
+                setButtonStates();
             }
 
             /**
@@ -338,6 +356,7 @@
             function italic() {
                 document.execCommand("italic");
                 div.focus();
+                setButtonStates();
             }
 
             /**
@@ -353,6 +372,7 @@
                     document.execCommand("createLink", false, url);
                 }
                 div.focus();
+                setButtonStates();
             }
 
             /**
@@ -363,6 +383,7 @@
             function unlink() {
                 document.execCommand("unlink");
                 div.focus();
+                setButtonStates();
             }
 
             div2 = document.createElement("div");
@@ -382,6 +403,7 @@
             for (prop in buttons) {
                 if (buttons.hasOwnProperty(prop)) {
                     button = document.createElement("button");
+                    button.id = "twocents_tool_" + prop;
                     //button.type = "button";
                     button.setAttribute("type", "button");
                     button.innerHTML = TWOCENTS["label_" + prop];
@@ -391,8 +413,11 @@
             }
             div.contentEditable = true;
             div.onkeypress = onkeypress;
+            div.onkeyup = setButtonStates;
+            div.onmouseup = setButtonStates;
             textarea.required = false;
             textarea.parentNode.onclick = focus;
+            setButtonStates();
         }
 
         div = document.createElement("div");
