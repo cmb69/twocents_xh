@@ -57,6 +57,7 @@ class RealblogBridge implements CommentsBridge
      */
     public static function getEditUrl($topic)
     {
+        $topic; // unused
         return false;
     }
 }

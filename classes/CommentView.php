@@ -44,7 +44,7 @@ class CommentView extends AbstractController
      */
     public function render()
     {
-        global $plugin_tx, $_XH_csrfProtection;
+        global $_XH_csrfProtection;
 
         $view = new View('comment');
         $isCurrentComment = $this->isCurrentComment();
