@@ -33,4 +33,30 @@ abstract class AbstractController
         $queryString = preg_replace('/&twocents_id=[^&]+/', '', $_SERVER['QUERY_STRING']);
         return $sn . '?' . $queryString;
     }
+
+    /**
+     * @param string $message
+     * @return string
+     */
+    protected function purify($message)
+    {
+        global $pth, $cf;
+
+        include_once $pth['folder']['plugins']
+            . 'twocents/htmlpurifier/HTMLPurifier.standalone.php';
+        $config = HTMLPurifier_Config::createDefault();
+        if (!$cf['xhtml']['endtags']) {
+            $config->set('HTML.Doctype', 'HTML 4.01 Transitional');
+        }
+        $config->set('HTML.Allowed', 'p,blockquote,br,b,strong,i,em,a[href]');
+        $config->set('AutoFormat.AutoParagraph', true);
+        $config->set('AutoFormat.RemoveEmpty', true);
+        $config->set('AutoFormat.RemoveEmpty.RemoveNbsp', true);
+        $config->set('HTML.Nofollow', true);
+        $config->set('Output.TidyFormat', true);
+        $config->set('Output.Newline', "\n");
+        $purifier = new HTMLPurifier($config);
+        $message = str_replace(array('&nbsp;', "\C2\A0"), ' ', $message);
+        return $purifier->purify($message);
+    }
 }

@@ -43,13 +43,10 @@ const TWOCENTS_VERSION = '@TWOCENTS_VERSION@';
  */
 function twocents($topicname)
 {
-    global $_Twocents_controller;
-
-    return $_Twocents_controller->renderComments($topicname);
+    $controller = new Twocents\MainController($topicname);
+    return $controller->renderComments();
 }
 
-/**
- * @var Twocents\Controller
- */
-$_Twocents_controller = new Twocents\Controller();
-$_Twocents_controller->dispatch();
+$temp = new Twocents\Router();
+$temp->route();
+unset($temp);

@@ -1,0 +1,23 @@
+<h1>Twocents</h1>
+<img src="<?=$this->logo?>" class="twocents_icon" alt="<?=$this->text('alt_icon')?>">
+<p>Version: <?=$this->version?></p>
+<p>Copyright &copy; 2014-2017
+    <a href="http://3-magi.net/" target="_blank">Christoph M. Becker</a>
+</p>
+<p class="twocents_license">
+    This program is free software: you can redistribute it and/or modify it
+    under the terms of the GNU General Public License as published by the Free
+    Software Foundation, either version 3 of the License, or (at your option)
+    any later version.
+</p>
+<p class="twocents_license">
+    This program is distributed in the hope that it will be useful, but
+    <em>without any warranty</em>; without even the implied warranty of
+    <em>merchantability</em> or <em>fitness for a particular purpose</em>. See
+    the GNU General Public License for more details.
+</p>
+<p class="twocents_license">
+    You should have received a copy of the GNU General Public License along with
+    this program. If not, see <a href="http://www.gnu.org/licenses/"
+    target="_blank">http://www.gnu.org/licenses/</a>.
+</p>

@@ -40,13 +40,14 @@ class RealblogBridge implements CommentsBridge
      */
     public static function handle($topic)
     {
-        global $_Twocents_controller, $plugin_cf, $plugin_tx;
+        global $plugin_cf, $plugin_tx;
 
+        $controller = new MainController($topic);
         return '<div class="twocents_realblog_comments">'
             . '<' . $plugin_cf['twocents']['realblog_heading'] . '>'
             .  $plugin_tx['twocents']['realblog_heading']
             . '</' . $plugin_cf['twocents']['realblog_heading'] . '>'
-            . $_Twocents_controller->renderComments($topic)
+            . $controller->renderComments()
             . '</div>';
     }
 
