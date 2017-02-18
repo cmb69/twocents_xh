@@ -31,11 +31,7 @@ class RealblogBridge implements CommentsBridge
      */
     public static function count($topic)
     {
-        $allComments = Comment::findByTopicname($topic);
-        $visibleComments = array_filter($allComments, function ($comment) {
-            return $comment->isVisible() || XH_ADM;
-        });
-        return count($visibleComments);
+        return count(Comment::findByTopicname($topic, true));
     }
 
     /**

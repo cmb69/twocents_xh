@@ -27,16 +27,20 @@ class Comment
 
     /**
      * @param string $name
+     * @param bool $visibleOnly
      * @return Comment[]
      */
-    public static function findByTopicname($name)
+    public static function findByTopicname($name, $visibleOnly = false)
     {
         $comments = array();
         Db::lock(LOCK_SH);
         $filename = Db::getFoldername() . $name . '.' . self::EXT;
         if (is_readable($filename) && ($file = fopen($filename, 'r'))) {
             while (($record = fgetcsv($file)) !== false) {
-                $comments[] = self::load($name, $record);
+                $comment = self::load($name, $record);
+                if (!$visibleOnly || ($comment->isVisible() || XH_ADM)) {
+                    $comments[] = $comment;
+                }
             }
             fclose($file);
         }

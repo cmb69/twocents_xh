@@ -67,15 +67,13 @@ class CommentsView
         $this->writeScriptsToBjs();
         $html = '<div class="twocents_comments">';
         foreach ($this->comments as $comment) {
-            if ($comment->isVisible() || XH_ADM) {
-                if (isset($this->currentComment)
-                    && $this->currentComment->getId() == $comment->getId()
-                ) {
-                    $html .= $this->messages;
-                }
-                $view = new CommentView($comment, $this->currentComment);
-                $html .= $view->render();
+            if (isset($this->currentComment)
+                && $this->currentComment->getId() == $comment->getId()
+            ) {
+                $html .= $this->messages;
             }
+            $view = new CommentView($comment, $this->currentComment);
+            $html .= $view->render();
         }
         $html .= '</div>';
         if (!isset($this->currentComment)

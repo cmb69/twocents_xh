@@ -284,7 +284,7 @@ EOT;
         if (isset($_GET['twocents_id'])) {
             $this->comment = Comment::find(stsl($_GET['twocents_id']), $topicname);
         }
-        $comments = Comment::findByTopicname($topicname);
+        $comments = Comment::findByTopicname($topicname, true);
         if ($plugin_cf['twocents']['comments_order'] == 'DESC') {
             $comments = array_reverse($comments);
         }
