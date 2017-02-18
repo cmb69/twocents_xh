@@ -44,77 +44,35 @@ class CommentView extends AbstractController
      */
     public function render()
     {
-        $id = $this->isCurrentComment()
-            ? ''
-            : ' id="twocents_comment_' . $this->comment->getId() . '"';
-        $class = $this->comment->isVisible() ? '' : ' twocents_hidden';
-        $html = '<div' . $id . ' class="twocents_comment' . $class . '">';
-        if ($this->isCurrentComment()) {
-            $view = new CommentFormView($this->currentComment);
-            $html .= $view->render();
-        } else {
-            if (XH_ADM) {
-                $html .= $this->renderAdminTools();
-            }
-            $html .= '<div class="twocents_attribution">'
-                . $this->renderAttribution() . '</div>'
-                . '<div class="twocents_message">' . $this->renderMessage()
-                . '</div>';
-        }
-        $html .= '</div>';
-        return $html;
-    }
-
-    /**
-     * @return string
-     */
-    protected function renderAdminTools()
-    {
-        return '<div class="twocents_admin_tools">'
-            . $this->renderEditLink()
-            . $this->renderDeleteForm()
-            . '</div>';
-    }
-
-    /**
-     * @return string
-     */
-    protected function renderDeleteForm()
-    {
         global $plugin_tx, $_XH_csrfProtection;
 
-        $hideLabel = $this->comment->isVisible()
-            ? $plugin_tx['twocents']['label_hide']
-            : $plugin_tx['twocents']['label_show'];
-        return '<form method="post" action="' . XH_hsc($this->getUrl()) . '">'
-            . $_XH_csrfProtection->tokenInput()
-            . tag(
-                'input type="hidden" name="twocents_id" value="'
-                . $this->comment->getId() . '"'
-            )
-            . '<button type="submit" name="twocents_action"'
-            . ' value="toggle_visibility">' . $hideLabel . '</button>'
-            . '<button type="submit" name="twocents_action" value="remove_comment">'
-            . $plugin_tx['twocents']['label_delete'] . '</button>'
-            . '</form>';
+        $view = new View('comment');
+        $isCurrentComment = $this->isCurrentComment();
+        $view->id = 'twocents_comment_' . $this->comment->getId();
+        $view->className = $this->comment->isVisible() ? '' : ' twocents_hidden';
+        $view->isCurrentComment = $isCurrentComment;
+        if ($isCurrentComment) {
+            $formView = new CommentFormView($this->currentComment);
+            $view->form = new HtmlString($formView->render());
+        } else {
+            $view->isAdmin = XH_ADM;
+            $view->url = $this->getUrl();
+            $view->editUrl = $this->getUrl() . '&twocents_id=' . $this->comment->getId();
+            $view->comment = $this->comment;
+            if (XH_ADM) {
+                $view->csrfTokenInput = new HtmlString($_XH_csrfProtection->tokenInput());
+            }
+            $view->visibility = $this->comment->isVisible() ? 'label_hide' : 'label_show';
+            $view->attribution = new HtmlString($this->renderAttribution());
+            $view->message = new HtmlString($this->renderMessage());
+        }
+        return $view->render();
     }
 
     /**
      * @return string
      */
-    protected function renderEditLink()
-    {
-        global $plugin_tx;
-
-        $url = $this->getUrl() . '&twocents_id=' . $this->comment->getId();
-        return '<a href="' . XH_hsc($url) . '">'
-            . $plugin_tx['twocents']['label_edit'] . '</a>';
-    }
-
-    /**
-     * @return string
-     */
-    protected function renderAttribution()
+    private function renderAttribution()
     {
         global $plugin_tx;
 
@@ -133,7 +91,7 @@ class CommentView extends AbstractController
     /**
      * @return string
      */
-    protected function renderMessage()
+    private function renderMessage()
     {
         global $plugin_cf;
 
@@ -147,7 +105,7 @@ class CommentView extends AbstractController
     /**
      * @return bool
      */
-    protected function isCurrentComment()
+    private function isCurrentComment()
     {
         return isset($this->currentComment)
             && $this->currentComment->getId() == $this->comment->getId();

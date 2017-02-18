@@ -42,87 +42,25 @@ class CommentFormView extends AbstractController
      */
     public function render()
     {
-        $url = XH_hsc($this->getUrl());
-        return '<form class="twocents_form" method="post" action="' . $url . '">'
-            . $this->renderHiddenFormFields()
-            . $this->renderUserInput()
-            . $this->renderEmailInput()
-            . $this->renderMessageTextarea()
-            . $this->renderCaptcha()
-            . $this->renderButtons()
-            . '</form>';
-    }
-
-    /**
-     * @return string
-     */
-    protected function renderHiddenFormFields()
-    {
         global $_XH_csrfProtection;
 
-        $html = '';
+        $view = new View('comment-form');
+        $view->action = $this->comment->getId() ? 'update' : 'add';
+        $view->url = $this->getUrl();
+        $view->comment = $this->comment;
+        $view->captcha = new HtmlString($this->renderCaptcha());
         if ($this->comment->getId()) {
-            $html .= $_XH_csrfProtection->tokenInput();
+            $view->csrfTokenInput = new HtmlString($_XH_csrfProtection->tokenInput());
+        } else {
+            $view->csrfTokenInput = '';
         }
-        $html .= tag(
-            'input type="hidden" name="twocents_id" value="'
-            . XH_hsc($this->comment->getId()) . '"'
-        );
-        return $html;
+        return $view->render();
     }
 
     /**
      * @return string
      */
-    protected function renderUserInput()
-    {
-        global $plugin_tx;
-
-        return '<div><label><span>' . $plugin_tx['twocents']['label_user']
-            . '</span>'
-            . tag(
-                'input type="text" name="twocents_user" value="'
-                . XH_hsc($this->comment->getUser())
-                . '" size="20" required="required"'
-            )
-            . '</label></div>';
-    }
-
-    /**
-     * @return string
-     */
-    protected function renderEmailInput()
-    {
-        global $plugin_tx;
-
-        return '<div><label><span>' . $plugin_tx['twocents']['label_email']
-            . '</span>'
-            . tag(
-                'input type="email" name="twocents_email" value="'
-                . XH_hsc($this->comment->getEmail())
-                . '" size="20" required="required"'
-            )
-            . '</label></div>';
-    }
-
-    /**
-     * @return string
-     */
-    protected function renderMessageTextarea()
-    {
-        global $plugin_tx;
-
-        return '<div><label><span>' . $plugin_tx['twocents']['label_message']
-            . '</span>'
-            . '<textarea name="twocents_message" cols="50" rows="8"'
-            . ' required="required">'
-            . XH_hsc($this->comment->getMessage()) . '</textarea></label></div>';
-    }
-
-    /**
-     * @return string
-     */
-    protected function renderCaptcha()
+    private function renderCaptcha()
     {
         global $pth, $plugin_cf;
 
@@ -134,26 +72,5 @@ class CommentFormView extends AbstractController
         } else {
             return '';
         }
-    }
-
-    /**
-     * @return string
-     */
-    protected function renderButtons()
-    {
-        global $plugin_tx;
-
-        $ptx = $plugin_tx['twocents'];
-        $action = $this->comment->getId() ? 'update' : 'add';
-        $html = '<div class="twocents_form_buttons">'
-            . '<button type="submit" name="twocents_action" value="' . $action
-            . '_comment">' . $ptx['label_' . $action] . '</button>';
-        if ($this->comment->getId()) {
-            $html .= '<a href="' . $this->getUrl() . '">'
-                . $ptx['label_cancel'] . '</a>';
-        }
-        $html .= '<button type="reset">' . $ptx['label_reset'] . '</button>'
-            . '</div>';
-        return $html;
     }
 }
