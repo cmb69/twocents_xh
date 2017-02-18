@@ -57,6 +57,7 @@ class ControllerTest extends TestCase
                 'comments_markup' => '',
                 'email_address' => 'cmbecker69@gmx.de',
                 'email_linebreak' => 'CRLF',
+                'pagination_max' => '12',
                 'captcha_plugin' => ''
             )
         );
@@ -66,6 +67,7 @@ class ControllerTest extends TestCase
             'Twocents\\Comment::findByTopicname',
             $this->subject
         );
+        $this->findByTopicnameMock->expects($this->any())->willReturn(array());
         $this->viewMock = $this->getMockBuilder('Twocents\\CommentsView')
             ->disableOriginalConstructor()->getMock();
         $viewMakeStub = new PHPUnit_Extensions_MockStaticMethod('Twocents\\CommentsView::make', $this->subject);
@@ -85,7 +87,7 @@ class ControllerTest extends TestCase
     public function testRenderComments()
     {
         $this->viewMock->expects($this->once())->method('render');
-        $this->findByTopicnameMock->expects($this->once())->with('foo');
+        $this->findByTopicnameMock->expects($this->once())->with('foo')->willReturn(array());
         $this->subject->renderComments('foo');
     }
 
