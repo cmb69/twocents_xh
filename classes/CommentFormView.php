@@ -21,7 +21,7 @@
 
 namespace Twocents;
 
-class CommentFormView extends View
+class CommentFormView extends AbstractController
 {
     /**
      * @var Comment

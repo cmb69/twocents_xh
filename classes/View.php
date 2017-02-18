@@ -1,7 +1,7 @@
 <?php
 
 /**
- * Copyright 2014-2017 Christoph M. Becker
+ * Copyright 2016-2017 Christoph M. Becker
  *
  * This file is part of Twocents_XH.
  *
@@ -21,16 +21,75 @@
 
 namespace Twocents;
 
-abstract class View
+class View
 {
-    /**
-     * @return string
-     */
-    protected function getUrl()
-    {
-        global $sn;
+    private $template;
 
-        $queryString = preg_replace('/&twocents_id=[^&]+/', '', $_SERVER['QUERY_STRING']);
-        return $sn . '?' . $queryString;
+    private $data = array();
+
+    public function __construct($template)
+    {
+        $this->template = $template;
+    }
+
+    public function __set($name, $value)
+    {
+        $this->data[$name] = $value;
+    }
+
+    public function __get($name)
+    {
+        return $this->escape($this->data[$name]);
+    }
+
+    public function __isset($name)
+    {
+        return isset($this->data[$name]);
+    }
+
+    public function __call($name, array $args)
+    {
+        return $this->escape(call_user_func_array($this->data[$name], $args));
+    }
+
+    protected function text($key)
+    {
+        global $plugin_tx;
+
+        $args = func_get_args();
+        array_shift($args);
+        return vsprintf($plugin_tx['twocents'][$key], $args);
+    }
+
+    protected function plural($key, $count)
+    {
+        global $plugin_tx;
+
+        if ($count == 0) {
+            $key .= '_0';
+        } else {
+            $key .= XH_numberSuffix($count);
+        }
+        $args = func_get_args();
+        array_shift($args);
+        return vsprintf($plugin_tx['twocents'][$key], $args);
+    }
+
+    public function render()
+    {
+        global $pth;
+
+        ob_start();
+        include "{$pth['folder']['plugins']}twocents/views/{$this->template}.php";
+        return ob_get_clean();
+    }
+
+    protected function escape($value)
+    {
+        if (is_scalar($value)) {
+            return XH_hsc($value);
+        } else {
+            return $value;
+        }
     }
 }

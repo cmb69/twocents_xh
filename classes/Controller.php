@@ -250,7 +250,7 @@ EOT;
      */
     public function renderComments($topicname)
     {
-        global $plugin_cf, $plugin_tx, $_XH_csrfProtection;
+        global $sn, $su, $plugin_cf, $plugin_tx, $_XH_csrfProtection;
 
         if (!$this->isValidTopicname($topicname)) {
             return XH_message('fail', $plugin_tx['twocents']['error_topicname']);
@@ -288,14 +288,27 @@ EOT;
         if ($plugin_cf['twocents']['comments_order'] == 'DESC') {
             $comments = array_reverse($comments);
         }
+        $count = count($comments);
+        $itemsPerPage = $plugin_cf['twocents']['pagination_max'];
+        $pageCount = (int) ceil($count / $itemsPerPage);
+        $currentPage = filter_input(
+            INPUT_GET,
+            'twocents_page',
+            FILTER_VALIDATE_INT,
+            array('options' => array('min_range' => 1, 'max_range' => $pageCount, 'default' => 1))
+        );
+        $comments = array_splice($comments, ($currentPage - 1) * $itemsPerPage, $itemsPerPage);
+        $pagination = new Pagination($count, $currentPage, $pageCount, $this->getPaginationUrl());
         $view = CommentsView::make($comments, $this->comment, $html);
+        $paginationHtml = $pagination->render();
+        $html = $paginationHtml . $view->render() . $paginationHtml;
         if (!$this->isXmlHttpRequest()) {
-            return '<div>' . $view->render() . '</div>';
+            return "<div>$html</div>";
         } else {
             while (ob_get_level()) {
                 ob_end_clean();
             }
-            echo $view->render();
+            echo $html;
             exit;
         }
     }
@@ -464,6 +477,38 @@ EOT;
     protected function getUrl()
     {
         return CMSIMPLE_URL . '?' . $_SERVER['QUERY_STRING'];
+    }
+
+    /**
+     * @return string
+     */
+    private function getPaginationUrl()
+    {
+        global $sn;
+
+        $params = $_GET;
+        $params['twocents_page'] = '%d';
+        $params = array_map(
+            function ($key, $value) {
+                $param = urlencode($key);
+                if ($value !== '') {
+                    $param .= '=';
+                    if ($key === 'twocents_page') {
+                        $param .= $value;
+                    } else {
+                        $param .= urlencode($value);
+                    }
+                }
+                return $param;
+            },
+            array_keys($params),
+            array_values($params)
+        );
+        $url = $sn;
+        if (!empty($params)) {
+            $url .= '?' . implode('&', $params);
+        }
+        return $url;
     }
 
     /**
