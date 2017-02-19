@@ -17,9 +17,6 @@
  * along with Twocents_XH.  If not, see <http://www.gnu.org/licenses/>.
  */
 
-/*jslint browser: true, maxlen: 80 */
-/*global TWOCENTS */
-
 (function () {
     "use strict";
 
