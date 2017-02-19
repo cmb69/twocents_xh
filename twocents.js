@@ -196,13 +196,19 @@
          * @returns {boolean}
          */
         function update(event) {
-            var form, textarea, editor, nextSibling;
+            var form, textarea, divs, i, editor;
 
             event = event || window.event;
             form = event.target || event.srcElement;
             textarea = form.getElementsByTagName("textarea")[0];
-            if ((nextSibling = textarea.parentNode.nextSibling)) {
-                editor = nextSibling.nextSibling;
+            divs = form.getElementsByTagName("div");
+            for (i = 0; i < divs.length; i++) {
+                if (divs[i].className === "twocents_editor") {
+                    editor = divs[i];
+                    break;
+                }
+            }
+            if (editor) {
                 textarea.value = editor.innerHTML;
             }
             return true;
