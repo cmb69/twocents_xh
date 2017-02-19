@@ -101,6 +101,7 @@
                 <exclude name="composer.*"/>
                 <exclude name="coverage.xml"/>
                 <exclude name="phpcompatinfo.json"/>
+                <exclude name="README.md"/>
                 <exclude name="TODO"/>
             </fileset>
         </move>
