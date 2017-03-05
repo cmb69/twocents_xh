@@ -43,8 +43,27 @@ const TWOCENTS_VERSION = '@TWOCENTS_VERSION@';
  */
 function twocents($topicname)
 {
-    $controller = new Twocents\MainController($topicname);
-    return $controller->renderComments();
+    global $plugin_tx;
+
+    try {
+        $controller = new Twocents\MainController($topicname);
+    } catch (DomainException $ex) {
+        return XH_message('fail', $plugin_tx['twocents']['error_topicname']);
+    }
+    $action = isset($_POST['twocents_action']) ? stsl($_POST['twocents_action']) : 'default';
+    $action = preg_replace_callback(
+        '/_([a-z])/',
+        function ($matches) {
+            return ucfirst($matches[1]);
+        },
+        $action
+    );
+    if (!method_exists($controller, "{$action}Action")) {
+        $action = 'default';
+    }
+    ob_start();
+    $controller->{"{$action}Action"}();
+    return ob_get_clean();
 }
 
 $temp = new Twocents\Router();

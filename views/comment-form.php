@@ -21,12 +21,10 @@
     </div>
     <?=$this->captcha()?>
     <div class="twocents_form_buttons">
-        <button type="submit" name="twocents_action" value="<?=$this->action()?>_comment">
-            <?=$this->text("label_{$this->action}")?>
-        </button>
-    <?php if ($this->comment->getId()):?>
+        <button type="submit" name="twocents_action" value="<?=$this->action()?>_comment"><?=$this->text("label_{$this->action}")?></button>
+<?php if ($this->comment->getId()):?>
         <a href="<?=$this->url()?>"><?=$this->text('label_cancel')?></a>
-    <?php endif?>
+<?php endif?>
         <button type="reset"><?=$this->text('label_reset')?></button>
     </div>
 </form>

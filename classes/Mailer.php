@@ -38,17 +38,8 @@ class Mailer
 
     /**
      * @param string $lineBreak
-     * @return Mailer
      */
-    public static function make($lineBreak = "\r\n")
-    {
-        return new self($lineBreak);
-    }
-
-    /**
-     * @param string $lineBreak
-     */
-    protected function __construct($lineBreak)
+    public function __construct($lineBreak = "\r\n")
     {
         $this->lineBreak = (string) $lineBreak;
     }

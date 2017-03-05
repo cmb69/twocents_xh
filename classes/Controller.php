@@ -24,17 +24,44 @@ namespace Twocents;
 use HTMLPurifier;
 use HTMLPurifier_Config;
 
-abstract class AbstractController
+abstract class Controller
 {
     /**
-     * @return string
+     * @var string
      */
-    protected function getUrl()
-    {
-        global $sn;
+    protected $scriptName;
 
-        $queryString = preg_replace('/&twocents_id=[^&]+/', '', $_SERVER['QUERY_STRING']);
-        return $sn . '?' . $queryString;
+    /**
+     * @var array
+     */
+    protected $config;
+
+    /**
+     * @var array
+     */
+    protected $lang;
+
+    /**
+     * @var object
+     */
+    protected $csrfProtector;
+
+    /**
+     * @var bool
+     */
+    private $isXhtml;
+
+    public function __construct()
+    {
+        global $sn, $cf, $plugin_cf, $plugin_tx, $_XH_csrfProtection;
+
+        $this->scriptName = $sn;
+        $this->config = $plugin_cf['twocents'];
+        $this->lang = $plugin_tx['twocents'];
+        if (isset($_XH_csrfProtection)) {
+            $this->csrfProtector = $_XH_csrfProtection;
+        }
+        $this->isXhtml = (bool) $cf['xhtml']['endtags'];
     }
 
     /**
@@ -43,18 +70,16 @@ abstract class AbstractController
      */
     protected function purify($message)
     {
-        global $pth, $cf;
-
-        include_once $pth['folder']['plugins']
-            . 'twocents/htmlpurifier/HTMLPurifier.standalone.php';
+        include_once "{$this->pluginsFolder}twocents/htmlpurifier/HTMLPurifier.standalone.php";
         $config = HTMLPurifier_Config::createDefault();
-        if (!$cf['xhtml']['endtags']) {
+        if (!$this->isXhtml) {
             $config->set('HTML.Doctype', 'HTML 4.01 Transitional');
         }
         $config->set('HTML.Allowed', 'p,blockquote,br,b,strong,i,em,a[href]');
         $config->set('AutoFormat.AutoParagraph', true);
         $config->set('AutoFormat.RemoveEmpty', true);
         $config->set('AutoFormat.RemoveEmpty.RemoveNbsp', true);
+        $config->set('Cache.SerializerPath', "{$this->pluginsFolder}twocents/cache");
         $config->set('HTML.Nofollow', true);
         $config->set('Output.TidyFormat', true);
         $config->set('Output.Newline', "\n");

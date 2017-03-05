@@ -21,31 +21,17 @@
 
 namespace Twocents;
 
-class MainAdminController extends AbstractController
+class MainAdminController extends Controller
 {
-    /**
-     * @var object
-     */
-    private $csrfProtector;
-
-    public function __construct()
-    {
-        global $_XH_csrfProtection;
-
-        $this->csrfProtector = $_XH_csrfProtection;
-    }
-
     /**
      * @return View
      */
     public function defaultAction()
     {
-        global $sn, $plugin_cf;
-
         $view = new View('admin');
-        $view->action = "$sn?&twocents";
+        $view->action = "{$this->scriptName}?&twocents";
         $view->csrfTokenInput = new HtmlString($this->csrfProtector->tokenInput());
-        if ($plugin_cf['twocents']['comments_markup'] == 'HTML') {
+        if ($this->config['comments_markup'] == 'HTML') {
             $button = 'convert_plain';
         } else {
             $button = 'convert_html';
@@ -76,8 +62,6 @@ class MainAdminController extends AbstractController
      */
     private function convertTo($to)
     {
-        global $plugin_tx;
-
         $this->csrfProtector->check();
         $topics = Topic::findAll();
         foreach ($topics as $topic) {
@@ -92,7 +76,7 @@ class MainAdminController extends AbstractController
                 $comment->update();
             }
         }
-        $message = $plugin_tx['twocents']['message_converted_' . $to];
+        $message = $this->lang['message_converted_' . $to];
         return  XH_message('success', $message)
             . $this->defaultAction();
     }
@@ -102,15 +86,13 @@ class MainAdminController extends AbstractController
      */
     public function importCommentsAction()
     {
-        global $plugin_cf, $plugin_tx;
-
         $this->csrfProtector->check();
         $topics = CommentsTopic::findAll();
         foreach ($topics as $topic) {
             $comments = CommentsComment::findByTopicname($topic->getName());
             foreach ($comments as $comment) {
                 $message = $comment->getMessage();
-                if ($plugin_cf['twocents']['comments_markup'] == 'HTML') {
+                if ($this->config['comments_markup'] == 'HTML') {
                     $message = $this->purify($message);
                 } else {
                     $message = $this->plainify($message);
@@ -119,7 +101,7 @@ class MainAdminController extends AbstractController
                 $comment->insert();
             }
         }
-        $message = $plugin_tx['twocents']['message_imported_comments'];
+        $message = $this->lang['message_imported_comments'];
         return XH_message('success', $message)
             . $this->defaultAction();
     }
@@ -130,10 +112,8 @@ class MainAdminController extends AbstractController
      */
     public function importGbookAction()
     {
-        global $plugin_tx;
-
         $this->csrfProtector->check();
-        return XH_message('info', $plugin_tx['twocents']['message_nyi'])
+        return XH_message('info', $this->lang['message_nyi'])
             . $this->defaultAction();
     }
 
