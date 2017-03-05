@@ -1,3 +1,5 @@
+<h1>Twocents – <?=$this->text('menu_main')?></h1>
+<?=$this->message()?>
 <form action="<?=$this->action()?>" method="post">
     <input type="hidden" name="admin" value="plugin_main">
     <?=$this->csrfTokenInput()?>

@@ -92,7 +92,8 @@ class Router
     private function handleMainAdministration()
     {
         $controller = new MainAdminController();
-        return '<h1>Twocents &ndash; Conversion</h1>'
-            . $controller->{self::getControllerAction($controller, 'action')}();
+        ob_start();
+        $controller->{self::getControllerAction($controller, 'action')}();
+        return ob_get_clean();
     }
 }

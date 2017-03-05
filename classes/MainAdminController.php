@@ -24,8 +24,10 @@ namespace Twocents;
 class MainAdminController extends Controller
 {
     /**
-     * @return View
+     * @var ?HtmlString
      */
+    private $message;
+
     public function defaultAction()
     {
         $view = new View('admin');
@@ -37,28 +39,22 @@ class MainAdminController extends Controller
             $button = 'convert_to_html';
         }
         $view->buttons = array($button, 'import_comments', 'import_gbook');
-        return $view;
+        $view->message = $this->message;
+        $view->render();
     }
 
-    /**
-     * @return string
-     */
     public function convertToHtmlAction()
     {
-        return $this->convertTo('html');
+        $this->convertTo('html');
     }
 
-    /**
-     * @return string
-     */
     public function convertToPlainTextAction()
     {
-        return $this->convertTo('plain');
+        $this->convertTo('plain');
     }
 
     /**
-     * @param string $to A markup format ('html' or 'plain').
-     * @return string
+     * @param string $to
      */
     private function convertTo($to)
     {
@@ -76,45 +72,8 @@ class MainAdminController extends Controller
                 $comment->update();
             }
         }
-        $message = $this->lang['message_converted_' . $to];
-        return  XH_message('success', $message)
-            . $this->defaultAction();
-    }
-
-    /**
-     * @return string
-     */
-    public function importCommentsAction()
-    {
-        $this->csrfProtector->check();
-        $topics = CommentsTopic::findAll();
-        foreach ($topics as $topic) {
-            $comments = CommentsComment::findByTopicname($topic->getName());
-            foreach ($comments as $comment) {
-                $message = $comment->getMessage();
-                if ($this->config['comments_markup'] == 'HTML') {
-                    $message = $this->purify($message);
-                } else {
-                    $message = $this->plainify($message);
-                }
-                $comment->setMessage($message);
-                $comment->insert();
-            }
-        }
-        $message = $this->lang['message_imported_comments'];
-        return XH_message('success', $message)
-            . $this->defaultAction();
-    }
-
-    /**
-     * @return string
-     * @todo Implement!
-     */
-    public function importGbookAction()
-    {
-        $this->csrfProtector->check();
-        return XH_message('info', $this->lang['message_nyi'])
-            . $this->defaultAction();
+        $this->message = new HtmlString(XH_message('success', $this->lang['message_converted_' . $to]));
+        $this->defaultAction();
     }
 
     /**
@@ -147,5 +106,36 @@ class MainAdminController extends Controller
             ENT_QUOTES,
             'UTF-8'
         );
+    }
+
+    public function importCommentsAction()
+    {
+        $this->csrfProtector->check();
+        $topics = CommentsTopic::findAll();
+        foreach ($topics as $topic) {
+            $comments = CommentsComment::findByTopicname($topic->getName());
+            foreach ($comments as $comment) {
+                $message = $comment->getMessage();
+                if ($this->config['comments_markup'] == 'HTML') {
+                    $message = $this->purify($message);
+                } else {
+                    $message = $this->plainify($message);
+                }
+                $comment->setMessage($message);
+                $comment->insert();
+            }
+        }
+        $this->message = new HtmlString(XH_message('success', $this->lang['message_imported_comments']));
+        $this->defaultAction();
+    }
+
+    /**
+     * @todo Implement!
+     */
+    public function importGbookAction()
+    {
+        $this->csrfProtector->check();
+        $this->message = new HtmlString(XH_message('info', $this->lang['message_nyi']));
+        $this->defaultAction();
     }
 }
