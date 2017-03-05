@@ -23,6 +23,25 @@ namespace Twocents;
 
 class Router
 {
+    /**
+     * @param string $param
+     * @return string
+     */
+    public static function getControllerAction(Controller $controller, $param)
+    {
+        $action = preg_replace_callback(
+            '/_([a-z])/',
+            function ($matches) {
+                return ucfirst($matches[1]);
+            },
+            isset($_POST[$param]) ? stsl($_POST[$param]) : 'default'
+        );
+        if (!method_exists($controller, "{$action}Action")) {
+            $action = 'default';
+        }
+        return "{$action}Action";
+    }
+
     public function route()
     {
         global $twocents;
@@ -74,27 +93,6 @@ class Router
     {
         $controller = new MainAdminController();
         return '<h1>Twocents &ndash; Conversion</h1>'
-            . $controller->{$this->getMainAdminAction()}();
-    }
-
-    /**
-     * @return string
-     */
-    private function getMainAdminAction()
-    {
-        global $action;
-
-        switch ($action) {
-            case 'convert_html':
-                return 'convertToHtmlAction';
-            case 'convert_plain':
-                return 'convertToPlainTextAction';
-            case 'import_comments':
-                return 'importCommentsAction';
-            case 'import_gbook':
-                return 'importGbookAction';
-            default:
-                return 'defaultAction';
-        }
+            . $controller->{self::getControllerAction($controller, 'action')}();
     }
 }

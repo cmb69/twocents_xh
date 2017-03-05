@@ -50,19 +50,9 @@ function twocents($topicname)
     } catch (DomainException $ex) {
         return XH_message('fail', $plugin_tx['twocents']['error_topicname']);
     }
-    $action = isset($_POST['twocents_action']) ? stsl($_POST['twocents_action']) : 'default';
-    $action = preg_replace_callback(
-        '/_([a-z])/',
-        function ($matches) {
-            return ucfirst($matches[1]);
-        },
-        $action
-    );
-    if (!method_exists($controller, "{$action}Action")) {
-        $action = 'default';
-    }
+    $action = Twocents\Router::getControllerAction($controller, 'twocents_action');
     ob_start();
-    $controller->{"{$action}Action"}();
+    $controller->{$action}();
     return ob_get_clean();
 }
 

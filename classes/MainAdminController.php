@@ -32,9 +32,9 @@ class MainAdminController extends Controller
         $view->action = "{$this->scriptName}?&twocents";
         $view->csrfTokenInput = new HtmlString($this->csrfProtector->tokenInput());
         if ($this->config['comments_markup'] == 'HTML') {
-            $button = 'convert_plain';
+            $button = 'convert_to_plain_text';
         } else {
-            $button = 'convert_html';
+            $button = 'convert_to_html';
         }
         $view->buttons = array($button, 'import_comments', 'import_gbook');
         return $view;
