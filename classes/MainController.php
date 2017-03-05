@@ -112,7 +112,7 @@ class MainController extends Controller
         $comments = array_splice($comments, ($currentPage - 1) * $itemsPerPage, $itemsPerPage);
         $pagination = new Pagination($count, $currentPage, $pageCount, $this->getPaginationUrl());
         $paginationHtml = $pagination->render();
-        $html = $paginationHtml . $this->renderCommentsView($comments) . $paginationHtml;
+        $html = $paginationHtml . $this->prepareCommentsView($comments) . $paginationHtml;
         if (!$this->isXmlHttpRequest()) {
             echo "<div>$html</div>";
         } else {
@@ -126,23 +126,27 @@ class MainController extends Controller
 
     /**
      * @param Comment[] $comments
-     * @return string
+     * @return View
      */
-    private function renderCommentsView(array $comments)
+    private function prepareCommentsView(array $comments)
     {
         $this->writeScriptsToBjs();
-        $html = '<div class="twocents_comments">';
-        foreach ($comments as $comment) {
-            if ($this->isCurrentComment($comment)) {
-                $html .= $this->messages;
-            }
-            $html .= $this->prepareCommentView($comment);
+        $view = new View('comments');
+        $view->comments = array_map(
+            function ($comment) {
+                return (object) array(
+                    'isCurrent' => $this->isCurrentComment($comment),
+                    'view' => $this->prepareCommentView($comment)
+                );
+            },
+            $comments
+        );
+        $view->hasAddComment = !isset($this->comment) || $this->comment->getId() == null;
+        if ($view->hasAddComment) {
+            $view->commentForm = $this->prepareCommentForm($this->comment);
         }
-        $html .= '</div>';
-        if (!isset($this->comment) || $this->comment->getId() == null) {
-            $html .= $this->messages . $this->prepareCommentForm($this->comment);
-        }
-        return $html;
+        $view->messages = $this->messages;
+        return $view;
     }
 
     private function writeScriptsToBjs()
@@ -165,12 +169,10 @@ class MainController extends Controller
         foreach ($properties as $property) {
             $config[$property] = $this->lang[$property];
         }
-        $json = json_encode($config);
-        $filename = "{$this->pluginsFolder}twocents/twocents.js";
-        $bjs .= <<<EOT
-<script type="text/javascript">/* <[CDATA[ */var TWOCENTS = $json;/* ]]> */</script>
-<script type="text/javascript" src="$filename"></script>
-EOT;
+        $view = new View('scripts');
+        $view->json = new HtmlString(json_encode($config));
+        $view->filename = "{$this->pluginsFolder}twocents/twocents.js";
+        $bjs .= $view;
     }
 
     /**
