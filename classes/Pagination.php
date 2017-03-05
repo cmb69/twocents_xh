@@ -26,11 +26,6 @@ class Pagination
     /**
      * @var int
      */
-    private $itemCount;
-
-    /**
-     * @var int
-     */
     private $page;
 
     /**
@@ -39,69 +34,41 @@ class Pagination
     private $pageCount;
 
     /**
-     * @var string
+     * @var int
      */
-    private $url;
+    private $radius;
 
     /**
-     * @param int $itemCount
      * @param int $page
      * @param int $pageCount
-     * @param string $url
      */
-    public function __construct($itemCount, $page, $pageCount, $url)
-    {
-        $this->itemCount = (int) $itemCount;
-        $this->page = (int) $page;
-        $this->pageCount = (int) $pageCount;
-        $this->url = (string) $url;
-    }
-
-    /**
-     * @return View
-     */
-    public function render()
-    {
-        if ($this->pageCount <= 1) {
-            return '';
-        }
-        $view = new View('pagination');
-        $view->itemCount = $this->itemCount;
-        $view->currentPage = $this->page;
-        $view->pages = $this->gatherPages();
-        return $view;
-    }
-
-    /**
-     * @return ?object[]
-     */
-    private function gatherPages()
+    public function __construct($page, $pageCount)
     {
         global $plugin_cf;
 
-        $radius = $plugin_cf['twocents']['pagination_radius'];
-        $pages = array($this->createPageObject(1));
-        if ($this->page - $radius > 1 + 1) {
-            $pages[] = null;
-        }
-        for ($i = $this->page - $radius; $i <= $this->page + $radius; $i++) {
-            if ($i > 1 && $i < $this->pageCount) {
-                $pages[] = $this->createPageObject($i);
-            }
-        }
-        if ($this->page + $radius < $this->pageCount - 1) {
-            $pages[] = null;
-        }
-        $pages[] = $this->createPageObject($this->pageCount);
-        return $pages;
+        $this->page = (int) $page;
+        $this->pageCount = (int) $pageCount;
+        $this->radius = $plugin_cf['twocents']['pagination_radius'];
     }
 
     /**
-     * @param int $pageIndex
-     * @return object
+     * @return ?int[]
      */
-    private function createPageObject($pageIndex)
+    public function gatherPages()
     {
-        return (object) array('index' => $pageIndex, 'url' => sprintf($this->url, $pageIndex));
+        $pages = array(1);
+        if ($this->page - $this->radius > 1 + 1) {
+            $pages[] = null;
+        }
+        for ($i = $this->page - $this->radius; $i <= $this->page + $this->radius; $i++) {
+            if ($i > 1 && $i < $this->pageCount) {
+                $pages[] = $i;
+            }
+        }
+        if ($this->page + $this->radius < $this->pageCount - 1) {
+            $pages[] = null;
+        }
+        $pages[] = $this->pageCount;
+        return $pages;
     }
 }

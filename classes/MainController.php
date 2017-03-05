@@ -110,9 +110,8 @@ class MainController extends Controller
             array('options' => array('min_range' => 1, 'max_range' => $pageCount, 'default' => 1))
         );
         $comments = array_splice($comments, ($currentPage - 1) * $itemsPerPage, $itemsPerPage);
-        $pagination = new Pagination($count, $currentPage, $pageCount, $this->getPaginationUrl());
-        $paginationHtml = $pagination->render();
-        $html = $paginationHtml . $this->prepareCommentsView($comments) . $paginationHtml;
+        $paginationView = $this->preparePaginationView($count, $currentPage, $pageCount);
+        $html = $paginationView . $this->prepareCommentsView($comments) . $paginationView;
         if (!$this->isXmlHttpRequest()) {
             echo "<div>$html</div>";
         } else {
@@ -122,6 +121,34 @@ class MainController extends Controller
             echo $html;
             exit;
         }
+    }
+
+    /**
+     * @param int $commentCount
+     * @param int $page
+     * @param int $pageCount
+     * @return View
+     */
+    private function preparePaginationView($commentCount, $page, $pageCount)
+    {
+        if ($pageCount <= 1) {
+            return '';
+        }
+        $view = new View('pagination');
+        $view->itemCount = $commentCount;
+        $view->currentPage = $page;
+        $pagination = new Pagination($page, $pageCount);
+        $view->pages = array_map(
+            function ($page) {
+                if (isset($page)) {
+                    return (object) array('index' => $page, 'url' => sprintf($this->getPaginationUrl(), $page));
+                } else {
+                    return null;
+                }
+            },
+            $pagination->gatherPages()
+        );
+        return $view;
     }
 
     /**
