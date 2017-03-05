@@ -165,7 +165,7 @@ class MainController extends Controller
         foreach ($properties as $property) {
             $config[$property] = $this->lang[$property];
         }
-        $json = XH_encodeJson($config);
+        $json = json_encode($config);
         $filename = "{$this->pluginsFolder}twocents/twocents.js";
         $bjs .= <<<EOT
 <script type="text/javascript">/* <[CDATA[ */var TWOCENTS = $json;/* ]]> */</script>
