@@ -40,7 +40,7 @@ class CommentView extends AbstractController
     }
 
     /**
-     * @return string
+     * @return View
      */
     public function render()
     {
@@ -53,7 +53,7 @@ class CommentView extends AbstractController
         $view->isCurrentComment = $isCurrentComment;
         if ($isCurrentComment) {
             $formView = new CommentFormView($this->currentComment);
-            $view->form = new HtmlString($formView->render());
+            $view->form = $formView->render();
         } else {
             $view->isAdmin = XH_ADM;
             $view->url = $this->getUrl();
@@ -66,7 +66,7 @@ class CommentView extends AbstractController
             $view->attribution = new HtmlString($this->renderAttribution());
             $view->message = new HtmlString($this->renderMessage());
         }
-        return $view->render();
+        return $view;
     }
 
     /**

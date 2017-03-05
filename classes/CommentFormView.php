@@ -38,7 +38,7 @@ class CommentFormView extends AbstractController
     }
 
     /**
-     * @return string
+     * @return View
      */
     public function render()
     {
@@ -54,7 +54,7 @@ class CommentFormView extends AbstractController
         } else {
             $view->csrfTokenInput = '';
         }
-        return $view->render();
+        return $view;
     }
 
     /**

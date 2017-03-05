@@ -55,7 +55,7 @@ class Router
     }
 
     /**
-     * @return string
+     * @return View
      */
     protected function renderInfo()
     {
@@ -64,7 +64,7 @@ class Router
         $view = new View('info');
         $view->logo = "{$pth['folder']['plugins']}twocents/twocents.png";
         $view->version = TWOCENTS_VERSION;
-        return $view->render();
+        return $view;
     }
 
     /**

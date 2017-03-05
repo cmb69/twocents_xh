@@ -36,7 +36,7 @@ class MainAdminController extends AbstractController
     }
 
     /**
-     * @return string
+     * @return View
      */
     public function defaultAction()
     {
@@ -51,7 +51,7 @@ class MainAdminController extends AbstractController
             $button = 'convert_html';
         }
         $view->buttons = array($button, 'import_comments', 'import_gbook');
-        return $view->render();
+        return $view;
     }
 
     /**

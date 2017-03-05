@@ -23,44 +23,87 @@ namespace Twocents;
 
 class View
 {
+    /**
+     * @var string
+     */
     private $template;
 
+    /**
+     * @var array
+     */
     private $data = array();
 
+    /**
+     * @param string $template
+     */
     public function __construct($template)
     {
         $this->template = $template;
     }
 
+    /**
+     * @param string $name
+     * @param mixed $value
+     */
     public function __set($name, $value)
     {
         $this->data[$name] = $value;
     }
 
+    /**
+     * @param string $name
+     * @return string
+     */
     public function __get($name)
     {
-        return $this->escape($this->data[$name]);
+        return $this->data[$name];
     }
 
+    /**
+     * @param string $name
+     * @return bool
+     */
     public function __isset($name)
     {
         return isset($this->data[$name]);
     }
 
+    /**
+     * @param string $name
+     * @return string
+     */
     public function __call($name, array $args)
     {
-        return $this->escape(call_user_func_array($this->data[$name], $args));
+        return $this->escape($this->data[$name]);
     }
 
+    /**
+     * @return string
+     */
+    public function __toString()
+    {
+        ob_start();
+        $this->render();
+        return ob_get_clean();
+    }
+    
+    /**
+     * @param string $key
+     * @return string
+     */
     protected function text($key)
     {
         global $plugin_tx;
 
         $args = func_get_args();
         array_shift($args);
-        return vsprintf($plugin_tx['twocents'][$key], $args);
+        return $this->escape(vsprintf($plugin_tx['twocents'][$key], $args));
     }
 
+    /**
+     * @param string $key
+     * @param int $count
+     */
     protected function plural($key, $count)
     {
         global $plugin_tx;
@@ -72,24 +115,30 @@ class View
         }
         $args = func_get_args();
         array_shift($args);
-        return vsprintf($plugin_tx['twocents'][$key], $args);
+        return $this->escape(vsprintf($plugin_tx['twocents'][$key], $args));
     }
 
+    /**
+     * @return string
+     */
     public function render()
     {
         global $pth;
 
-        ob_start();
+        echo "<!-- {$this->template} -->", PHP_EOL;
         include "{$pth['folder']['plugins']}twocents/views/{$this->template}.php";
-        return ob_get_clean();
     }
 
+    /**
+     * @param mixed $value
+     * @return mixed
+     */
     protected function escape($value)
     {
-        if (is_scalar($value)) {
-            return XH_hsc($value);
-        } else {
+        if ($value instanceof HtmlString || $value instanceof View) {
             return $value;
+        } else {
+            return XH_hsc($value);
         }
     }
 }

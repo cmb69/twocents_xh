@@ -58,7 +58,7 @@ class Pagination
     }
 
     /**
-     * @return string
+     * @return View
      */
     public function render()
     {
@@ -69,34 +69,39 @@ class Pagination
         $view->itemCount = $this->itemCount;
         $view->currentPage = $this->page;
         $view->pages = $this->gatherPages();
-        $url = $this->url;
-        $view->url = function ($page) use ($url) {
-            return sprintf($url, $page);
-        };
-        return $view->render();
+        return $view;
     }
 
     /**
-     * @return ?int[]
+     * @return ?object[]
      */
     private function gatherPages()
     {
         global $plugin_cf;
 
         $radius = $plugin_cf['twocents']['pagination_radius'];
-        $pages = array(1);
+        $pages = array($this->createPageObject(1));
         if ($this->page - $radius > 1 + 1) {
             $pages[] = null;
         }
         for ($i = $this->page - $radius; $i <= $this->page + $radius; $i++) {
             if ($i > 1 && $i < $this->pageCount) {
-                $pages[] = $i;
+                $pages[] = $this->createPageObject($i);
             }
         }
         if ($this->page + $radius < $this->pageCount - 1) {
             $pages[] = null;
         }
-        $pages[] = $this->pageCount;
+        $pages[] = $this->createPageObject($this->pageCount);
         return $pages;
+    }
+
+    /**
+     * @param int $pageIndex
+     * @return object
+     */
+    private function createPageObject($pageIndex)
+    {
+        return (object) array('index' => $pageIndex, 'url' => sprintf($this->url, $pageIndex));
     }
 }

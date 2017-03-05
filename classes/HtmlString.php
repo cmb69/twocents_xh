@@ -27,7 +27,7 @@ class HtmlString
 
     public function __construct($string)
     {
-        $this->value = $string;
+        $this->value = (string) $string;
     }
 
     public function __toString()
