@@ -28,9 +28,10 @@ class Comment
     /**
      * @param string $name
      * @param bool $visibleOnly
+     * @param bool $ascending
      * @return Comment[]
      */
-    public static function findByTopicname($name, $visibleOnly = false)
+    public static function findByTopicname($name, $visibleOnly = false, $ascending = true)
     {
         $comments = array();
         Db::lock(LOCK_SH);
@@ -45,6 +46,9 @@ class Comment
             fclose($file);
         }
         Db::lock(LOCK_UN);
+        if (!$ascending) {
+            $comments = array_reverse($comments);
+        }
         return $comments;
     }
 

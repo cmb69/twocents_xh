@@ -96,10 +96,7 @@ class MainController extends Controller
         if (isset($_GET['twocents_id'])) {
             $this->comment = Comment::find(stsl($_GET['twocents_id']), $this->topicname);
         }
-        $comments = Comment::findByTopicname($this->topicname, true);
-        if ($this->config['comments_order'] == 'DESC') {
-            $comments = array_reverse($comments);
-        }
+        $comments = Comment::findByTopicname($this->topicname, true, $this->config['comments_order'] === 'ASC');
         $count = count($comments);
         $itemsPerPage = $this->config['pagination_max'];
         $pageCount = (int) ceil($count / $itemsPerPage);
