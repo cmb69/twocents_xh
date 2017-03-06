@@ -29,6 +29,7 @@ $plugin_tx['twocents']['label_convert_to_plain_text']="Convert all comments to p
 $plugin_tx['twocents']['label_import_comments']="Import all comments from the Comments plugin";
 $plugin_tx['twocents']['label_import_gbook']="Import all comments from the GBook plugin";
 $plugin_tx['twocents']['email_subject']="A new comment has been posted";
+$plugin_tx['twocents']['email_attribution']="In <%1\$s>, %2\$s (<%3\$s>) wrote:";
 $plugin_tx['twocents']['error_topicname']="A topicname may only contain letters (a-z), digits (0-9) and minus signs (-)!";
 $plugin_tx['twocents']['error_user']="Invalid name!";
 $plugin_tx['twocents']['error_email']="Invalid email address!";

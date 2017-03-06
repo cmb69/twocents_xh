@@ -354,9 +354,10 @@ class MainController extends Controller
             $view->comment = $this->comment;
             $view->url = (new Url($this->scriptName, $_GET))->absolute()
                 . "#twocents_comment_" . $this->comment->getId();
-            $view->message = $message;
+            $view->message = '> ' . str_replace("\n", "\n> ", $message);
+            $replyTo = str_replace(["\n", "\r"], '', $this->comment->getEmail());
             $mailer = new Mailer(($this->config['email_linebreak'] === 'LF') ? "\n" : "\r\n");
-            $mailer->send($email, $this->lang['email_subject'], $view, "From: $email");
+            $mailer->send($email, $this->lang['email_subject'], $view, "From: $email\r\nReply-To: $replyTo");
         }
     }
 

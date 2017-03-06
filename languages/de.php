@@ -29,6 +29,7 @@ $plugin_tx['twocents']['label_convert_to_plain_text']="Alle Kommentare in einfac
 $plugin_tx['twocents']['label_import_comments']="Alle Kommentare aus dem Comments Plugin importieren";
 $plugin_tx['twocents']['label_import_gbook']="Alle Kommentare aus dem GBook plugin importieren";
 $plugin_tx['twocents']['email_subject']="Ein neuer Kommentar wurde gepostet";
+$plugin_tx['twocents']['email_attribution']="In <%1\$s> schrieb %2\$s (<%3\$s>):";
 $plugin_tx['twocents']['error_topicname']="Ein Themenname darf nur Buchstaben (a-z), Ziffern (0-9) and Minus-Zeichen (-) enthalten!";
 $plugin_tx['twocents']['error_user']="Ungültiger Name!";
 $plugin_tx['twocents']['error_email']="Ungültige E-Mail-Adresse!";
