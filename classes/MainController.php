@@ -129,10 +129,12 @@ class MainController extends Controller
         $view->itemCount = $commentCount;
         $view->currentPage = $page;
         $pagination = new Pagination($page, $pageCount);
+        $url = new Url($this->scriptName, $_GET);
         $view->pages = array_map(
-            function ($page) {
+            function ($page) use ($url) {
                 if (isset($page)) {
-                    return (object) array('index' => $page, 'url' => sprintf($this->getPaginationUrl(), $page));
+                    return (object) array('index' => $page, 'url' => $url->with('twocents_page', $page)
+                    );
                 } else {
                     return null;
                 }
@@ -207,8 +209,8 @@ class MainController extends Controller
             $view->form = $this->prepareCommentForm($this->comment);
         } else {
             $view->isAdmin = XH_ADM;
-            $view->url = $this->getUrl();
-            $view->editUrl = $this->getUrl() . '&twocents_id=' . $comment->getId();
+            $view->url = (new Url($this->scriptName, $_GET))->without('twocents_id');
+            $view->editUrl = $view->url->with('twocents_id', $comment->getId());
             $view->comment = $comment;
             if (XH_ADM) {
                 $view->csrfTokenInput = new HtmlString($this->csrfProtector->tokenInput());
@@ -230,7 +232,7 @@ class MainController extends Controller
         }
         $view = new View('comment-form');
         $view->action = $comment->getId() ? 'update' : 'add';
-        $view->url = $this->getUrl();
+        $view->url = (new Url($this->scriptName, $_GET))->without('twocents_id');
         $view->comment = $comment;
         $view->captcha = new HtmlString($this->renderCaptcha());
         if ($comment->getId()) {
@@ -352,41 +354,12 @@ class MainController extends Controller
             }
             $view = new PlainTextView('email');
             $view->comment = $this->comment;
-            $view->url = CMSIMPLE_URL . "?{$_SERVER['QUERY_STRING']}";
+            $view->url = (new Url($this->scriptName, $_GET))->absolute()
+                . "#twocents_comment_" . $this->comment->getId();
             $view->message = $message;
             $mailer = new Mailer(($this->config['email_linebreak'] === 'LF') ? "\n" : "\r\n");
             $mailer->send($email, $this->lang['email_subject'], $view, "From: $email");
         }
-    }
-
-    /**
-     * @return string
-     */
-    private function getPaginationUrl()
-    {
-        $params = $_GET;
-        $params['twocents_page'] = '%d';
-        $params = array_map(
-            function ($key, $value) {
-                $param = urlencode($key);
-                if ($value !== '') {
-                    $param .= '=';
-                    if ($key === 'twocents_page') {
-                        $param .= $value;
-                    } else {
-                        $param .= urlencode($value);
-                    }
-                }
-                return $param;
-            },
-            array_keys($params),
-            array_values($params)
-        );
-        $url = $this->scriptName;
-        if (!empty($params)) {
-            $url .= '?' . implode('&', $params);
-        }
-        return $url;
     }
 
     public function updateCommentAction()
@@ -454,18 +427,9 @@ class MainController extends Controller
             && $_SERVER['HTTP_X_REQUESTED_WITH'] === 'XMLHttpRequest';
     }
 
-    /**
-     * @return string
-     */
-    private function getUrl()
-    {
-        $queryString = preg_replace('/&twocents_id=[^&]+/', '', $_SERVER['QUERY_STRING']);
-        return "{$this->scriptName}?$queryString";
-    }
-
     private function redirectToDefault()
     {
-        $url = CMSIMPLE_URL . '?' . $_SERVER['QUERY_STRING'];
+        $url = (new Url($this->scriptName, $_GET))->without('twocents_action')->absolute();
         header("Location: $url", true, 303);
         exit;
     }
