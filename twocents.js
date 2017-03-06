@@ -266,7 +266,7 @@
                 button.className = "twocents_write_button";
                 button.onclick = showForm;
                 button.innerHTML = TWOCENTS.label_new;
-                form.parentNode.appendChild(button);
+                form.parentNode.insertBefore(button, form.nextSibling);
             }
         }
 

@@ -79,7 +79,9 @@
 .twocents_scroll_marker {
     height: 1em;
 }
-
+.twocents_write_button {
+    margin: 1em 0;
+}
 /*
  * Back-end.
  */

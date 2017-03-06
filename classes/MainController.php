@@ -159,8 +159,10 @@ class MainController extends Controller
             },
             $comments
         );
-        $view->hasAddComment = !isset($this->comment) || $this->comment->getId() == null;
-        if ($view->hasAddComment) {
+        $mayAddComment = !isset($this->comment) || $this->comment->getId() == null;
+        $view->hasCommentFormAbove = $mayAddComment && $this->config['comments_order'] === 'DESC';
+        $view->hasCommentFormBelow = $mayAddComment && $this->config['comments_order'] === 'ASC';
+        if ($mayAddComment) {
             $view->commentForm = $this->prepareCommentForm($this->comment);
         }
         $view->messages = new HtmlString($this->messages);
