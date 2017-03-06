@@ -22,6 +22,14 @@
 
     var init;
 
+    function on(target, event, listener) {
+        if (typeof target.addEventListener !== "undefined") {
+            target.addEventListener(event, listener, false);
+        } else if (typeof target.attachEvent !== "undefined") {
+            target.attachEvent("on" + event, listener);
+        }
+    }
+
     /**
      * Convert all relevant anchor elements to buttons.
      *
@@ -466,5 +474,5 @@
         }
     };
 
-    init();
+    on(window, "load", init);
 }());
