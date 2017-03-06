@@ -46,8 +46,6 @@ class MainController extends Controller
      */
     public function __construct($topicname)
     {
-        global $pth;
-
         parent::__construct();
         if (!$this->isValidTopicname($topicname)) {
             throw new DomainException;
