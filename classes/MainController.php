@@ -163,7 +163,7 @@ class MainController extends Controller
         if ($view->hasAddComment) {
             $view->commentForm = $this->prepareCommentForm($this->comment);
         }
-        $view->messages = $this->messages;
+        $view->messages = new HtmlString($this->messages);
         return $view;
     }
 
