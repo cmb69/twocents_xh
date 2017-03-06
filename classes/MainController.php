@@ -31,11 +31,6 @@ class MainController extends Controller
     private $topicname;
 
     /**
-     * @var string
-     */
-    private $pluginsFolder;
-
-    /**
      * @var Comment
      */
     private $comment;
@@ -58,7 +53,6 @@ class MainController extends Controller
             throw new DomainException;
         }
         $this->topicname = $topicname;
-        $this->pluginsFolder = $pth['folder']['plugins'];
         $this->messages = '';
     }
 

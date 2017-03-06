@@ -32,6 +32,11 @@ abstract class Controller
     protected $scriptName;
 
     /**
+     * @var string
+     */
+    protected $pluginsFolder;
+
+    /**
      * @var array
      */
     protected $config;
@@ -53,9 +58,10 @@ abstract class Controller
 
     public function __construct()
     {
-        global $sn, $cf, $plugin_cf, $plugin_tx, $_XH_csrfProtection;
+        global $sn, $pth, $cf, $plugin_cf, $plugin_tx, $_XH_csrfProtection;
 
         $this->scriptName = $sn;
+        $this->pluginsFolder = $pth['folder']['plugins'];
         $this->config = $plugin_cf['twocents'];
         $this->lang = $plugin_tx['twocents'];
         if (isset($_XH_csrfProtection)) {
