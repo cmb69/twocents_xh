@@ -102,7 +102,7 @@ class MainController extends Controller
         $paginationView = $this->preparePaginationView($count, $currentPage, $pageCount);
         $html = $paginationView . $this->prepareCommentsView($comments) . $paginationView;
         if (!$this->isXmlHttpRequest()) {
-            echo "<div>$html</div>";
+            echo "<div class=\"twocents_container\">$html</div>";
         } else {
             while (ob_get_level()) {
                 ob_end_clean();

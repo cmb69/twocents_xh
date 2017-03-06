@@ -168,8 +168,11 @@
 
                 if (request.readyState === 4 && request.status === 200) {
                     commentsDiv = form.parentNode;
+                    while (commentsDiv
+                            && commentsDiv.className !== "twocents_container") {
+                        commentsDiv = commentsDiv.parentNode;
+                    }
                     commentsDiv.innerHTML = request.responseText;
-                    commentsDiv.className = "";
                     init();
                     scrollMarker = document.getElementById(
                         "twocents_scroll_marker"
