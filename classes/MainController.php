@@ -131,7 +131,9 @@ class MainController extends Controller
         $view->pages = array_map(
             function ($page) use ($url) {
                 if (isset($page)) {
-                    return (object) array('index' => $page, 'url' => $url->with('twocents_page', $page)
+                    return (object) array(
+                        'index' => $page,
+                        'url' => $url->without('twocents_id')->with('twocents_page', $page)
                     );
                 } else {
                     return null;

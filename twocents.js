@@ -45,6 +45,87 @@
         }
     }
 
+    function doGetRequest(url) {
+        var request = new XMLHttpRequest();
+        request.open("GET", url);
+        request.setRequestHeader("X-Requested-With", "XMLHttpRequest");
+        request.onreadystatechange = (function onreadystatechange() {
+            var request = this;
+            if (request.readyState === 4 && request.status === 200) {
+                each(find(".twocents_container"), function (container) {
+                    container.innerHTML = request.responseText;
+                    init();
+                    container.className = container.className.replace(/ twocents_loading$/, "");
+                });
+            }
+        });
+        request.send(null);
+        each(find(".twocents_container"), function (container) {
+            container.className += " twocents_loading";
+        });
+    }
+
+    function doPostRequest(url, payload) {
+        var request = new XMLHttpRequest();
+        request.open("POST", window.location.href);
+        request.setRequestHeader("Content-Type", "application/x-www-form-urlencoded");
+        request.setRequestHeader("X-Requested-With", "XMLHttpRequest");
+        request.onreadystatechange = (function () {
+            var request = this;
+            if (request.readyState === 4 && request.status === 200) {
+                each(find(".twocents_container"), function (container) {
+                    container.innerHTML = request.responseText;
+                    container.className = container.className.replace(/ twocents_loading$/, "");
+                });
+                init();
+                each(find("#twocents_scroll_marker"), function (scrollMarker) {
+                    scrollMarker.scrollIntoView(
+                        scrollMarker.nextSibling.nodeName.toLowerCase() ===
+                                "p"
+                    );
+                });
+            }
+        });
+        request.send(payload);
+        each(find(".twocents_container"), function (container) {
+            container.className += " twocents_loading";
+        });
+    }
+
+    function ajaxifyPagination() {
+        each(find(".twocents_pagination a"), function (anchor) {
+            anchor.onclick = (function () {
+                doGetRequest(this.href);
+                return false;
+            });
+        });
+    }
+
+    function ajaxifyAdminTools() {
+        var currentButton;
+        each(find(".twocents_admin_tools form button"), function (button) {
+            button.onclick = (function () {
+                currentButton = this;
+            });
+        });
+        each(find(".twocents_admin_tools form"), function (form) {
+            form.onsubmit = (function () {
+                if (currentButton.value === "remove_comment") {
+                    var confirmed = window.confirm(TWOCENTS.message_delete);
+                    if (!confirmed) {
+                        return false;
+                    }
+                }
+                var params = [];
+                each([this["xh_csrf_token"], this["twocents_id"], currentButton], function (element) {
+                    params.push(encodeURIComponent(element.name) + "=" + encodeURIComponent(element.value));
+                });
+                doPostRequest(this.action, params.join("&"));
+                return false;
+            });       
+        });
+    }
+
     /**
      * Convert all relevant anchor elements to buttons.
      *
@@ -52,34 +133,15 @@
      */
     function convertAnchorsToButtons() {
         each(find(".twocents_admin_tools a, .twocents_form_buttons a"), function (anchor) {
-            var button;
-
-            button = document.createElement("button");
+            var button = document.createElement("button");
             //button.type = "button";
             button.setAttribute("type", "button");
             button.onclick = (function () {
-                window.location.href = anchor.href;
+                doGetRequest(anchor.href);
+                return false;
             });
             button.innerHTML = anchor.innerHTML;
             anchor.parentNode.replaceChild(button, anchor);
-        });
-    }
-
-    /**
-     * Adds a delete confirmatio to all relevant elements.
-     *
-     * @returns {undefined}
-     */
-    function addDeleteConfirmation() {
-        each(find(".twocents_admin_tools form"), function (form) {
-            each(find("button[value='toggle_visibility']", form), function (button) {
-                button.onclick = (function () {
-                    this.form.onsubmit = null;
-                });
-            });
-            form.onsubmit = (function () {
-                return window.confirm(TWOCENTS.message_delete);
-            });
         });
     }
 
@@ -111,50 +173,6 @@
      * @returns {undefined}
      */
     function prepareForm() {
-
-        /**
-         * Submits a form.
-         *
-         * @param {HTMLFormElement} form
-         *
-         * @returns {undefined}
-         */
-        function submit(form) {
-            var request;
-
-            if (typeof XMLHttpRequest === "undefined") {
-                return false;
-            }
-            request = new XMLHttpRequest();
-            request.open("POST", window.location.href);
-            request.setRequestHeader("Content-Type", "application/x-www-form-urlencoded");
-            request.setRequestHeader("X-Requested-With", "XMLHttpRequest");
-            request.onreadystatechange = (function () {
-                var request = this;
-                if (request.readyState === 4 && request.status === 200) {
-                    each(find(".twocents_container"), function (element) {
-                        if (element.contains(form)) {
-                            element.innerHTML = request.responseText;
-                        }
-                    });
-                    init();
-                    each(find("#twocents_scroll_marker"), function (scrollMarker) {
-                        scrollMarker.scrollIntoView(
-                            scrollMarker.nextSibling.nodeName.toLowerCase() ===
-                                    "p"
-                        );
-                    });
-                    each(find(".twocents_container"), function (container) {
-                        container.className = container.className.replace(/ twocents_loading$/, "");
-                    });
-                }
-            });
-            request.send(serialize(form));
-            each(find(".twocents_container"), function (container) {
-                container.className += " twocents_loading";
-            });
-            return true;
-        }
 
         /**
          * Updates the textarea from the content-editable.
@@ -200,16 +218,15 @@
 
         each(find(".twocents_comments button"), function (button) {
             if (button.name === "twocents_action") {
-                if (button.value === "add_comment") {
+                if (button.value === "add_comment" || button.value === "update_comment") {
                     button.form.onsubmit = (function () {
                         update(this);
-                        return !submit(this);
+                        doPostRequest(this.action, serialize(this));
+                        return false;
                     });
-                    hideForm(button.form);
-                } else if (button.value === "update_comment") {
-                    button.form.onsubmit = (function () {
-                        update(this);
-                    });
+                    if (button.value === "add_comment") {
+                        hideForm(button.form);
+                    }
                 }
             } else if (button.type === "reset") {
                 button.onclick = (function () {
@@ -321,8 +338,9 @@
      * @returns {undefined}
      */
     init = function () {
+        ajaxifyPagination();
         convertAnchorsToButtons();
-        addDeleteConfirmation();
+        ajaxifyAdminTools();
         prepareForm();
         if (TWOCENTS.comments_markup === "HTML") {
             if (isRteSupported()) {
