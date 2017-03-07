@@ -5,6 +5,7 @@
 .twocents_loading {
     opacity: 0.3;
     filter: alpha(opacity=30); /* IE < 9 */
+    background-image: url("./ajax-loader.gif");
 }
 .twocents_comments {
 }

@@ -144,10 +144,15 @@
                                     "p"
                         );
                     });
+                    each(find(".twocents_container"), function (container) {
+                        container.className = container.className.replace(/ twocents_loading$/, "");
+                    });
                 }
             });
             request.send(serialize(form));
-            form.parentNode.className = "twocents_loading";
+            each(find(".twocents_container"), function (container) {
+                container.className += " twocents_loading";
+            });
             return true;
         }
 
