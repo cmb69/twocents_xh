@@ -79,7 +79,7 @@ class Url
      */
     private function queryString()
     {
-        return preg_replace('/=(?=&|$)/', '', http_build_query($this->params,  null, '&'));
+        return preg_replace('/=(?=&|$)/', '', http_build_query($this->params, null, '&'));
     }
 
     /**
