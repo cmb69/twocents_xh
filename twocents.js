@@ -67,7 +67,7 @@
 
     function doPostRequest(url, payload) {
         var request = new XMLHttpRequest();
-        request.open("POST", window.location.href);
+        request.open("POST", url);
         request.setRequestHeader("Content-Type", "application/x-www-form-urlencoded");
         request.setRequestHeader("X-Requested-With", "XMLHttpRequest");
         request.onreadystatechange = (function () {

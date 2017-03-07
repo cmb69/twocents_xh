@@ -92,12 +92,7 @@ class MainController extends Controller
         $count = count($comments);
         $itemsPerPage = $this->config['pagination_max'];
         $pageCount = (int) ceil($count / $itemsPerPage);
-        $currentPage = filter_input(
-            INPUT_GET,
-            'twocents_page',
-            FILTER_VALIDATE_INT,
-            array('options' => array('min_range' => 1, 'max_range' => $pageCount, 'default' => 1))
-        );
+        $currentPage = isset($_GET['twocents_page']) ? max(1, min($pageCount, $_GET['twocents_page'])) : 1;
         $comments = array_splice($comments, ($currentPage - 1) * $itemsPerPage, $itemsPerPage);
         $paginationView = $this->preparePaginationView($count, $currentPage, $pageCount);
         $html = $paginationView . $this->prepareCommentsView($comments) . $paginationView;
@@ -235,6 +230,9 @@ class MainController extends Controller
         $view = new View('comment-form');
         $view->action = $comment->getId() ? 'update' : 'add';
         $view->url = (new Url($this->scriptName, $_GET))->without('twocents_id');
+        if (!$comment->getId()) {
+            $view->url = $view->url->with('twocents_page', '2147483647');
+        }
         $view->comment = $comment;
         $view->captcha = new HtmlString($this->renderCaptcha());
         if ($comment->getId()) {
