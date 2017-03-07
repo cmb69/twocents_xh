@@ -94,3 +94,7 @@
 .twocents_license {
     text-align: justify;
 }
+.twocents_syscheck {
+    list-style: none;
+    padding-left: 0;
+}

@@ -83,6 +83,7 @@ class Router
         $view = new View('info');
         $view->logo = "{$pth['folder']['plugins']}twocents/twocents.png";
         $view->version = TWOCENTS_VERSION;
+        $view->checks = (new SystemCheckService)->getChecks();
         return $view;
     }
 
