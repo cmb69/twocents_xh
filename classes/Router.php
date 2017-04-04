@@ -44,13 +44,11 @@ class Router
 
     public function route()
     {
-        global $twocents;
-
         if (XH_ADM) {
             if (function_exists('XH_registerStandardPluginMenuItems')) {
                 XH_registerStandardPluginMenuItems(true);
             }
-            if (isset($twocents) && $twocents == 'true') {
+            if (XH_wantsPluginAdministration('twocents')) {
                 $this->handleAdministration();
             }
         }
