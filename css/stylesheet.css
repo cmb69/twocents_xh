@@ -2,10 +2,12 @@
  * Front-end.
  */
 
+/*
+ * For a fancier styling of the following, see
+ * <https://cmsimpleforum.com/viewtopic.php?t=7933&p=58481#p58468>.
+ */
 .twocents_loading {
-    opacity: 0.3;
-    filter: alpha(opacity=30); /* IE < 9 */
-    background-image: url("./ajax-loader.gif");
+    visibility: hidden;
 }
 .twocents_comments {
 }
