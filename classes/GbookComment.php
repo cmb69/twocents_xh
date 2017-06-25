@@ -1,7 +1,7 @@
 <?php
 
 /**
- * Copyright 2014-2017 Christoph M. Becker
+ * Copyright 2017 Christoph M. Becker
  *
  * This file is part of Twocents_XH.
  *
@@ -21,7 +21,7 @@
 
 namespace Twocents;
 
-class CommentsComment extends Comment
+class GbookComment extends Comment
 {
     const EXT = 'txt';
 
@@ -37,7 +37,7 @@ class CommentsComment extends Comment
         if (is_readable($filename) && ($file = fopen($filename, 'r'))) {
             if (fgets($file) !== false) {
                 while (($line = fgets($file)) !== false) {
-                    $record = explode('-,+;-', trim($line));
+                    $record = explode(';', trim($line));
                     $comments[] = self::load($name, $record);
                 }
             }
@@ -53,12 +53,11 @@ class CommentsComment extends Comment
      */
     protected static function load($topicname, array $record)
     {
-        // image is $record[6]
-        $comment = new parent($topicname, $record[5]);
-        $comment->user = $record[1];
-        $comment->email = $record[2];
-        $comment->message = $record[7];
-        $comment->hidden = $record[5] == 'hidden';
+        $comment = new parent($topicname, $record[8]);
+        $comment->user = $record[0];
+        $comment->email = $record[1];
+        $comment->message = "<p><strong>{$record[5]}</strong></p><p>{$record[6]}</p>";
+        $comment->hidden = false;
         return $comment;
     }
 }

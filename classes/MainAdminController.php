@@ -135,7 +135,21 @@ class MainAdminController extends Controller
     public function importGbookAction()
     {
         $this->csrfProtector->check();
-        $this->message = new HtmlString(XH_message('info', $this->lang['message_nyi']));
+        $topics = CommentsTopic::findAll();
+        foreach ($topics as $topic) {
+            $comments = GbookComment::findByTopicname($topic->getName());
+            foreach ($comments as $comment) {
+                $message = $comment->getMessage();
+                if ($this->config['comments_markup'] == 'HTML') {
+                    $message = $this->purify($message);
+                } else {
+                    $message = $this->plainify($message);
+                }
+                $comment->setMessage($message);
+                $comment->insert();
+            }
+        }
+        $this->message = new HtmlString(XH_message('success', $this->lang['message_imported_gbook']));
         $this->defaultAction();
     }
 }
