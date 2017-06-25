@@ -188,7 +188,7 @@ class MainController extends Controller
         }
         $view = new View('scripts');
         $view->json = new HtmlString(json_encode($config));
-        $view->filename = "{$this->pluginsFolder}twocents/twocents.js";
+        $view->filename = "{$this->pluginsFolder}twocents/twocents.min.js";
         $bjs .= $view;
     }
 

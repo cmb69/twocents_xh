@@ -7,10 +7,6 @@
         <include name="index.php"/>
     </fileset>
 
-    <fileset id="js-sources" dir=".">
-        <include name="twocents.js"/>
-    </fileset>
-
     <fileset id="unit-tests" dir="tests/unit">
         <include name="*Test.php"/>
     </fileset>
@@ -91,7 +87,7 @@
         </move>
         <jsMin targetDir="dist" suffix="" failOnError="false">
             <fileset dir="export">
-                <include name="twocents.js"/>
+                <include name="twocents.min.js"/>
             </fileset>
         </jsMin>
         <move todir="dist">
