@@ -9,23 +9,34 @@
 
 <body>
 
-<h1>Twocents_XH - ein CMSimple_XH Plugin</h1>
-<img src="../twocents.png" style="float: left; margin: 0 16px 0 0" alt="leere
-Sprechblase">
-<p>Twocents_XH erlaubt Ihren Besuchern Ihren Senf abzugeben (engl. "to put in
-one's two cents"). ;) Sie können es als allgemeine Kommentarmöglichkeit auf
-mehreren Seiten, oder als Gästebuch auf einer einzigen Seite, oder als beides,
-sowie als Kommentar-Plugin für <a
-href="http://3-magi.net/de/?CMSimple_XH/Realblog_XH">Realblog_XH</a> verwenden. Als
-Auszeichnungssprache steht optional eine minimale Untermenge von HTML zur
-Verfügung, die mit einem schlichten WYSIWYG Editor eingegeben werden kann.</p>
-<p>Optional können Sie die Kommentar-Moderation aktivieren (d.h. Kommentare
-werden nicht automtisch veröffentlicht), sich über neue Kommentare per E-Mail
-informieren lassen, und zur Spam-Prävention können Sie ein <a
-href="http://www.cmsimple-xh.org/wiki/doku.php/captcha_plugins">spezifikationsgerechtes
-CAPTCHA-Plugin</a> und eine einfache Bad-Word-Liste nutzen.</p>
+<article>
 
-<ul id="nav">
+<h1>Twocents_XH – Handbuch</h1>
+<img src="../twocents.png" style="float: left; margin: 0 1.5em 0.5em 0" alt="leere Sprechblase">
+<p>
+    Twocents_XH erlaubt Ihren Besuchern ihren Senf abzugeben (engl. "to put in
+    one's two cents"). ;) Sie können es als allgemeine Kommentarmöglichkeit auf
+    mehreren Seiten, oder als Gästebuch auf einer einzigen Seite, oder als
+    beides, sowie als Kommentar-Plugin für <a
+    href="http://3-magi.net/de/?CMSimple_XH/Realblog_XH">Realblog_XH</a>
+    verwenden. Als Auszeichnungssprache steht optional eine minimale Untermenge
+    von <abbr title="Hypertext Markup Language">HTML</abbr> zur Verfügung, die
+    mit einem schlichten <abbr title="What You See Is What You
+    Get">WYSIWYG</abbr> Editor eingegeben werden kann.
+</p>
+<p>
+    Optional können Sie die Kommentar-Moderation aktivieren (d.h. Kommentare
+    werden nicht automtisch veröffentlicht), sich über neue Kommentare per
+    E-Mail informieren lassen, und zur Spam-Prävention können Sie ein <a
+    href="http://www.cmsimple-xh.org/wiki/doku.php/captcha_plugins">spezifikationsgerechtes
+    <abbr title="Completely Automated Public Turing test to tell Computers and
+    Humans Apart">CAPTCHA</abbr>-Plugin</a> und eine einfache Bad-Word-Liste
+    nutzen.
+</p>
+
+<nav id="nav">
+<h2>Inhaltsverzeichnis</h2>
+<ul>
 <li><a href="#notice">Wichtiger Hinweis</a></li>
 <li><a href="#requirements">Voraussetzungen</a></li>
 <li><a href="#installation">Installation</a></li>
@@ -39,134 +50,198 @@ CAPTCHA-Plugin</a> und eine einfache Bad-Word-Liste nutzen.</p>
 <li><a href="#license">Lizenz</a></li>
 <li><a href="#credits">Danksagung</a></li>
 </ul>
+</nav>
 
-<div id="body">
-
-<p><strong>Bitte lesen Sie diese Dokumentation <em>bevor</em> Sie auf Probleme
-stoßen!</strong></p>
-
-<h2 id="notice">Wichtiger Hinweis</h2>
-<p>
-    <strong>Twocents_XH konnte bisher noch nicht in diversen Umgebungen getestet
-    werden. Es handelt sich um eine so genannte Beta Version. Vorsicht bei der
-    Verwendung!</strong>
+<section id="notice">
+<h2>Wichtiger Hinweis</h2>
+<p class="important">
+    Twocents_XH konnte bisher noch nicht in diversen Umgebungen getestet werden.
+    Es handelt sich um eine so genannte Beta Version. Vorsicht bei der
+    Verwendung!
 </p>
-<div class="toplink"><a href="#">zum Seitenanfang</a></div>
+</section>
 
-<h2 id="requirements">Voraussetzungen</h2>
+<section id="requirements">
+<h2>Voraussetzungen</h2>
 <p>
-    Twocents_XH ist ein Plugin für CMSimple_XH. Es benötigt CMSimple_XH &ge; 1.6.3
-    und PHP &ge; 5.4.0 mit der installierten json Extension.
+    Twocents_XH ist ein Plugin für CMSimple_XH ≥ 1.6.3 und <abbr title="PHP:
+    Hypertext Preprocessor">PHP</abbr> ≥ 5.4.0 mit der installierten <i>JSON</i>
+    Extension.
 </p>
-<div class="toplink"><a href="#">zum Seitenanfang</a></div>
+</section>
 
-<h2 id="installation">Installation</h2>
-<p>Die Installation erfolgt wie bei vielen anderen CMSimple_XH-Plugins auch. Im
-<a href="http://www.cmsimple-xh.org/wiki/doku.php/de:installation">CMSimple_XH
-Wiki</a> finden sie ausführliche Hinweise.</p>
+<section id="installation">
+<h2>Installation</h2>
+<p>
+    Die Installation erfolgt wie bei vielen anderen CMSimple_XH-Plugins auch. Im
+    <a
+    href="http://www.cmsimple-xh.org/wiki/doku.php/de:installation">CMSimple_XH
+    Wiki</a> finden sie ausführliche Hinweise.
+</p>
 <ol>
-<li>Sichern Sie die Daten auf Ihrem Server.</li>
-<li>Entpacken Sie die ZIP-Datei auf Ihrem Computer.</li>
-<li>Laden Sie das gesamte Verzeichnis twocents/ auf Ihren Server in das plugins/
-Verzeichnis von CMSimple_XH hoch.</li>
-<li>Vergeben Sie Schreibrechte für die Unterverzeichnisse cache/, css/, config/ und
-languages/.</li>
-<!--<li>Navigieren Sie zur Administration von Twocents, und prüfen Sie, ob alle
-Voraussetzungen für den Betrieb erfüllt sind.</li>-->
+<li class="important">
+    Sichern Sie die Daten auf Ihrem Server.
+</li>
+<li>
+    Entpacken Sie die ZIP-Datei auf Ihrem Computer.
+</li>
+<li>
+    Laden Sie das gesamte Verzeichnis <code>twocents/</code> auf Ihren Server in
+    das <code>plugins/</code> Verzeichnis von CMSimple_XH hoch.
+</li>
+<li>
+    Vergeben Sie Schreibrechte für die Unterverzeichnisse <code>cache/</code>,
+    <code>css/</code>, <code>config/</code> und <code>languages/</code>.
+</li>
+<li class="important">
+    Navigieren Sie nach <i>Plugins</i> → <i>Twocents</i> und prüfen Sie, ob alle
+    Voraussetzungen für den Betrieb erfüllt sind.
+</li>
 </ol>
-<div class="toplink"><a href="#">zum Seitenanfang</a></div>
+</section>
 
-<h2 id="settings">Einstellungen</h2>
-<p>Die Konfiguration des Plugins erfolgt wie bei vielen anderen
-CMSimple_XH-Plugins auch im Administrationsbereich der Homepage. Wählen Sie
-Plugins &rarr; Twocents.</p>
-<!--<p>Sie können die Original-Einstellungen von Twocents_XH unter "Konfiguration"-->
-<!--ändern. Beim Überfahren der Hilfe-Icons mit der Maus werden Hinweise zu den-->
-<!--Einstellungen angezeigt.</p>-->
-<p>Die Lokalisierung wird unter "Sprache" vorgenommen. Sie können die
-Zeichenketten in Ihre eigene Sprache übersetzen (falls keine entsprechende
-Sprachdatei zur Verfügung steht), oder sie entsprechend Ihren Anforderungen
-anpassen.</p>
-<p>Das Aussehen von Twocents_XH kann unter "Stylesheet" angepasst werden.</p>
-<div class="toplink"><a href="#">zum Seitenanfang</a></div>
+<section id="settings">
+<h2>Einstellungen</h2>
+<p>
+    Die Konfiguration des Plugins erfolgt wie bei vielen anderen
+    CMSimple_XH-Plugins auch im Administrationsbereich der Homepage. Wählen Sie
+    <i>Plugins</i> → <i>Twocents</i>.
+</p>
+<p>
+    Sie können die Original-Einstellungen von Twocents_XH unter
+    <i>Konfiguration</i> ändern. Beim Überfahren der Hilfe-Icons mit der Maus
+    werden Hinweise zu den Einstellungen angezeigt.
+</p>
+<p>
+    Die Lokalisierung wird unter <i>Sprache</i> vorgenommen. Sie können die
+    Zeichenketten in Ihre eigene Sprache übersetzen (falls keine entsprechende
+    Sprachdatei zur Verfügung steht), oder sie entsprechend Ihren Anforderungen
+    anpassen.
+</p>
+<p>
+    Das Aussehen von Twocents_XH kann unter <i>Stylesheet</i> angepasst werden.
+</p>
+</section>
 
-<h2 id="usage">Verwendung</h2>
-<p>Um eine Kommentargelegenheit auf einer Seite zu platzieren, schreiben
-Sie:</p>
-<pre>{{{twocents('%THEMENNAME%');}}}</pre>
-<p>%THEMENNAME% kann ein beliebiger Name sein, aber er darf nur die Buchstaben
-a-z, die Ziffern 0-9 und Minuszeichen (-) enthalten. Der Themenname steht nicht
-notwendigerweise in Beziehung zur Seitenüberschrift; vielmehr ist es nur der
-Name einer Datei, die im Unterordner twocents/ von CMSimple_XHs Content-Ordner
-gespeichert wird. Wenn Sie möchten, können Sie die Kommentare zum selben Thema
-auf verschiedenen Seiten anzeigen.</p>
-<p>Ein paar Beispiele:</p>
-<pre>{{{twocents('gaestebuch');}}}
-{{{twocents('artikel-1');}}}</pre>
-<p>Beachten Sie, dass höchstens ein Aufruf von twocents auf einer einzelnen Seite
-erfolgen darf.</p>
+<section id="usage">
+<h2>Verwendung</h2>
+<p>
+    Um eine Kommentargelegenheit auf einer Seite zu platzieren, schreiben Sie:
+</p>
+<pre>{{{twocents('%THEMENNAME%')}}}</pre>
+<p>
+    <code>%THEMENNAME%</code> kann ein beliebiger Name sein, aber er darf nur
+    die Buchstaben <code>a</code>-<code>z</code>, die Ziffern
+    <code>0</code>-<code>9</code> und Minuszeichen (<code>-</code>) enthalten.
+    Der Themenname steht nicht notwendigerweise in Beziehung zur
+    Seitenüberschrift; vielmehr ist es nur der Name einer Datei, die im
+    Unterordner <code>twocents/</code> von CMSimple_XHs <code>content/</code>
+    Ordner gespeichert wird. Wenn Sie möchten, können Sie die Kommentare zum
+    selben Thema auf verschiedenen Seiten anzeigen.
+</p>
+<p>
+    Ein paar Beispiele:
+</p>
+<pre>{{{twocents('gaestebuch')}}}
+{{{twocents('artikel-1')}}}</pre>
+<p>
+    Beachten Sie, dass höchstens ein Aufruf von twocents auf einer einzelnen
+    Seite erfolgen darf.
+</p>
 <p>
     Der äußerst simplistische Spamschutz kann in den Spracheinstellungen unter
-    <em>Spam→Words</em>, das eine durch Kommas getrennte Liste von Wörtern
-    enthält, konfiguriert werden. Kommt eines dieser Wörter in der Nachricht vor
-    (wobei Groß-/Kleinschreibung keine Rolle spielt), dann wird der Kommentar
-    automatisch versteckt.
+    <i>Spam</i> → <i>Words</i>, das eine durch Kommas getrennte Liste von
+    Wörtern enthält, konfiguriert werden. Kommt eines dieser Wörter in der
+    Nachricht vor (wobei Groß-/Kleinschreibung keine Rolle spielt), dann wird
+    der Kommentar automatisch versteckt.
 </p>
-<div class="toplink"><a href="#">back to top</a></div>
 
-<h3 id="usage-admin">Administration</h2>
-<p>Die Administration der Kommentare erfolgt auf den Seiten, auf denen die
-Kommentare angezeigt werden. Wenn Sie als Adminstrator angemeldet sind, dann
-sehen Sie Schalter zum Bearbeiten, Verstecken/Anzeigen und Löschen der einzelnen
-Kommentare.</p>
-<p>Im Administrationsbereich des Plugins können Sie, in Abhängigkeit der
-Einstellung der Konfigurationsoption Comments &rarr; Markup, existierende
-Kommentare von bzw. nach HTML konvertieren. Beachten Sie, dass es das Beste ist,
-wenn Sie das nur tun, wenn sich die Website im Wartungsmodus befindet, und dass
-Sie nach der Konvertierung diese Konfigurationsoption umstellen müssen.</p>
-<p>Des weiteren gibt es die Möglichkeit Kommentare aus dem Comments Plugin zu
-importieren. Um dies zu verwenden müssen Sie die Daten-Dateien des Comments
-Plugins in den Datenordner von Twocents_XH (der der Unterordner twocents/ von CMSimple_XHs content Ordner ist) kopieren. Beachten Sie, dass einige
-Informationen ignoriert werden, z.B. die IP-Adresse und das hoch geladene Bild,
-sowie die Formartierung, wenn Twocents_XH auf einfachen Text konfiguriert
-ist.</p>
-<div class="toplink"><a href="#">zum Seitenanfang</a></div>
+<section id="usage-admin">
+<h3>Administration</h3>
+<p>
+    Die Administration der Kommentare erfolgt auf den Seiten, auf denen die
+    Kommentare angezeigt werden. Wenn Sie als Adminstrator angemeldet sind, dann
+    sehen Sie Schalter zum Bearbeiten, Verstecken/Anzeigen und Löschen der
+    einzelnen Kommentare.
+</p>
+<p>
+    Im Administrationsbereich des Plugins können Sie, in Abhängigkeit der
+    Einstellung der Konfigurationsoption <i>Comments</i> → <i>Markup</i>,
+    existierende Kommentare von bzw. nach HTML konvertieren. Beachten Sie, dass
+    es das Beste ist, wenn Sie das nur tun, wenn sich die Website im
+    Wartungsmodus befindet, und dass Sie nach der Konvertierung diese
+    Konfigurationsoption umstellen müssen.
+</p>
+<p>
+    Des weiteren gibt es die Möglichkeit Kommentare aus dem Comments Plugin zu
+    importieren. Um diese zu verwenden müssen Sie die Daten-Dateien des Comments
+    Plugins in den Datenordner von Twocents_XH (der der Unterordner
+    <code>twocents/</code> von CMSimple_XHs <code>content/</code> Ordner ist)
+    kopieren. Beachten Sie, dass einige Informationen ignoriert werden, z.B. die
+    <abbr title="Internet Protocol">IP</abbr>-Adresse und das hoch geladene
+    Bild, sowie die Formatierung, wenn Twocents_XH auf einfachen Text
+    konfiguriert ist.
+</p>
+</section>
 
-<h2><a name="limitations">Beschränkungen</a></h2>
-<p>Zur Zeit ist das Posten von Kommentaren von sehr alten Browsern, wie IE 6 und
-IE 7, ist nicht möglich; das Absenden des Formulars schlägt ohne Meldung
-fehl.</p>
-<p>Twocents_XH verwendet HTML5 Formularvalidierungs-Features. Diese werden von
-Validatoren für HTML 4.01 und XHTML 1.0 Templates beanstanded. Darüberhinaus
-verursachen Sie keine Probleme; alte Browser werden sie einfach ignorieren, und
-zeitgemäße Browser werden sie trotzdem beachten.</p>
-<div class="toplink"><a href="#">zum Seitenanfang</a></div>
+</section>
 
-<h2 id="license">Lizenz</h2>
-<p>Twocents_XH kann unter Einhaltung der <a
-href="http://www.gnu.org/licenses/gpl.html">GPLv3</a> verwendet werden.</p>
-<p>&copy; 2014-2017 Christoph M. Becker</p>
-<div class="toplink"><a href="#">zum Seitenanfang</a></div>
+<section id="limitations">
+<h2>Beschränkungen</h2>
+<p>
+    Zur Zeit ist das Posten von Kommentaren von sehr alten Browsern, wie <abbr
+    title="Internet Explorer">IE</abbr> 6 und IE 7, ist nicht möglich; das
+    Absenden des Formulars schlägt ohne Meldung fehl.
+</p>
+<p>
+    Twocents_XH verwendet HTML5 Formularvalidierungs-Features. Diese werden von
+    Validatoren für HTML 4.01 und XHTML 1.0 Templates beanstanded. Darüberhinaus
+    verursachen Sie keine Probleme; alte Browser werden sie einfach ignorieren,
+    und zeitgemäße Browser werden sie trotzdem beachten. Es wird ohnehin
+    empfohlen im Template die so genannte HTML5 Doctype-Declaration zu
+    verwenden.
+</p>
+</section>
 
-<h2 id="credits">Danksagung</h2>
-<p>Twocents_XH verwendet <a href="http://htmlpurifier.org/">HTML Purifier</a>.
-Vielen Dank für die Veröffentlichung dieses großartigen Tools unter LGPL.</p>
-<p>Das Plugin-Icon wurde von <a href="http://www.mentalrey.it/">Alessandro
-Rei</a> gestaltet. Vielen Dank für die Veröffentlichung des Icons unter
-GPL.</p>
-<!--<p>Dieses Plugin verwendet "free applications icons" von <a-->
-<!--href="http://www.aha-soft.com/">Aha-Soft</a>. Vielen Dank für die freie-->
-<!--Verwendbarkeit dieser Icons.</p>-->
-<!--<p>Vielen Dank an die Gemeinschaft im <a-->
-<!--href="http://www.cmsimpleforum.com/">CMSimple_XH-Forum</a> für Tipps, Anregungen-->
-<!--und das Testen.</p>-->
-<p>Zu guter Letzt vielen Dank an <a href="http://harteg.dk/">Peter Harteg</a>,
-den "Vater" von CMSimple, und allen Entwicklern von <a
-href="http://www.cmsimple-xh.org/">CMSimple_XH</a>, ohne die dieses fantastische
-CMS nicht existieren würde.</p>
-<div class="toplink"><a href="#">zum Seitenanfang</a></div>
+<section id="license">
+<h2>Lizenz</h2>
+<p>
+    Twocents_XH kann unter Einhaltung der <a
+    href="http://www.gnu.org/licenses/gpl.html"><abbr title="General Public
+    License">GPL</abbr>v3</a> verwendet werden.
+</p>
+<p>
+    Copyright © 2014-2017 Christoph M. Becker
+</p>
+</section>
 
-</div>
+<section id="credits">
+<h2>Danksagung</h2>
+<p>
+    Twocents_XH verwendet <a href="http://htmlpurifier.org/">HTML Purifier</a>.
+    Vielen Dank für die Veröffentlichung dieses großartigen Tools unter <abbr
+    title="Lesser General Public License">LGPL</abbr>.
+</p>
+<p>
+    Das Pluginlogo wurde von <a href="http://www.mentalrey.it/">Alessandro
+    Rei</a> gestaltet. Vielen Dank für die Veröffentlichung des Icons unter GPL.
+</p>
+<p>
+    Vielen Dank an die Gemeinschaft im <a
+    href="http://www.cmsimpleforum.com/">CMSimple_XH-Forum</a> für Tipps,
+    Anregungen und das Testen. Besonderer Dank gebührt <i>frase</i> und
+    <i>lck</i> fürs Testen und wertvolles Feedback.
+</p>
+<p>
+    Zu guter Letzt vielen Dank an <a href="http://harteg.dk/">Peter Harteg</a>,
+    den "Vater" von CMSimple, und allen Entwicklern von <a
+    href="http://www.cmsimple-xh.org/">CMSimple_XH</a>, ohne die dieses
+    fantastische <abbr title="Content Management System">CMS</abbr> nicht
+    existieren würde.
+</p>
+</section>
+
+</article>
 
 </body>
 
