@@ -237,7 +237,8 @@ class MainController extends Controller
         $view->action = $comment->getId() ? 'update' : 'add';
         $view->url = (new Url($this->scriptName, $_GET))->without('twocents_id');
         if (!$comment->getId()) {
-            $view->url = $view->url->with('twocents_page', '2147483647');
+            $page = $this->config['comments_order'] === 'ASC' ? '2147483647' : '0';
+            $view->url = $view->url->with('twocents_page', $page);
         }
         $view->comment = $comment;
         $view->captcha = new HtmlString($this->renderCaptcha());
