@@ -46,9 +46,10 @@ class Comment
             fclose($file);
         }
         Db::lock(LOCK_UN);
-        if (!$ascending) {
-            $comments = array_reverse($comments);
-        }
+        $order = $ascending ? 1 : -1;
+        usort($comments, function ($a, $b) use ($order) {
+            return ($a->time - $b->time) * $order;
+        });
         return $comments;
     }
 
