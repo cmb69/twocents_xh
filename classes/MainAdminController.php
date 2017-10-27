@@ -59,6 +59,7 @@ class MainAdminController extends Controller
     private function convertTo($to)
     {
         $this->csrfProtector->check();
+        $count = 0;
         $topics = Topic::findAll();
         foreach ($topics as $topic) {
             $comments = Comment::findByTopicname($topic->getName());
@@ -70,9 +71,10 @@ class MainAdminController extends Controller
                 }
                 $comment->setMessage($message);
                 $comment->update();
+                $count++;
             }
         }
-        $this->message = new HtmlString(XH_message('success', $this->lang['message_converted_' . $to]));
+        $this->message = new HtmlString(XH_message('success', $this->lang['message_converted_' . $to], $count));
         $this->defaultAction();
     }
 
@@ -111,6 +113,7 @@ class MainAdminController extends Controller
     public function importCommentsAction()
     {
         $this->csrfProtector->check();
+        $count = 0;
         $topics = CommentsTopic::findAll();
         foreach ($topics as $topic) {
             $comments = CommentsComment::findByTopicname($topic->getName());
@@ -123,9 +126,10 @@ class MainAdminController extends Controller
                 }
                 $comment->setMessage($message);
                 $comment->insert();
+                $count++;
             }
         }
-        $this->message = new HtmlString(XH_message('success', $this->lang['message_imported_comments']));
+        $this->message = new HtmlString(XH_message('success', $this->lang['message_imported_comments'], $count));
         $this->defaultAction();
     }
 
@@ -135,6 +139,7 @@ class MainAdminController extends Controller
     public function importGbookAction()
     {
         $this->csrfProtector->check();
+        $count = 0;
         $topics = CommentsTopic::findAll();
         foreach ($topics as $topic) {
             $comments = GbookComment::findByTopicname($topic->getName());
@@ -147,9 +152,10 @@ class MainAdminController extends Controller
                 }
                 $comment->setMessage($message);
                 $comment->insert();
+                $count++;
             }
         }
-        $this->message = new HtmlString(XH_message('success', $this->lang['message_imported_gbook']));
+        $this->message = new HtmlString(XH_message('success', $this->lang['message_imported_gbook'], $count));
         $this->defaultAction();
     }
 }
