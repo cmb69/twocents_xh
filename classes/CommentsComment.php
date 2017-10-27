@@ -58,7 +58,7 @@ class CommentsComment extends Comment
         $comment->user = $record[1];
         $comment->email = $record[2];
         $comment->message = $record[7];
-        $comment->hidden = $record[5] == 'hidden';
+        $comment->hidden = $record[0] == 'hidden';
         return $comment;
     }
 }
