@@ -34,7 +34,7 @@ class Router
             function ($matches) {
                 return ucfirst($matches[1]);
             },
-            isset($_POST[$param]) ? stsl($_POST[$param]) : 'default'
+            isset($_POST[$param]) ? $_POST[$param] : 'default'
         );
         if (!method_exists($controller, "{$action}Action")) {
             $action = 'default';

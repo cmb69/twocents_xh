@@ -60,7 +60,7 @@ class MainController extends Controller
             return;
         }
         $this->csrfProtector->check();
-        $comment = Comment::find(stsl($_POST['twocents_id']), $this->topicname);
+        $comment = Comment::find($_POST['twocents_id'], $this->topicname);
         if ($comment->isVisible()) {
             $comment->hide();
         } else {
@@ -76,7 +76,7 @@ class MainController extends Controller
             return;
         }
         $this->csrfProtector->check();
-        $comment = Comment::find(stsl($_POST['twocents_id']), $this->topicname);
+        $comment = Comment::find($_POST['twocents_id'], $this->topicname);
         if (isset($comment)) {
             $comment->delete();
         }
@@ -86,7 +86,7 @@ class MainController extends Controller
     public function defaultAction()
     {
         if (isset($_GET['twocents_id'])) {
-            $this->comment = Comment::find(stsl($_GET['twocents_id']), $this->topicname);
+            $this->comment = Comment::find($_GET['twocents_id'], $this->topicname);
         }
         $comments = Comment::findByTopicname($this->topicname, true, $this->config['comments_order'] === 'ASC');
         $count = count($comments);
@@ -313,9 +313,9 @@ class MainController extends Controller
     public function addCommentAction()
     {
         $this->comment = Comment::make($this->topicname, time());
-        $this->comment->setUser(trim(stsl($_POST['twocents_user'])));
-        $this->comment->setEmail(trim(stsl($_POST['twocents_email'])));
-        $message = trim(stsl($_POST['twocents_message']));
+        $this->comment->setUser(trim($_POST['twocents_user']));
+        $this->comment->setEmail(trim($_POST['twocents_email']));
+        $message = trim($_POST['twocents_message']);
         if (!XH_ADM && $this->config['comments_markup'] == 'HTML') {
             $message = $this->purify($message);
         }
@@ -375,10 +375,10 @@ class MainController extends Controller
             return;
         }
         $this->csrfProtector->check();
-        $this->comment = Comment::find(stsl($_POST['twocents_id']), $this->topicname);
-        $this->comment->setUser(trim(stsl($_POST['twocents_user'])));
-        $this->comment->setEmail(trim(stsl($_POST['twocents_email'])));
-        $this->comment->setMessage(trim(stsl($_POST['twocents_message'])));
+        $this->comment = Comment::find($_POST['twocents_id'], $this->topicname);
+        $this->comment->setUser(trim($_POST['twocents_user']));
+        $this->comment->setEmail(trim($_POST['twocents_email']));
+        $this->comment->setMessage(trim($_POST['twocents_message']));
         if ($this->validateFormSubmission()) {
             $this->comment->update();
             $this->comment = null;
