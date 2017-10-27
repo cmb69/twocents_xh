@@ -169,7 +169,13 @@ class MainController extends Controller
     private function writeScriptsToBjs()
     {
         global $bjs;
+        static $done = false;
 
+        if ($done) {
+            return;
+        } else {
+            $done = true;
+        }
         $config = array();
         foreach (array('comments_markup') as $property) {
             $config[$property] = $this->config[$property];
