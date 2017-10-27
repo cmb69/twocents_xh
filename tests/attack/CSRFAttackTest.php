@@ -29,6 +29,8 @@
 
 namespace Twocents;
 
+use PHPUnit\Framework\TestCase;
+
 class CSRFAttackTest extends TestCase
 {
     /**
@@ -117,14 +119,7 @@ class CSRFAttackTest extends TestCase
             array(
                 array(
                     'admin' => 'plugin_main',
-                    'action' => 'convert_html'
-                ),
-                '&twocents&normal'
-            ),
-            array(
-                array(
-                    'admin' => 'plugin_main',
-                    'action' => 'convert_plain'
+                    'action' => 'convert_to_html'
                 ),
                 '&twocents&normal'
             ),
