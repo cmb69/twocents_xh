@@ -21,13 +21,13 @@
 
 namespace Twocents;
 
-use PHPUnit_Framework_TestCase;
+use PHPUnit\Framework\TestCase;
 use stdClass;
 use org\bovigo\vfs\vfsStreamWrapper;
 use org\bovigo\vfs\vfsStreamDirectory;
 use org\bovigo\vfs\vfsStream;
 
-class SystemCheckServiceTest extends PHPUnit_Framework_TestCase
+class SystemCheckServiceTest extends TestCase
 {
     /**
      * @var SystemCheckService

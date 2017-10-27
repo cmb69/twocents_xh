@@ -21,6 +21,8 @@
 
 namespace Twocents;
 
+use PHPUnit\Framework\TestCase;
+
 class SpamFilterTest extends TestCase
 {
     /**

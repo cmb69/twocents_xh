@@ -21,6 +21,8 @@
 
 namespace Twocents;
 
+use PHPUnit\Framework\TestCase;
+
 class MailerTest extends TestCase
 {
     /**
