@@ -20,11 +20,8 @@
  */
 
 spl_autoload_register(function ($class) {
-    global $pth;
-
     $parts = explode('\\', $class, 2);
     if ($parts[0] == 'Twocents') {
-        include_once $pth['folder']['plugins'] . 'twocents/classes/'
-            . $parts[1] . '.php';
+        include_once __DIR__ . '/' . $parts[1] . '.php';
     }
 });

@@ -28,15 +28,4 @@ if (file_exists('../../cmsimple/utf8.php')) {
     include_once '../utf8/utf8.php';
 }
 require_once '../../cmsimple/classes/CSRFProtection.php';
-
-
-spl_autoload_register(
-    function ($class) {
-        global $pth;
-
-        $parts = explode('\\', $class, 2);
-        if ($parts[0] == 'Twocents') {
-            include_once './classes/' . $parts[1] . '.php';
-        }
-    }
-);
+require_once './classes/required_classes.php';
