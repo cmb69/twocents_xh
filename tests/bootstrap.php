@@ -22,7 +22,11 @@
 require_once './vendor/autoload.php';
 require_once '../../cmsimple/functions.php';
 require_once '../../cmsimple/adminfuncs.php';
-require_once '../utf8/utf8.php';
+if (file_exists('../../cmsimple/utf8.php')) {
+    include_once '../../cmsimple/utf8.php';
+} else {
+    include_once '../utf8/utf8.php';
+}
 require_once '../../cmsimple/classes/CSRFProtection.php';
 require_once './tests/TestCase.php';
 
