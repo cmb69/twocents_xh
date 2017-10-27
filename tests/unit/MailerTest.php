@@ -61,7 +61,7 @@ class MailerTest extends TestCase
 
     public function testSendAsciiSubjectCallsMailWithCorrectArguments()
     {
-        uopz_set_return('mail', function() use (&$args) {
+        uopz_set_return('mail', function () use (&$args) {
             $args = func_get_args();
         }, true);
         $this->subject->send(
@@ -70,14 +70,16 @@ class MailerTest extends TestCase
             'Lorem ipsum',
             'From: cmbecker69@gmx.de'
         );
-        $this->assertEquals([
-            'cmbecker69@gmx',
-            'A test',
-            "TG9yZW0gaXBzdW0=\r\n",
-            "MIME-Version: 1.0\r\n"
-            . "Content-Type: text/plain; charset=UTF-8; format=flowed\r\n"
-            . "Content-Transfer-Encoding: base64\r\n"
-            . "From: cmbecker69@gmx.de"],
+        $this->assertEquals(
+            array(
+                'cmbecker69@gmx',
+                'A test',
+                "TG9yZW0gaXBzdW0=\r\n",
+                "MIME-Version: 1.0\r\n"
+                . "Content-Type: text/plain; charset=UTF-8; format=flowed\r\n"
+                . "Content-Transfer-Encoding: base64\r\n"
+                . "From: cmbecker69@gmx.de"
+            ),
             $args
         );
         uopz_unset_return('mail');
@@ -94,15 +96,17 @@ class MailerTest extends TestCase
             'Lorem ipsum',
             'From: cmbecker69@gmx.de'
         );
-        $this->assertEquals([
-            'cmbecker69@gmx',
-            '=?UTF-8?B?RHJpdmluZyB5b3VyIEJNVyBkb3duIHRoZSByb2FkLCBpcyBGYWhydmVy'
-            . "Z24=?=\r\n =?UTF-8?B?w7xnZW4=?=",
-            "TG9yZW0gaXBzdW0=\r\n",
-            "MIME-Version: 1.0\r\n"
-            . "Content-Type: text/plain; charset=UTF-8; format=flowed\r\n"
-            . "Content-Transfer-Encoding: base64\r\n"
-            . "From: cmbecker69@gmx.de"],
+        $this->assertEquals(
+            array(
+                'cmbecker69@gmx',
+                '=?UTF-8?B?RHJpdmluZyB5b3VyIEJNVyBkb3duIHRoZSByb2FkLCBpcyBGYWhydmVy'
+                . "Z24=?=\r\n =?UTF-8?B?w7xnZW4=?=",
+                "TG9yZW0gaXBzdW0=\r\n",
+                "MIME-Version: 1.0\r\n"
+                . "Content-Type: text/plain; charset=UTF-8; format=flowed\r\n"
+                . "Content-Transfer-Encoding: base64\r\n"
+                . "From: cmbecker69@gmx.de"
+            ),
             $args
         );
         uopz_unset_return('mail');
