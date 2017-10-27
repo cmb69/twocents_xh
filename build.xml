@@ -41,7 +41,9 @@
     </target>
 
     <target name="uml" description="generates UML class diagram">
-        <exec command="umlwriter diagram:render --reflector=reflect --processor=graphviz classes | dot -Tpng -o UML.png"/>
+        <fail unless="plantuml" message="plantuml is not defined!"/>
+        <exec command="umlwriter diagram:render --reflector=reflect --processor=plantuml classes | java -jar ${plantuml} -p -tsvg > classes.svg"
+              logoutput="true"/>
     </target>
 
     <target name="unit-tests" description="runs all unit tests">
