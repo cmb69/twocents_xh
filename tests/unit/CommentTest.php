@@ -21,7 +21,6 @@
 
 namespace Twocents;
 
-use PHPUnit_Extensions_MockFunction;
 use org\bovigo\vfs\vfsStreamWrapper;
 use org\bovigo\vfs\vfsStreamDirectory;
 use org\bovigo\vfs\vfsStream;
@@ -55,7 +54,12 @@ class CommentTest extends TestCase
     {
         $this->setUpFilesystem();
         $this->subject = Comment::make(self::TOPICNAME, self::TIME);
-        $this->setupMocks();
+        uopz_set_return('uniqid', self::ID);
+    }
+
+    protected function tearDown()
+    {
+        uopz_unset_return('uniqid');
     }
 
     protected function setUpFilesystem()
@@ -68,12 +72,6 @@ class CommentTest extends TestCase
         mkdir(dirname($this->filename));
         file_put_contents($this->filename, self::LINE2);
         $pth['folder']['content'] = vfsStream::url('test/');
-    }
-
-    protected function setUpMocks()
-    {
-        $uniqidStub = new PHPUnit_Extensions_MockFunction('uniqid', $this->subject);
-        $uniqidStub->expects($this->any())->will($this->returnValue(self::ID));
     }
 
     public function testIdIsNull()

@@ -21,8 +21,6 @@
 
 namespace Twocents;
 
-use PHPUnit_Extensions_MockFunction;
-
 class MailerTest extends TestCase
 {
     /**
@@ -33,26 +31,18 @@ class MailerTest extends TestCase
     /**
      * @var object
      */
-    protected $gethostbynameMock;
-
-    /**
-     * @var object
-     */
     protected $mailMock;
 
     public function setUp()
     {
         $this->subject = new Mailer();
-        $this->gethostbynameMock = new PHPUnit_Extensions_MockFunction('gethostbyname', $this->subject);
-        $this->mailMock = new PHPUnit_Extensions_MockFunction('mail', $this->subject);
     }
 
     public function testValidAddress()
     {
-        $this->gethostbynameMock->expects($this->any())->will(
-            $this->returnValue('127.0.0.1')
-        );
+        uopz_set_return('gethostbyname', '127.0.0.1');
         $this->assertTrue($this->subject->isValidAddress('me@example.com'));
+        uopz_unset_return('gethostbyname');
     }
 
     public function testLocalPartWithSpaceIsInvalidAddress()
@@ -62,34 +52,47 @@ class MailerTest extends TestCase
 
     public function testNotExistingDomainIsInvalidAddress()
     {
-        $this->gethostbynameMock->expects($this->any())->will(
-            $this->returnValue('test.invalid')
-        );
+        uopz_set_return('gethostbyname', 'test.invalid');
         $this->assertFalse($this->subject->isValidAddress('me@test.invalid'));
+        uopz_unset_return('gethostbyname');
     }
 
     public function testSendAsciiSubjectCallsMailWithCorrectArguments()
     {
-        $this->mailMock->expects($this->once())->with(
-            'cmbecker69@gmx',
-            'A test',
-            "TG9yZW0gaXBzdW0=\r\n",
-            "MIME-Version: 1.0\r\n"
-            . "Content-Type: text/plain; charset=UTF-8; format=flowed\r\n"
-            . "Content-Transfer-Encoding: base64\r\n"
-            . "From: cmbecker69@gmx.de"
-        );
+        uopz_set_return('mail', function() use (&$args) {
+            $args = func_get_args();
+        }, true);
         $this->subject->send(
             'cmbecker69@gmx',
             'A test',
             'Lorem ipsum',
             'From: cmbecker69@gmx.de'
         );
+        $this->assertEquals([
+            'cmbecker69@gmx',
+            'A test',
+            "TG9yZW0gaXBzdW0=\r\n",
+            "MIME-Version: 1.0\r\n"
+            . "Content-Type: text/plain; charset=UTF-8; format=flowed\r\n"
+            . "Content-Transfer-Encoding: base64\r\n"
+            . "From: cmbecker69@gmx.de"],
+            $args
+        );
+        uopz_unset_return('mail');
     }
 
     public function testSendUtf8SubjectCallsMailWithCorrectArguments()
     {
-        $this->mailMock->expects($this->once())->with(
+        uopz_set_return('mail', function () use (&$args) {
+            $args = func_get_args();
+        }, true);
+        $this->subject->send(
+            'cmbecker69@gmx',
+            "Driving your BMW down the road, is Fahrvergn\xC3\xBCgen",
+            'Lorem ipsum',
+            'From: cmbecker69@gmx.de'
+        );
+        $this->assertEquals([
             'cmbecker69@gmx',
             '=?UTF-8?B?RHJpdmluZyB5b3VyIEJNVyBkb3duIHRoZSByb2FkLCBpcyBGYWhydmVy'
             . "Z24=?=\r\n =?UTF-8?B?w7xnZW4=?=",
@@ -97,13 +100,9 @@ class MailerTest extends TestCase
             "MIME-Version: 1.0\r\n"
             . "Content-Type: text/plain; charset=UTF-8; format=flowed\r\n"
             . "Content-Transfer-Encoding: base64\r\n"
-            . "From: cmbecker69@gmx.de"
+            . "From: cmbecker69@gmx.de"],
+            $args
         );
-        $this->subject->send(
-            'cmbecker69@gmx',
-            "Driving your BMW down the road, is Fahrvergn\xC3\xBCgen",
-            'Lorem ipsum',
-            'From: cmbecker69@gmx.de'
-        );
+        uopz_unset_return('mail');
     }
 }
