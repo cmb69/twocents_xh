@@ -39,14 +39,15 @@ const TWOCENTS_VERSION = '@TWOCENTS_VERSION@';
 
 /**
  * @param string $topicname
+ * @param bool $readonly
  * @return string
  */
-function twocents($topicname)
+function twocents($topicname, $readonly = false)
 {
     global $plugin_tx;
 
     try {
-        $controller = new Twocents\MainController($topicname);
+        $controller = new Twocents\MainController($topicname, $readonly);
     } catch (DomainException $ex) {
         return XH_message('fail', $plugin_tx['twocents']['error_topicname']);
     }

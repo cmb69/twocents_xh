@@ -31,6 +31,11 @@ class MainController extends Controller
     private $topicname;
 
     /**
+     * @var bool
+     */
+    private $readonly;
+
+    /**
      * @var Comment
      */
     private $comment;
@@ -42,15 +47,17 @@ class MainController extends Controller
 
     /**
      * @param string $topicname
+     * @param bool $readonly
      * @throws DomainException
      */
-    public function __construct($topicname)
+    public function __construct($topicname, $readonly)
     {
         parent::__construct();
         if (!$this->isValidTopicname($topicname)) {
             throw new DomainException;
         }
         $this->topicname = $topicname;
+        $this->readonly = $readonly;
         $this->messages = '';
     }
 
@@ -156,7 +163,8 @@ class MainController extends Controller
             },
             $comments
         );
-        $mayAddComment = !isset($this->comment) || $this->comment->getId() == null;
+        $mayAddComment = (!isset($this->comment) || $this->comment->getId() == null)
+            && (XH_ADM || !$this->readonly);
         $view->hasCommentFormAbove = $mayAddComment && $this->config['comments_order'] === 'DESC';
         $view->hasCommentFormBelow = $mayAddComment && $this->config['comments_order'] === 'ASC';
         if ($mayAddComment) {
@@ -313,6 +321,9 @@ class MainController extends Controller
 
     public function addCommentAction()
     {
+        if (!XH_ADM && $this->readonly) {
+            $this->defaultAction();
+        }
         $this->comment = Comment::make($this->topicname, time());
         $this->comment->setUser(trim($_POST['twocents_user']));
         $this->comment->setEmail(trim($_POST['twocents_email']));
