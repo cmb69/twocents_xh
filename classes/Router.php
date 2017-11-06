@@ -22,6 +22,7 @@
 namespace Twocents;
 
 use Pfw\View\HtmlView;
+use Pfw\SystemCheckService;
 
 class Router
 {
@@ -87,7 +88,15 @@ class Router
             ->data([
                 'logo' => "{$pth['folder']['plugins']}twocents/twocents.png",
                 'version' => TWOCENTS_VERSION,
-                'checks' => (new SystemCheckService)->getChecks()
+                'checks' => (new SystemCheckService)
+                    ->minPhpVersion('5.4.0')
+                    ->extension('json')
+                    ->minXhVersion('1.6.3')
+                    ->writable("{$pth['folder']['base']}content/twocents/")
+                    ->writable("{$pth['folder']['plugins']}twocents/config/")
+                    ->writable("{$pth['folder']['plugins']}twocents/css/")
+                    ->writable("{$pth['folder']['plugins']}twocents/languages/")
+                    ->getChecks()
             ]);
     }
 

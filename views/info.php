@@ -21,9 +21,9 @@
     this program. If not, see <a href="http://www.gnu.org/licenses/"
     target="_blank">http://www.gnu.org/licenses/</a>.
 </p>
-<h2><?=$this->text('syscheck_title')?></h2>
-<ul class="twocents_syscheck">
+<div class="twocents_syscheck">
+    <h2><?=$this->text('syscheck_title')?></h2>
 <?php foreach ($checks as $check):?>
-    <li class="xh_<?=$check->state?>"><?=$this->text('syscheck_message', $check->label, $check->stateLabel)?></li>
+    <p class="xh_<?=$check->getState()?>"><?=$this->text('syscheck_message', $check->getLabel(), $check->getStateLabel())?></li>
 <?php endforeach?>
-</ul>
+</div>
