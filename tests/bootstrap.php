@@ -28,4 +28,4 @@ if (file_exists('../../cmsimple/utf8.php')) {
     include_once '../utf8/utf8.php';
 }
 require_once '../../cmsimple/classes/CSRFProtection.php';
-require_once './classes/required_classes.php';
+require_once '../pfw/classes/required_classes.php';
