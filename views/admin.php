@@ -1,11 +1,11 @@
 <h1>Twocents – <?=$this->text('menu_main')?></h1>
-<?=$this->message()?>
-<form action="<?=$this->action()?>" method="post">
+<?=$message?>
+<form action="<?=$action?>" method="post">
     <input type="hidden" name="admin" value="plugin_main">
-    <?=$this->csrfTokenInput()?>
-<?php foreach ($this->buttons as $button):?>
+    <?=$csrfTokenInput?>
+<?php foreach ($buttons as $button):?>
     <p>
-        <button type="submit" name="action" value="<?=$this->escape($button)?>"><?=$this->text("label_$button")?></button>
+        <button type="submit" name="action" value="<?=$button?>"><?=$this->text("label_$button")?></button>
     </p>
 <?php endforeach?>
 </form>

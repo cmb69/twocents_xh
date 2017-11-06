@@ -22,6 +22,8 @@
 namespace Twocents;
 
 use DomainException;
+use Pfw\View\HtmlView;
+use Pfw\View\HtmlString;
 
 class MainController extends Controller
 {
@@ -101,8 +103,16 @@ class MainController extends Controller
         $pageCount = (int) ceil($count / $itemsPerPage);
         $currentPage = isset($_GET['twocents_page']) ? max(1, min($pageCount, $_GET['twocents_page'])) : 1;
         $comments = array_splice($comments, ($currentPage - 1) * $itemsPerPage, $itemsPerPage);
-        $paginationView = $this->preparePaginationView($count, $currentPage, $pageCount);
-        $html = $paginationView . $this->prepareCommentsView($comments) . $paginationView;
+        $pagination = $this->preparePaginationView($count, $currentPage, $pageCount);
+        ob_start();
+        if (isset($pagination)) {
+            $pagination->render();
+        }
+        $this->prepareCommentsView($comments)->render();
+        if (isset($pagination)) {
+            $pagination->render();
+        }
+        $html = ob_get_clean();
         if (!$this->isXmlHttpRequest()) {
             echo "<div class=\"twocents_container\">$html</div>";
         } else {
@@ -118,60 +128,64 @@ class MainController extends Controller
      * @param int $commentCount
      * @param int $page
      * @param int $pageCount
-     * @return View
+     * @return ?HtmlView
      */
     private function preparePaginationView($commentCount, $page, $pageCount)
     {
         if ($pageCount <= 1) {
-            return '';
+            return null;
         }
-        $view = new View('pagination');
-        $view->itemCount = $commentCount;
-        $view->currentPage = $page;
         $pagination = new Pagination($page, $pageCount);
         $url = new Url($this->scriptName, $_GET);
-        $view->pages = array_map(
-            function ($page) use ($url) {
-                if (isset($page)) {
-                    return (object) array(
-                        'index' => $page,
-                        'url' => $url->without('twocents_id')->with('twocents_page', $page)
-                    );
-                } else {
-                    return null;
-                }
-            },
-            $pagination->gatherPages()
-        );
-        return $view;
+        $currentPage = $page;
+        return (new HtmlView('twocents'))
+            ->template('pagination')
+            ->data([
+                'itemCount' => $commentCount,
+                'pages' => array_map(
+                    function ($page) use ($url, $currentPage) {
+                        if (isset($page)) {
+                            return (object) array(
+                                'index' => $page,
+                                'url' => $url->without('twocents_id')->with('twocents_page', $page),
+                                'isCurrent' => $page === $currentPage,
+                                'isEllipsis' => false
+                            );
+                        } else {
+                            return (object) ['isEllipsis' => true];
+                        }
+                    },
+                    $pagination->gatherPages()
+                )
+            ]);
     }
 
     /**
      * @param Comment[] $comments
-     * @return View
+     * @return HtmlView
      */
     private function prepareCommentsView(array $comments)
     {
         $this->writeScriptsToBjs();
-        $view = new View('comments');
-        $view->comments = array_map(
-            function ($comment) {
-                return (object) array(
-                    'isCurrent' => $this->isCurrentComment($comment),
-                    'view' => $this->prepareCommentView($comment)
-                );
-            },
-            $comments
-        );
         $mayAddComment = (!isset($this->comment) || $this->comment->getId() == null)
             && (XH_ADM || !$this->readonly);
-        $view->hasCommentFormAbove = $mayAddComment && $this->config['comments_order'] === 'DESC';
-        $view->hasCommentFormBelow = $mayAddComment && $this->config['comments_order'] === 'ASC';
-        if ($mayAddComment) {
-            $view->commentForm = $this->prepareCommentForm($this->comment);
-        }
-        $view->messages = new HtmlString($this->messages);
-        return $view;
+        return (new HtmlView('twocents'))
+            ->template('comments')
+            ->data([
+                'comments' => array_map(
+                    function ($comment) {
+                        return (object) array(
+                            'isCurrent' => $this->isCurrentComment($comment),
+                            'view' => $this->prepareCommentView($comment)
+                        );
+                    },
+                    $comments
+                ),
+                'hasCommentFormAbove' => $mayAddComment && $this->config['comments_order'] === 'DESC',
+                'hasCommentFormBelow' => $mayAddComment && $this->config['comments_order'] === 'ASC',
+                'commentForm' => $mayAddComment ? $this->prepareCommentForm($this->comment) : null,
+                'messages' => new HtmlString($this->messages)
+            ]);
     }
 
     private function writeScriptsToBjs()
@@ -200,62 +214,79 @@ class MainController extends Controller
         foreach ($properties as $property) {
             $config[$property] = $this->lang[$property];
         }
-        $view = new View('scripts');
-        $view->json = new HtmlString(json_encode($config));
-        $view->filename = "{$this->pluginsFolder}twocents/twocents.min.js";
-        $bjs .= $view;
+        ob_start();
+        (new HtmlView('twocents'))
+            ->template('scripts')
+            ->data([
+                'json' => new HtmlString(json_encode($config)),
+                'filename' => "{$this->pluginsFolder}twocents/twocents.min.js"
+            ])
+            ->render();
+        $bjs .= ob_get_clean();
     }
 
     /**
-     * @return View
+     * @return HtmlView
      */
     private function prepareCommentView(Comment $comment)
     {
-        $view = new View('comment');
         $isCurrentComment = $this->isCurrentComment($comment);
-        $view->id = 'twocents_comment_' . $comment->getId();
-        $view->className = $comment->isVisible() ? '' : ' twocents_hidden';
-        $view->isCurrentComment = $isCurrentComment;
+        $data = [
+            'id' => 'twocents_comment_' . $comment->getId(),
+            'className' => $comment->isVisible() ? '' : ' twocents_hidden',
+            'isCurrentComment' => $isCurrentComment
+        ];
         if ($isCurrentComment) {
-            $view->form = $this->prepareCommentForm($this->comment);
+            $data['form'] = $this->prepareCommentForm($this->comment);
         } else {
-            $view->isAdmin = XH_ADM;
-            $view->url = (new Url($this->scriptName, $_GET))->without('twocents_id');
-            $view->editUrl = $view->url->with('twocents_id', $comment->getId());
-            $view->comment = $comment;
+            $url = (new Url($this->scriptName, $_GET))->without('twocents_id');
+            $data += [
+                'isAdmin' => XH_ADM,
+                'url' => $url,
+                'editUrl' => $url->with('twocents_id', $comment->getId()),
+                'comment' => $comment,
+                'visibility' => $comment->isVisible() ? 'label_hide' : 'label_show',
+                'attribution' => new HtmlString($this->renderAttribution($comment)),
+                'message' => new HtmlString($this->renderMessage($comment))
+            ];
             if (XH_ADM) {
-                $view->csrfTokenInput = new HtmlString($this->csrfProtector->tokenInput());
+                $data['csrfTokenInput'] = new HtmlString($this->csrfProtector->tokenInput());
             }
-            $view->visibility = $comment->isVisible() ? 'label_hide' : 'label_show';
-            $view->attribution = new HtmlString($this->renderAttribution($comment));
-            $view->message = new HtmlString($this->renderMessage($comment));
         }
-        return $view;
+        return (new HtmlView('twocents'))
+            ->template('comment')
+            ->data($data);
     }
 
     /**
-     * @return View
+     * @return HtmlView
      */
     private function prepareCommentForm(Comment $comment = null)
     {
         if (!isset($comment)) {
             $comment = Comment::make(null, null);
         }
-        $view = new View('comment-form');
-        $view->action = $comment->getId() ? 'update' : 'add';
-        $view->url = (new Url($this->scriptName, $_GET))->without('twocents_id');
-        if (!$comment->getId()) {
-            $page = $this->config['comments_order'] === 'ASC' ? '2147483647' : '0';
-            $view->url = $view->url->with('twocents_page', $page);
-        }
-        $view->comment = $comment;
-        $view->captcha = new HtmlString($this->renderCaptcha());
+        $url = (new Url($this->scriptName, $_GET))->without('twocents_id');
+        $data = [
+            'action' => $comment->getId() ? 'update' : 'add',
+            'comment' => $comment,
+            'captcha' => new HtmlString($this->renderCaptcha()),
+        ];
         if ($comment->getId()) {
-            $view->csrfTokenInput = new HtmlString($this->csrfProtector->tokenInput());
+            $data += [
+                'url' => $url,
+                'csrfTokenInput' => new HtmlString($this->csrfProtector->tokenInput())
+            ];
         } else {
-            $view->csrfTokenInput = '';
+            $page = $this->config['comments_order'] === 'ASC' ? '2147483647' : '0';
+            $data += [
+                'url' => $url->with('twocents_page', $page),
+                'csrfTokenInput' => ''
+            ];
         }
-        return $view;
+        return (new HtmlView('twocents'))
+            ->template('comment-form')
+            ->data($data);
     }
 
     /**
@@ -370,14 +401,18 @@ class MainController extends Controller
             if ($this->config['comments_markup'] === 'HTML') {
                 $message = strip_tags($message);
             }
-            $view = new PlainTextView('email');
-            $view->comment = $this->comment;
-            $view->url = (new Url($this->scriptName, $_GET))->absolute()
+            $url = (new Url($this->scriptName, $_GET))->absolute()
                 . "#twocents_comment_" . $this->comment->getId();
-            $view->message = '> ' . str_replace("\n", "\n> ", $message);
+            $attribution = sprintf(
+                $this->lang['email_attribution'],
+                $url,
+                $this->comment->getUser(),
+                $this->comment->getEmail()
+            );
+            $body = $attribution. "\n\n> " . str_replace("\n", "\n> ", $message);
             $replyTo = str_replace(["\n", "\r"], '', $this->comment->getEmail());
             $mailer = new Mailer(($this->config['email_linebreak'] === 'LF') ? "\n" : "\r\n");
-            $mailer->send($email, $this->lang['email_subject'], $view, "From: $email\r\nReply-To: $replyTo");
+            $mailer->send($email, $this->lang['email_subject'], $body, "From: $email\r\nReply-To: $replyTo");
         }
     }
 

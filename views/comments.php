@@ -1,16 +1,16 @@
 <div class="twocents_comments">
-<?php if ($this->hasCommentFormAbove):?>
-    <?=$this->messages()?>
-    <?=$this->commentForm()?>
+<?php if ($hasCommentFormAbove):?>
+    <?=$messages?>
+<?php $commentForm()?>
 <?php endif?>
-<?php foreach ($this->comments as $comment):?>
+<?php foreach ($comments as $comment):?>
 <?php   if ($comment->isCurrent):?>
-    <?=$this->messages()?>
+    <?=$messages?>
 <?php   endif?>
-    <?=$this->escape($comment->view)?>
+<?php ($comment->view)()?>
 <?php endforeach?>
-<?php if ($this->hasCommentFormBelow):?>
-    <?=$this->messages()?>
-    <?=$this->commentForm()?>
+<?php if ($hasCommentFormBelow):?>
+    <?=$messages?>
+<?php $commentForm()?>
 <?php endif?>
 </div>

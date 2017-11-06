@@ -21,6 +21,8 @@
 
 namespace Twocents;
 
+use Pfw\View\HtmlView;
+
 class Router
 {
     /**
@@ -61,7 +63,9 @@ class Router
         $o .= print_plugin_admin('on');
         switch ($admin) {
             case '':
-                $o .= $this->renderInfo();
+                ob_start();
+                $this->renderInfo()->render();
+                $o .= ob_get_clean();
                 break;
             case 'plugin_main':
                 $o .= $this->handleMainAdministration();
@@ -72,17 +76,19 @@ class Router
     }
 
     /**
-     * @return View
+     * @return HtmlView
      */
     protected function renderInfo()
     {
         global $pth;
 
-        $view = new View('info');
-        $view->logo = "{$pth['folder']['plugins']}twocents/twocents.png";
-        $view->version = TWOCENTS_VERSION;
-        $view->checks = (new SystemCheckService)->getChecks();
-        return $view;
+        return (new HtmlView('twocents'))
+            ->template('info')
+            ->data([
+                'logo' => "{$pth['folder']['plugins']}twocents/twocents.png",
+                'version' => TWOCENTS_VERSION,
+                'checks' => (new SystemCheckService)->getChecks()
+            ]);
     }
 
     /**

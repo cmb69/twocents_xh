@@ -1,6 +1,6 @@
 <h1>Twocents</h1>
-<img src="<?=$this->logo()?>" class="twocents_icon" alt="<?=$this->text('alt_icon')?>">
-<p>Version: <?=$this->version()?></p>
+<img src="<?=$logo?>" class="twocents_icon" alt="<?=$this->text('alt_icon')?>">
+<p>Version: <?=$version?></p>
 <p>Copyright &copy; 2014-2017
     <a href="http://3-magi.net/" target="_blank">Christoph M. Becker</a>
 </p>
@@ -23,7 +23,7 @@
 </p>
 <h2><?=$this->text('syscheck_title')?></h2>
 <ul class="twocents_syscheck">
-<?php foreach ($this->checks as $check):?>
-    <li class="xh_<?=$this->escape($check->state)?>"><?=$this->text('syscheck_message', $check->label, $check->stateLabel)?></li>
+<?php foreach ($checks as $check):?>
+    <li class="xh_<?=$check->state?>"><?=$this->text('syscheck_message', $check->label, $check->stateLabel)?></li>
 <?php endforeach?>
 </ul>
