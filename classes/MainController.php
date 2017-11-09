@@ -22,6 +22,7 @@
 namespace Twocents;
 
 use DomainException;
+use Pfw\Url;
 use Pfw\View\HtmlView;
 use Pfw\View\HtmlString;
 
