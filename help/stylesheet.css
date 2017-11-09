@@ -1,21 +1,12 @@
-@media (min-width: 768px) {
-    body {
-        column-count: 2;
-    }
-}
-@media (min-width: 1152px) {
-    body {
-        column-count: 3;
-    }
-}
-
 body {
     font-family: Georgia, serif;
     line-height: 1.5;
-    margin-left: 2em;
-    margin-right: 2em;
+    margin-left: auto;
+    margin-right: auto;
+    padding-left: 0.5em;
+    padding-right: 0.5em;
     background: #ffffe1;
-    column-gap: 4em;
+    max-width: 32em;
 }
 p {
     text-align: justify;
