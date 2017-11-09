@@ -24,9 +24,29 @@ namespace Twocents;
 class Url
 {
     /**
+     * @return self
+     */
+    public static function getCurrent()
+    {
+        global $sn, $su;
+
+        if ($su) {
+            $params = array_slice($_GET, 1);
+        } else {
+            $params = $_GET;
+        }
+        return new self($sn, $su, $params);
+    }
+
+    /**
      * @var string
      */
     private $path;
+
+    /**
+     * @var string
+     */
+    private $page;
 
     /**
      * @var array
@@ -35,10 +55,12 @@ class Url
 
     /**
      * @param string $path
+     * @param string $page
      */
-    public function __construct($path, array $params)
+    public function __construct($path, $page = '', array $params = [])
     {
         $this->path = $path;
+        $this->page = $page;
         $this->params = $params;
     }
 
@@ -47,17 +69,18 @@ class Url
      */
     public function __toString()
     {
-        return $this->relative();
+        return $this->getRelative();
     }
 
     /**
      * @return string
      */
-    public function relative()
+    public function getRelative()
     {
         $result = $this->path;
-        if (!empty($this->params)) {
-            $result .= '?' . $this->queryString();
+        $queryString = $this->getQueryString();
+        if ($queryString) {
+            $result .= "?$queryString";
         }
         return $result;
     }
@@ -65,11 +88,12 @@ class Url
     /**
      * @return string
      */
-    public function absolute()
+    public function getAbsolute()
     {
         $result = CMSIMPLE_URL;
-        if (!empty($this->params)) {
-            $result .= '?' . $this->queryString();
+        $queryString = $this->getQueryString();
+        if ($queryString) {
+            $result .= "?$queryString";
         }
         return $result;
     }
@@ -77,21 +101,26 @@ class Url
     /**
      * @return string
      */
-    private function queryString()
+    private function getQueryString()
     {
-        return preg_replace('/=(?=&|$)/', '', http_build_query($this->params, null, '&'));
+        $result = "{$this->page}";
+        $additional = preg_replace('/=(?=&|$)/', '', http_build_query($this->params, null, '&'));
+        if ($additional) {
+            $result .= "&$additional";
+        }
+        return $result;
     }
 
     /**
      * @param string $param
-     * @param string $value
+     * @param mixed $value
      * @return self
      */
     public function with($param, $value)
     {
         $params = $this->params;
-        $params[$param] = (string) $value;
-        return new self($this->path, $params);
+        $params[$param] = $value;
+        return new self($this->path, $this->page, $params);
     }
 
     /**
@@ -102,6 +131,6 @@ class Url
     {
         $params = $this->params;
         unset($params[$param]);
-        return new self($this->path, $params);
+        return new self($this->path, $this->page, $params);
     }
 }

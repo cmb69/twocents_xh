@@ -136,7 +136,7 @@ class MainController extends Controller
             return null;
         }
         $pagination = new Pagination($page, $pageCount);
-        $url = new Url($this->scriptName, $_GET);
+        $url = Url::getCurrent();
         $currentPage = $page;
         return (new HtmlView('twocents'))
             ->template('pagination')
@@ -239,7 +239,7 @@ class MainController extends Controller
         if ($isCurrentComment) {
             $data['form'] = $this->prepareCommentForm($this->comment);
         } else {
-            $url = (new Url($this->scriptName, $_GET))->without('twocents_id');
+            $url = Url::getCurrent()->without('twocents_id');
             $data += [
                 'isAdmin' => XH_ADM,
                 'url' => $url,
@@ -266,7 +266,7 @@ class MainController extends Controller
         if (!isset($comment)) {
             $comment = Comment::make(null, null);
         }
-        $url = (new Url($this->scriptName, $_GET))->without('twocents_id');
+        $url = Url::getCurrent()->without('twocents_id');
         $data = [
             'action' => $comment->getId() ? 'update' : 'add',
             'comment' => $comment,
@@ -401,7 +401,7 @@ class MainController extends Controller
             if ($this->config['comments_markup'] === 'HTML') {
                 $message = strip_tags($message);
             }
-            $url = (new Url($this->scriptName, $_GET))->absolute()
+            $url = Url::getCurrent()->getAbsolute()
                 . "#twocents_comment_" . $this->comment->getId();
             $attribution = sprintf(
                 $this->lang['email_attribution'],
@@ -483,7 +483,7 @@ class MainController extends Controller
 
     private function redirectToDefault()
     {
-        $url = (new Url($this->scriptName, $_GET))->without('twocents_action')->absolute();
+        $url = Url::getCurrent()->without('twocents_action')->getAbsolute();
         header("Location: $url", true, 303);
         exit;
     }
