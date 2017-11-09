@@ -1,6 +1,6 @@
 <div id="<?=$id?>" class="twocents_comment <?=$className?>">
 <?php if ($isCurrentComment):?>
-<?php $form()?>
+    <?=$form?>
 <?php else:?>
 <?php   if ($isAdmin):?>
     <div class="twocents_admin_tools">
