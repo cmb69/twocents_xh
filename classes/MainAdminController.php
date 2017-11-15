@@ -21,7 +21,7 @@
 
 namespace Twocents;
 
-use Pfw\View\HtmlView;
+use Pfw\View\View;
 use Pfw\View\HtmlString;
 
 class MainAdminController extends Controller
@@ -38,7 +38,7 @@ class MainAdminController extends Controller
         } else {
             $button = 'convert_to_html';
         }
-        (new HtmlView('twocents'))
+        (new View('twocents'))
             ->template('admin')
             ->data([
                 'action' => "{$this->scriptName}?&twocents",

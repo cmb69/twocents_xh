@@ -21,7 +21,7 @@
 
 namespace Twocents;
 
-use Pfw\View\HtmlView;
+use Pfw\View\View;
 use Pfw\SystemCheckService;
 
 class Router
@@ -77,13 +77,13 @@ class Router
     }
 
     /**
-     * @return HtmlView
+     * @return View
      */
     protected function renderInfo()
     {
         global $pth;
 
-        return (new HtmlView('twocents'))
+        return (new View('twocents'))
             ->template('info')
             ->data([
                 'logo' => "{$pth['folder']['plugins']}twocents/twocents.png",

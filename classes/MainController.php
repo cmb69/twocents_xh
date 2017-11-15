@@ -23,7 +23,7 @@ namespace Twocents;
 
 use DomainException;
 use Pfw\Url;
-use Pfw\View\HtmlView;
+use Pfw\View\View;
 use Pfw\View\HtmlString;
 
 class MainController extends Controller
@@ -129,7 +129,7 @@ class MainController extends Controller
      * @param int $commentCount
      * @param int $page
      * @param int $pageCount
-     * @return ?HtmlView
+     * @return ?View
      */
     private function preparePaginationView($commentCount, $page, $pageCount)
     {
@@ -139,7 +139,7 @@ class MainController extends Controller
         $pagination = new Pagination($page, $pageCount);
         $url = Url::getCurrent();
         $currentPage = $page;
-        return (new HtmlView('twocents'))
+        return (new View('twocents'))
             ->template('pagination')
             ->data([
                 'itemCount' => $commentCount,
@@ -163,14 +163,14 @@ class MainController extends Controller
 
     /**
      * @param Comment[] $comments
-     * @return HtmlView
+     * @return View
      */
     private function prepareCommentsView(array $comments)
     {
         $this->writeScriptsToBjs();
         $mayAddComment = (!isset($this->comment) || $this->comment->getId() == null)
             && (XH_ADM || !$this->readonly);
-        return (new HtmlView('twocents'))
+        return (new View('twocents'))
             ->template('comments')
             ->data([
                 'comments' => array_map(
@@ -216,7 +216,7 @@ class MainController extends Controller
             $config[$property] = $this->lang[$property];
         }
         ob_start();
-        (new HtmlView('twocents'))
+        (new View('twocents'))
             ->template('scripts')
             ->data([
                 'json' => new HtmlString(json_encode($config)),
@@ -227,7 +227,7 @@ class MainController extends Controller
     }
 
     /**
-     * @return HtmlView
+     * @return View
      */
     private function prepareCommentView(Comment $comment)
     {
@@ -254,13 +254,13 @@ class MainController extends Controller
                 $data['csrfTokenInput'] = new HtmlString($this->csrfProtector->tokenInput());
             }
         }
-        return (new HtmlView('twocents'))
+        return (new View('twocents'))
             ->template('comment')
             ->data($data);
     }
 
     /**
-     * @return HtmlView
+     * @return View
      */
     private function prepareCommentForm(Comment $comment = null)
     {
@@ -285,7 +285,7 @@ class MainController extends Controller
                 'csrfTokenInput' => ''
             ];
         }
-        return (new HtmlView('twocents'))
+        return (new View('twocents'))
             ->template('comment-form')
             ->data($data);
     }
