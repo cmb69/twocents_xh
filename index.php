@@ -55,6 +55,4 @@ function twocents($topicname, $readonly = false)
     return ob_get_clean();
 }
 
-$temp = new Twocents\Plugin();
-$temp->route();
-unset($temp);
+(new Twocents\Plugin())->route();
