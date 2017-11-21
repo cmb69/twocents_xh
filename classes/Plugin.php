@@ -26,7 +26,7 @@ use Pfw\SystemCheckService;
 
 class Plugin
 {
-    const VERSION = '@TWOCENTS_VERSION@';
+    const VERSION = '@PLUGIN_VERSION@';
 
     /**
      * @param string $param

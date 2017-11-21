@@ -13,57 +13,6 @@
         <include name="*Test.php"/>
     </fileset>
 
-    <target name="build" description="builds a distributable ZIP archive">
-        <fail unless="version" message="version is not defined!"/>
-        <exec command="git archive -o export.tar HEAD" checkreturn="true"/>
-        <untar file="export.tar" todir="export"/>
-        <delete file="export.tar"/>
-        <move todir="dist">
-            <fileset dir="export">
-                <include name="index.php"/>
-                <include name="version.nfo"/>
-            </fileset>
-            <filterchain>
-                <replacetokens>
-                    <token key="TWOCENTS_VERSION" value="${version}"/>
-                </replacetokens>
-            </filterchain>
-        </move>
-        <jsMin targetDir="dist" suffix="" failOnError="false">
-            <fileset dir="export">
-                <include name="twocents.min.js"/>
-            </fileset>
-        </jsMin>
-        <move todir="dist">
-            <fileset dir="export">
-                <include name="views/*.php"/>
-            </fileset>
-            <filterchain>
-                <replaceregexp>
-                    <regexp pattern="\?=" replace="?php echo "/>
-                </replaceregexp>
-            </filterchain>
-        </move>
-        <move todir="dist">
-            <fileset dir="export">
-                <exclude name="tests/**"/>
-                <exclude name="build.xml"/>
-                <exclude name="pax_global_header"/>
-                <exclude name="phpcompatinfo.json"/>
-                <exclude name="README.md"/>
-                <exclude name="TODO"/>
-            </fileset>
-        </move>
-        <delete dir="export"/>
-        <copy file="dist/config/config.php"
-              tofile="dist/config/defaultconfig.php"/>
-        <copy file="dist/languages/en.php"
-              tofile="dist/languages/default.php"/>
-        <zip destfile="Twocents_XH-${version}.zip"
-             basedir="dist" prefix="twocents/"/>
-        <delete dir="dist"/>
-    </target>
-
     <target name="build-patch" description="builds a distributable update package">
         <fail unless="patchee" message="patchee is not defined!"/>
         <fail unless="version" message="version is not defined!"/>
