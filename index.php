@@ -51,12 +51,12 @@ function twocents($topicname, $readonly = false)
     } catch (DomainException $ex) {
         return XH_message('fail', $plugin_tx['twocents']['error_topicname']);
     }
-    $action = Twocents\Router::getControllerAction($controller, 'twocents_action');
+    $action = Twocents\Plugin::getControllerAction($controller, 'twocents_action');
     ob_start();
     $controller->{$action}();
     return ob_get_clean();
 }
 
-$temp = new Twocents\Router();
+$temp = new Twocents\Plugin();
 $temp->route();
 unset($temp);

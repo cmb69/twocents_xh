@@ -43,7 +43,7 @@ class RealblogBridge implements CommentsBridge
         global $plugin_cf, $plugin_tx;
 
         $controller = new MainController($topic);
-        $action = Router::getControllerAction($controller, 'twocents_action');
+        $action = Plugin::getControllerAction($controller, 'twocents_action');
         ob_start();
         $controller->{$action}();
         $comments = ob_get_clean();

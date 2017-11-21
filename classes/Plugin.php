@@ -24,7 +24,7 @@ namespace Twocents;
 use Pfw\View\View;
 use Pfw\SystemCheckService;
 
-class Router
+class Plugin
 {
     /**
      * @param string $param
