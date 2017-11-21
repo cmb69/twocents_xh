@@ -26,6 +26,8 @@ use Pfw\SystemCheckService;
 
 class Plugin
 {
+    const VERSION = '@TWOCENTS_VERSION@';
+
     /**
      * @param string $param
      * @return string
@@ -87,7 +89,7 @@ class Plugin
             ->template('info')
             ->data([
                 'logo' => "{$pth['folder']['plugins']}twocents/twocents.png",
-                'version' => TWOCENTS_VERSION,
+                'version' => Plugin::VERSION,
                 'checks' => (new SystemCheckService)
                     ->minPhpVersion('5.4.0')
                     ->extension('json')

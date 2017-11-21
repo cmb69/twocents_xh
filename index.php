@@ -35,8 +35,6 @@ EOT
     );
 }
 
-const TWOCENTS_VERSION = '@TWOCENTS_VERSION@';
-
 /**
  * @param string $topicname
  * @param bool $readonly
