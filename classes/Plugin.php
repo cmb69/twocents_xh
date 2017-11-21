@@ -47,7 +47,7 @@ class Plugin
         return "{$action}Action";
     }
 
-    public function route()
+    public function run()
     {
         if (XH_ADM) {
             if (function_exists('XH_registerStandardPluginMenuItems')) {
