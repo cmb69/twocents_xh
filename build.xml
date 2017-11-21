@@ -2,6 +2,8 @@
 
 <project name="Twocents" default="help">
 
+    <import file="../pfw/build.xml"/>
+
     <fileset id="php-sources" dir=".">
         <include name="classes/*.php"/>
         <include name="index.php"/>
@@ -47,7 +49,7 @@
     </target>
 
     <target name="unit-tests" description="runs all unit tests">
-        <phpunit bootstrap="tests/bootstrap.php"
+        <phpunit bootstrap="tests/unit/bootstrap.php"
                  haltonerror="true" haltonfailure="true">
             <formatter type="plain" usefile="false"/>
             <batchtest>
@@ -65,10 +67,6 @@
                 <fileset refid="attack-tests"/>
             </batchtest>
         </phpunit>
-    </target>
-
-    <target name="coverage" description="generates coverage report">
-        <exec command="phpdbg -qrr vendor/phpunit/phpunit/phpunit --configuration coverage.xml" logoutput="true"/>
     </target>
 
     <target name="build" description="builds a distributable ZIP archive">
@@ -107,7 +105,6 @@
                 <exclude name="tests/**"/>
                 <exclude name="build.xml"/>
                 <exclude name="composer.*"/>
-                <exclude name="coverage.xml"/>
                 <exclude name="pax_global_header"/>
                 <exclude name="phpcompatinfo.json"/>
                 <exclude name="README.md"/>
