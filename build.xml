@@ -13,28 +13,4 @@
         <include name="*Test.php"/>
     </fileset>
 
-    <target name="build-patch" description="builds a distributable update package">
-        <fail unless="patchee" message="patchee is not defined!"/>
-        <fail unless="version" message="version is not defined!"/>
-        <unzip file="Twocents_XH-${version}.zip" todir="current"/>
-        <unzip file="${patchee}" todir="patchee"/>
-        <copy todir="dist">
-            <fileset dir="current">
-                <different targetdir="patchee" ignoreFileTimes="true"/>
-            </fileset>
-        </copy>
-        <delete>
-            <fileset dir="dist/twocents">
-                <include name="config/config.php"/>
-                <include name="languages/??.php"/>
-                <include name="css/stylesheet.css"/>
-            </fileset>
-        </delete>
-        <zip destfile="Twocents_XH-${version}-PATCH.zip" basedir="dist"
-             includeemptydirs="false"/>
-        <delete dir="patchee" quiet="true"/>
-        <delete dir="current" quiet="true"/>
-        <delete dir="dist" quiet="true"/>
-    </target>
-
 </project>
