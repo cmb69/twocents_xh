@@ -53,5 +53,3 @@ $plugin_tx['twocents']['cf_pagination_max']="Die Höchstanzahl von Kommentaren a
 $plugin_tx['twocents']['cf_pagination_radius']="Die Anzahl von Seitenlinks, die in der Paginierung vor und nach der aktuellen Seite angezeigt werden sollen.";
 $plugin_tx['twocents']['cf_captcha_plugin']="Der (Ordner-)Name eines spezifikationsgerechten CAPTCHA-Plugins. Leer lassen, um auf den CAPTCHA-Test zu verzichten.";
 $plugin_tx['twocents']['cf_realblog_heading']="Die Überschriftenebene für Realblog_XH Kommentare.";
-
-?>
