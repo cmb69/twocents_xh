@@ -85,18 +85,3 @@
 .twocents_write_button {
     margin: 1em 0;
 }
-/*
- * Back-end.
- */
-
-.twocents_icon {
-    float: left;
-    margin: 0 16px 0 0;
-}
-.twocents_license {
-    text-align: justify;
-}
-.twocents_syscheck {
-    list-style: none;
-    padding-left: 0;
-}
