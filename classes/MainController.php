@@ -215,12 +215,16 @@ class MainController extends Controller
         foreach ($properties as $property) {
             $config[$property] = $this->lang[$property];
         }
+        $filename = "{$this->pluginsFolder}twocents/twocents.min.js";
+        if (!file_exists($filename)) {
+            $filename = "{$this->pluginsFolder}twocents/twocents.js";
+        }
         ob_start();
         (new View('twocents'))
             ->template('scripts')
             ->data([
                 'json' => new HtmlString(json_encode($config)),
-                'filename' => "{$this->pluginsFolder}twocents/twocents.min.js"
+                'filename' => $filename
             ])
             ->render();
         $bjs .= ob_get_clean();

@@ -1,3 +1,4 @@
 tests/coverage
 vendor
 /classes.svg
+/twocents.min.js
