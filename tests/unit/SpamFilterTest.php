@@ -30,7 +30,7 @@ class SpamFilterTest extends TestCase
      */
     private $subject;
 
-    public function setUp()
+    public function setUp(): void
     {
         global $plugin_tx;
 

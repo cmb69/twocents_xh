@@ -51,14 +51,14 @@ class CommentTest extends TestCase
      */
     protected $filename;
 
-    public function setUp()
+    public function setUp(): void
     {
         $this->setUpFilesystem();
         $this->subject = Comment::make(self::TOPICNAME, self::TIME);
         uopz_set_return('uniqid', self::ID);
     }
 
-    protected function tearDown()
+    protected function tearDown(): void
     {
         uopz_unset_return('uniqid');
     }

@@ -40,7 +40,7 @@ class TopicTest extends TestCase
      */
     protected $filename;
 
-    public function setUp()
+    public function setUp(): void
     {
         $this->setUpFilesystem();
         $this->subject = new Topic(self::TOPIC);
@@ -68,7 +68,7 @@ class TopicTest extends TestCase
     public function testInsertionCreatesFile()
     {
         $this->subject->delete();
-        $this->assertFileNotExists($this->filename);
+        $this->assertFileDoesNotExist($this->filename);
         $this->subject->insert();
         $this->assertFileExists($this->filename);
     }
@@ -78,7 +78,7 @@ class TopicTest extends TestCase
         $this->subject->insert();
         $this->assertFileExists($this->filename);
         $this->subject->delete();
-        $this->assertFileNotExists($this->filename);
+        $this->assertFileDoesNotExist($this->filename);
     }
 
     public function testFinds3Topics()

@@ -35,7 +35,7 @@ class MailerTest extends TestCase
      */
     protected $mailMock;
 
-    public function setUp()
+    public function setUp(): void
     {
         $this->subject = new Mailer();
     }

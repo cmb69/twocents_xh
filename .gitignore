@@ -4,3 +4,4 @@ vendor
 /twocents.min.js
 /README.htm
 /composer.lock
+/.phpunit.cache
