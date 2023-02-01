@@ -15,11 +15,14 @@
     <echo>${help}</echo>
   </target>
 
-  <target name="sniff" description="checks adherence to coding standards">
-    <phpcodesniffer standard="PSR2" haltonerror="true">
-      <fileset refid="php-sources"/>
-      <fileset refid="unit-tests"/>
-    </phpcodesniffer>
+  <target name="sniff" description="checks adherence to the coding standard">
+    <exec executable="phpcs" passthru="true" checkreturn="true">
+      <arg value="--standard=PSR2"/>
+      <arg line="--runtime-set ignore_warnings_on_exit true"/>
+      <arg file="classes"/>
+      <arg file="tests/unit"/>
+      <arg file="index.php"/>
+    </exec>
   </target>
 
   <target name="mess" description="detects code flaws">
