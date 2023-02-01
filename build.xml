@@ -62,6 +62,7 @@
     <delete file="export.zip"/>
     <move todir="dist">
       <fileset dir="export">
+        <exclude name=".github/**"/>
         <exclude name="help/template.htm"/>
         <exclude name="tests/**"/>
         <exclude name="README*.md"/>
