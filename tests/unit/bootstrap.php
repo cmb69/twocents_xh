@@ -28,4 +28,9 @@ if (file_exists('../../cmsimple/utf8.php')) {
     include_once '../utf8/utf8.php';
 }
 require_once '../../cmsimple/classes/CSRFProtection.php';
-require_once '../pfw/classes/required_classes.php';
+require_once './classes/Comment.php';
+require_once './classes/Db.php';
+require_once './classes/Mailer.php';
+require_once './classes/Pagination.php';
+require_once './classes/SpamFilter.php';
+require_once './classes/Topic.php';
