@@ -1,0 +1,16 @@
+parameters:
+  level: 0
+  paths:
+    - classes/
+#    - tests/
+#    - views/
+    - index.php
+#  bootstrapFiles:
+#    - phpstan.php
+  scanFiles:
+#    - ../../cmsimple/classes/CSRFProtection.php
+    - ../../cmsimple/adminfuncs.php
+    - ../../cmsimple/functions.php
+    - ../../cmsimple/utf8.php
+    - ../realblog/classes/CommentsBridge.php
+    - ./htmlpurifier/HTMLPurifier.standalone.php
