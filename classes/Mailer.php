@@ -31,6 +31,9 @@ namespace Twocents;
 
 class Mailer
 {
+    /** @var MailHelper */
+    private $mailHelper;
+
     /**
      * @var string
      */
@@ -39,8 +42,9 @@ class Mailer
     /**
      * @param string $lineBreak
      */
-    public function __construct($lineBreak = "\r\n")
+    public function __construct(MailHelper $mailHelper, $lineBreak = "\r\n")
     {
+        $this->mailHelper = $mailHelper;
         $this->lineBreak = (string) $lineBreak;
     }
 
@@ -68,7 +72,7 @@ class Mailer
                 ? idn_to_ascii($domain, 0, INTL_IDNA_VARIANT_UTS46)
                 : idn_to_ascii($domain);
         }
-        if (gethostbyname($domain) == $domain) {
+        if ($this->mailHelper->gethostbyname($domain) == $domain) {
             return false;
         }
         return true;
@@ -91,7 +95,7 @@ class Mailer
         $subject = $this->encodeMIMEFieldBody($subject);
         $message = preg_replace('/(?:\r\n|\r|\n)/', $this->lineBreak, trim($message));
         $message = chunk_split(base64_encode($message));
-        return mail($to, $subject, $message, $header);
+        return $this->mailHelper->mail($to, $subject, $message, $header);
     }
 
     /**

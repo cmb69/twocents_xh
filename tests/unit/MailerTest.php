@@ -31,20 +31,20 @@ class MailerTest extends TestCase
     protected $subject;
 
     /**
-     * @var object
+     * @var MailHelper
      */
-    protected $mailMock;
+    protected $mailHelper;
 
     public function setUp(): void
     {
-        $this->subject = new Mailer();
+        $this->mailHelper = $this->createMock(MailHelper::class);
+        $this->subject = new Mailer($this->mailHelper);
     }
 
     public function testValidAddress()
     {
-        uopz_set_return('gethostbyname', '127.0.0.1');
+        $this->mailHelper->method('gethostbyname')->willReturn('127.0.0.1');
         $this->assertTrue($this->subject->isValidAddress('me@example.com'));
-        uopz_unset_return('gethostbyname');
     }
 
     public function testLocalPartWithSpaceIsInvalidAddress()
@@ -54,61 +54,52 @@ class MailerTest extends TestCase
 
     public function testNotExistingDomainIsInvalidAddress()
     {
-        uopz_set_return('gethostbyname', 'test.invalid');
+        $this->mailHelper->method('gethostbyname')->willReturn('test.invalid');
         $this->assertFalse($this->subject->isValidAddress('me@test.invalid'));
-        uopz_unset_return('gethostbyname');
     }
 
     public function testSendAsciiSubjectCallsMailWithCorrectArguments()
     {
-        uopz_set_return('mail', function () use (&$args) {
-            $args = func_get_args();
-        }, true);
+        $this->mailHelper->expects($this->once())->method('mail')->with(
+            $this->equalTo('cmbecker69@gmx'),
+            $this->equalTo('A test'),
+            $this->equalTo("TG9yZW0gaXBzdW0=\r\n"),
+            $this->equalTo(
+                "MIME-Version: 1.0\r\n"
+                . "Content-Type: text/plain; charset=UTF-8; format=flowed\r\n"
+                . "Content-Transfer-Encoding: base64\r\n"
+                . "From: cmbecker69@gmx.de"
+            )
+        );
         $this->subject->send(
             'cmbecker69@gmx',
             'A test',
             'Lorem ipsum',
             'From: cmbecker69@gmx.de'
         );
-        $this->assertEquals(
-            array(
-                'cmbecker69@gmx',
-                'A test',
-                "TG9yZW0gaXBzdW0=\r\n",
-                "MIME-Version: 1.0\r\n"
-                . "Content-Type: text/plain; charset=UTF-8; format=flowed\r\n"
-                . "Content-Transfer-Encoding: base64\r\n"
-                . "From: cmbecker69@gmx.de"
-            ),
-            $args
-        );
-        uopz_unset_return('mail');
     }
 
     public function testSendUtf8SubjectCallsMailWithCorrectArguments()
     {
-        uopz_set_return('mail', function () use (&$args) {
-            $args = func_get_args();
-        }, true);
+        $this->mailHelper->expects($this->once())->method('mail')->with(
+            $this->equalTo('cmbecker69@gmx'),
+            $this->equalTo(
+                '=?UTF-8?B?RHJpdmluZyB5b3VyIEJNVyBkb3duIHRoZSByb2FkLCBpcyBGYWhydmVy'
+                . "Z24=?=\r\n =?UTF-8?B?w7xnZW4=?="
+            ),
+            $this->equalTo("TG9yZW0gaXBzdW0=\r\n"),
+            $this->equalTo(
+                "MIME-Version: 1.0\r\n"
+                . "Content-Type: text/plain; charset=UTF-8; format=flowed\r\n"
+                . "Content-Transfer-Encoding: base64\r\n"
+                . "From: cmbecker69@gmx.de"
+            )
+        );
         $this->subject->send(
             'cmbecker69@gmx',
             "Driving your BMW down the road, is Fahrvergn\xC3\xBCgen",
             'Lorem ipsum',
             'From: cmbecker69@gmx.de'
         );
-        $this->assertEquals(
-            array(
-                'cmbecker69@gmx',
-                '=?UTF-8?B?RHJpdmluZyB5b3VyIEJNVyBkb3duIHRoZSByb2FkLCBpcyBGYWhydmVy'
-                . "Z24=?=\r\n =?UTF-8?B?w7xnZW4=?=",
-                "TG9yZW0gaXBzdW0=\r\n",
-                "MIME-Version: 1.0\r\n"
-                . "Content-Type: text/plain; charset=UTF-8; format=flowed\r\n"
-                . "Content-Transfer-Encoding: base64\r\n"
-                . "From: cmbecker69@gmx.de"
-            ),
-            $args
-        );
-        uopz_unset_return('mail');
     }
 }

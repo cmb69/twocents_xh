@@ -11,8 +11,6 @@ jobs:
         uses: shivammathur/setup-php@v2
         with:
           php-version: ${{matrix.php}}
-          extensions: uopz
-          ini-values: uopz.exit=1
           tools: composer
       - name: Install CMSimple_XH
         run: |

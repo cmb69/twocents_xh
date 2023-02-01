@@ -126,7 +126,7 @@ class MainAdminController extends Controller
                     $message = $this->plainify($message);
                 }
                 $comment->setMessage($message);
-                $comment->insert();
+                $comment->insert(uniqid());
                 $count++;
             }
         }
@@ -152,7 +152,7 @@ class MainAdminController extends Controller
                     $message = $this->plainify($message);
                 }
                 $comment->setMessage($message);
-                $comment->insert();
+                $comment->insert(uniqid());
                 $count++;
             }
         }

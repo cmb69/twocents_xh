@@ -55,12 +55,6 @@ class CommentTest extends TestCase
     {
         $this->setUpFilesystem();
         $this->subject = Comment::make(self::TOPICNAME, self::TIME);
-        uopz_set_return('uniqid', self::ID);
-    }
-
-    protected function tearDown(): void
-    {
-        uopz_unset_return('uniqid');
     }
 
     protected function setUpFilesystem()
@@ -133,13 +127,13 @@ class CommentTest extends TestCase
         unlink($this->filename);
         rmdir(dirname($this->filename));
         $this->subject->setUser('cmb');
-        $this->subject->insert();
+        $this->subject->insert(self::ID);
         $this->assertStringEqualsFile($this->filename, self::LINE1);
     }
 
     public function testUpdateSavesToFile()
     {
-        $this->subject->insert();
+        $this->subject->insert(self::ID);
         $this->subject->setUser('cmb');
         $this->subject->update();
         $this->assertStringEqualsFile($this->filename, self::LINE2 . self::LINE1);
@@ -147,14 +141,14 @@ class CommentTest extends TestCase
 
     public function testDeleteRemovesFromFile()
     {
-        $this->subject->insert();
+        $this->subject->insert(self::ID);
         $this->subject->delete();
         $this->assertStringEqualsFile($this->filename, self::LINE2);
     }
 
     public function testFinds2CommentsByTopicname()
     {
-        $this->subject->insert();
+        $this->subject->insert(self::ID);
         $comments = Comment::findByTopicname(self::TOPICNAME);
         $this->assertContainsOnlyInstancesOf('Twocents\\Comment', $comments);
         $this->assertCount(2, $comments);
@@ -168,13 +162,13 @@ class CommentTest extends TestCase
 
     public function testFindsInsertedComment()
     {
-        $this->subject->insert();
+        $this->subject->insert(self::ID);
         $this->assertEquals($this->subject, Comment::find(self::ID, self::TOPICNAME));
     }
 
     public function testDoesNotFindDeletedComment()
     {
-        $this->subject->insert();
+        $this->subject->insert(self::ID);
         $this->subject->delete();
         $this->assertNull(Comment::find(self::ID, self::TOPICNAME));
     }

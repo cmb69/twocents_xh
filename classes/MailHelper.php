@@ -1,7 +1,7 @@
 <?php
 
 /**
- * Copyright 2015-2017 Christoph M. Becker
+ * Copyright (c) Christoph M. Becker
  *
  * This file is part of Twocents_XH.
  *
@@ -19,19 +19,28 @@
  * along with Twocents_XH.  If not, see <http://www.gnu.org/licenses/>.
  */
 
+namespace Twocents;
 
-require_once '../../cmsimple/functions.php';
-require_once '../../cmsimple/adminfuncs.php';
-if (file_exists('../../cmsimple/utf8.php')) {
-    include_once '../../cmsimple/utf8.php';
-} else {
-    include_once '../utf8/utf8.php';
+class MailHelper
+{
+    /**
+     * @param string $hostname
+     * @return string
+     */
+    public function gethostbyname($hostname)
+    {
+        return gethostbyname($hostname);
+    }
+
+    /**
+     * @param string $to
+     * @param string $subject
+     * @param string $message
+     * @param string $additionalHeaders
+     * @return bool
+     */
+    public function mail($to, $subject, $message, $additionalHeaders)
+    {
+        return mail($to, $subject, $message, $additionalHeaders);
+    }
 }
-require_once '../../cmsimple/classes/CSRFProtection.php';
-require_once './classes/Comment.php';
-require_once './classes/Db.php';
-require_once './classes/Mailer.php';
-require_once './classes/MailHelper.php';
-require_once './classes/Pagination.php';
-require_once './classes/SpamFilter.php';
-require_once './classes/Topic.php';

@@ -236,9 +236,10 @@ class Comment
         $this->hidden = false;
     }
 
-    public function insert()
+    /** @param string $uniqid */
+    public function insert($uniqid)
     {
-        $this->id = uniqid();
+        $this->id = $uniqid;
         Db::lock(LOCK_EX);
         $file = fopen(Db::getFoldername() . $this->topicname . '.' . self::EXT, 'a');
         fputcsv($file, $this->toRecord());

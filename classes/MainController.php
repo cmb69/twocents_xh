@@ -364,7 +364,7 @@ class MainController extends Controller
         $marker = '<div id="twocents_scroll_marker" class="twocents_scroll_marker">'
             . '</div>';
         if ($this->validateFormSubmission()) {
-            $this->comment->insert();
+            $this->comment->insert(uniqid());
             $this->sendNotificationEmail();
             $this->comment = null;
             if ($this->isModerated() || $isSpam) {
@@ -405,7 +405,7 @@ class MainController extends Controller
             );
             $body = $attribution. "\n\n> " . str_replace("\n", "\n> ", $message);
             $replyTo = str_replace(["\n", "\r"], '', $this->comment->getEmail());
-            $mailer = new Mailer(($this->config['email_linebreak'] === 'LF') ? "\n" : "\r\n");
+            $mailer = new Mailer(new MailHelper(), ($this->config['email_linebreak'] === 'LF') ? "\n" : "\r\n");
             $mailer->send($email, $this->lang['email_subject'], $body, "From: $email\r\nReply-To: $replyTo");
         }
     }
@@ -437,7 +437,7 @@ class MainController extends Controller
             $isValid = false;
             $this->messages .= XH_message('fail', $this->lang['error_user']);
         }
-        $mailer = new Mailer();
+        $mailer = new Mailer(new MailHelper());
         if (!$mailer->isValidAddress($this->comment->getEmail())) {
             $isValid = false;
             $this->messages .= XH_message('fail', $this->lang['error_email']);
