@@ -21,8 +21,6 @@
 
 namespace Twocents;
 
-use Pfw\CsrfTestCase;
-
 /*
  * A page "Twocents" with a Twocents_XH widget has to be there.
  */

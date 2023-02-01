@@ -1,7 +1,7 @@
 <?php
 
 /**
- * Copyright 2015-2017 Christoph M. Becker
+ * Copyright 2023 Christoph M. Becker
  *
  * This file is part of Twocents_XH.
  *
@@ -19,18 +19,22 @@
  * along with Twocents_XH.  If not, see <http://www.gnu.org/licenses/>.
  */
 
+namespace Twocents;
 
-require_once '../../cmsimple/functions.php';
-require_once '../../cmsimple/adminfuncs.php';
-if (file_exists('../../cmsimple/utf8.php')) {
-    include_once '../../cmsimple/utf8.php';
-} else {
-    include_once '../utf8/utf8.php';
+class HtmlString
+{
+    /** @var string */
+    private $string;
+
+    /** @param string $string */
+    public function __construct($string)
+    {
+        $this->string = $string;
+    }
+
+    /** @return string */
+    public function __toString()
+    {
+        return $this->string;
+    }
 }
-require_once '../../cmsimple/classes/CSRFProtection.php';
-require_once './classes/Comment.php';
-require_once './classes/Db.php';
-require_once './classes/Mailer.php';
-require_once './classes/Pagination.php';
-require_once './classes/SpamFilter.php';
-require_once './classes/Topic.php';

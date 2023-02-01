@@ -21,9 +21,6 @@
 
 namespace Twocents;
 
-use Pfw\View\View;
-use Pfw\SystemCheckService;
-
 class Plugin
 {
     const VERSION = '1.0beta3';
@@ -66,9 +63,7 @@ class Plugin
         $o .= print_plugin_admin('on');
         switch ($admin) {
             case '':
-                ob_start();
-                $this->renderInfo()->render();
-                $o .= ob_get_clean();
+                $o .= $this->renderInfo();
                 break;
             case 'plugin_main':
                 $o .= $this->handleMainAdministration();
@@ -79,27 +74,24 @@ class Plugin
     }
 
     /**
-     * @return View
+     * @return string
      */
     protected function renderInfo()
     {
-        global $pth;
+        global $pth, $plugin_tx;
 
-        return (new View('twocents'))
-            ->template('info')
-            ->data([
-                'logo' => "{$pth['folder']['plugins']}twocents/twocents.png",
-                'version' => Plugin::VERSION,
-                'checks' => (new SystemCheckService)
-                    ->minPhpVersion('5.4.0')
-                    ->extension('json')
-                    ->minXhVersion('1.6.3')
-                    ->writable("{$pth['folder']['base']}content/twocents/")
-                    ->writable("{$pth['folder']['plugins']}twocents/config/")
-                    ->writable("{$pth['folder']['plugins']}twocents/css/")
-                    ->writable("{$pth['folder']['plugins']}twocents/languages/")
-                    ->getChecks()
-            ]);
+        $systemCheckService = new SystemCheckService(
+            $pth['folder']['plugins'],
+            $plugin_tx['twocents'],
+            "{$pth['folder']['base']}content/twocents/",
+            new SystemChecker()
+        );
+        $view = new View("{$pth['folder']['plugins']}twocents/views/", $plugin_tx['twocents']);
+        return $view->render('info', [
+            'logo' => "{$pth['folder']['plugins']}twocents/twocents.png",
+            'version' => Plugin::VERSION,
+            'checks' => $systemCheckService->getChecks(),
+        ]);
     }
 
     /**

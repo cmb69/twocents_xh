@@ -21,9 +21,6 @@
 
 namespace Twocents;
 
-use Pfw\View\View;
-use Pfw\View\HtmlString;
-
 class MainAdminController extends Controller
 {
     /**
@@ -38,15 +35,13 @@ class MainAdminController extends Controller
         } else {
             $button = 'convert_to_html';
         }
-        (new View('twocents'))
-            ->template('admin')
-            ->data([
-                'action' => "{$this->scriptName}?&twocents",
-                'csrfTokenInput' => new HtmlString($this->csrfProtector->tokenInput()),
-                'buttons' => array($button, 'import_comments', 'import_gbook'),
-                'message' => $this->message
-            ])
-            ->render();
+        $view = new View("{$this->pluginsFolder}twocents/views/", $this->lang);
+        echo $view->render('admin', [
+            'action' => "{$this->scriptName}?&twocents",
+            'csrfTokenInput' => new HtmlString($this->csrfProtector->tokenInput()),
+            'buttons' => array($button, 'import_comments', 'import_gbook'),
+            'message' => $this->message
+        ]);
     }
 
     public function convertToHtmlAction()

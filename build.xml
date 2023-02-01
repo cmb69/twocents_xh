@@ -2,6 +2,70 @@
 
 <project name="Twocents" default="help">
 
-    <import file="../pfw/build.xml"/>
+  <fileset id="php-sources" dir=".">
+    <include name="classes/*.php"/>
+  </fileset>
+
+  <fileset id="unit-tests" dir="tests/unit">
+    <include name="*Test.php"/>
+  </fileset>
+
+  <target name="help" description="lists available targets">
+    <exec command="phing -l" outputProperty="help"/>
+    <echo>${help}</echo>
+  </target>
+
+  <target name="sniff" description="checks adherence to coding standards">
+    <phpcodesniffer standard="PSR2" haltonerror="true">
+      <fileset refid="php-sources"/>
+      <fileset refid="unit-tests"/>
+    </phpcodesniffer>
+  </target>
+
+  <target name="mess" description="detects code flaws">
+    <phpmd rulesets="codesize,unusedcode">
+      <fileset refid="php-sources"/>
+      <fileset refid="unit-tests"/>
+      </phpmd>
+  </target>
+
+  <target name="compat" description="checks PHP requirements">
+    <exec command="phpcompatinfo analyser:run classes" logoutput="true"/>
+  </target>
+
+  <target name="unit-tests" description="runs all unit tests">
+    <phpunit bootstrap="tests/unit/bootstrap.php" haltonerror="true" haltonfailure="true">
+      <formatter type="plain" usefile="false"/>
+      <batchtest>
+        <fileset refid="unit-tests"/>
+      </batchtest>
+    </phpunit>
+  </target>
+
+  <target name="coverage" description="generates coverage report">
+    <exec command="phpdbg -qrr vendor/phpunit/phpunit/phpunit --configuration coverage.xml" logoutput="true"/>
+  </target>
+
+  <target name="build">
+    <fail unless="version" message="version is not defined!"/>
+    <exec command="git archive -o export.zip HEAD" checkreturn="true"/>
+    <unzip file="export.zip" todir="export"/>
+    <delete file="export.zip"/>
+    <move todir="dist">
+      <fileset dir="export">
+        <exclude name="tests/**"/>
+        <exclude name="build.xml"/>
+        <exclude name="composer.*"/>
+        <exclude name="coverage.xml"/>
+        <exclude name="phpcompatinfo.json"/>
+        <exclude name="teplad.xml"/>
+      </fileset>
+    </move>
+    <delete dir="export"/>
+    <copy file="dist/config/config.php" tofile="dist/config/defaultconfig.php"/>
+    <copy file="dist/languages/en.php" tofile="dist/languages/default.php"/>
+    <zip destfile="Twocents_XH-${version}.zip" basedir="dist" prefix="twocents/"/>
+    <delete dir="dist"/>
+  </target>
 
 </project>
