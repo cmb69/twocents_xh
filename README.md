@@ -27,7 +27,7 @@ and a simple bad-word list.
 ## Requirements
 
 Twocents_XH is a plugin for [CMSimple_XH](https://www.cmsimple-xh.org/).
-It requires CMSimple_XH ≥ 1.6.3, and PHP ≥ 5.4.0 with the JSON
+It requires CMSimple_XH ≥ 1.7.0, and PHP ≥ 5.4.0 with the JSON
 extension installed.
 
 ## Download

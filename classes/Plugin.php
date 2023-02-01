@@ -47,9 +47,7 @@ class Plugin
     public function run()
     {
         if (XH_ADM) {
-            if (function_exists('XH_registerStandardPluginMenuItems')) {
-                XH_registerStandardPluginMenuItems(true);
-            }
+            XH_registerStandardPluginMenuItems(true);
             if (XH_wantsPluginAdministration('twocents')) {
                 $this->handleAdministration();
             }
@@ -69,7 +67,7 @@ class Plugin
                 $o .= $this->handleMainAdministration();
                 break;
             default:
-                $o .= plugin_admin_common($action, $admin, 'twocents');
+                $o .= plugin_admin_common();
         }
     }
 
