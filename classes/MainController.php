@@ -22,7 +22,6 @@
 namespace Twocents;
 
 use DomainException;
-use Pfw\Url;
 
 class MainController extends Controller
 {
