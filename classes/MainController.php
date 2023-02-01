@@ -23,7 +23,6 @@ namespace Twocents;
 
 use DomainException;
 use Pfw\Url;
-use Pfw\View\View;
 use Pfw\View\HtmlString;
 
 class MainController extends Controller
@@ -107,11 +106,11 @@ class MainController extends Controller
         $pagination = $this->preparePaginationView($count, $currentPage, $pageCount);
         ob_start();
         if (isset($pagination)) {
-            $pagination->render();
+            echo $pagination;
         }
-        $this->prepareCommentsView($comments)->render();
+        echo $this->prepareCommentsView($comments);
         if (isset($pagination)) {
-            $pagination->render();
+            echo $pagination;
         }
         $html = ob_get_clean();
         if (!$this->isXmlHttpRequest()) {
@@ -129,7 +128,7 @@ class MainController extends Controller
      * @param int $commentCount
      * @param int $page
      * @param int $pageCount
-     * @return ?View
+     * @return ?string
      */
     private function preparePaginationView($commentCount, $page, $pageCount)
     {
@@ -139,54 +138,52 @@ class MainController extends Controller
         $pagination = new Pagination($page, $pageCount);
         $url = Url::getCurrent();
         $currentPage = $page;
-        return (new View('twocents'))
-            ->template('pagination')
-            ->data([
-                'itemCount' => $commentCount,
-                'pages' => array_map(
-                    function ($page) use ($url, $currentPage) {
-                        if (isset($page)) {
-                            return (object) array(
-                                'index' => $page,
-                                'url' => $url->without('twocents_id')->with('twocents_page', $page),
-                                'isCurrent' => $page === $currentPage,
-                                'isEllipsis' => false
-                            );
-                        } else {
-                            return (object) ['isEllipsis' => true];
-                        }
-                    },
-                    $pagination->gatherPages()
-                )
+        $view = new View("{$this->pluginsFolder}twocents/views/", $this->lang);
+        return $view->render('pagination', [
+            'itemCount' => $commentCount,
+            'pages' => array_map(
+                function ($page) use ($url, $currentPage) {
+                    if (isset($page)) {
+                        return (object) array(
+                            'index' => $page,
+                            'url' => $url->without('twocents_id')->with('twocents_page', $page),
+                            'isCurrent' => $page === $currentPage,
+                            'isEllipsis' => false
+                        );
+                    } else {
+                        return (object) ['isEllipsis' => true];
+                    }
+                },
+                $pagination->gatherPages()
+            )
             ]);
     }
 
     /**
      * @param Comment[] $comments
-     * @return View
+     * @return string
      */
     private function prepareCommentsView(array $comments)
     {
         $this->writeScriptsToBjs();
         $mayAddComment = (!isset($this->comment) || $this->comment->getId() == null)
             && (XH_ADM || !$this->readonly);
-        return (new View('twocents'))
-            ->template('comments')
-            ->data([
-                'comments' => array_map(
-                    function ($comment) {
-                        return (object) array(
-                            'isCurrent' => $this->isCurrentComment($comment),
-                            'view' => $this->prepareCommentView($comment)
-                        );
-                    },
-                    $comments
-                ),
-                'hasCommentFormAbove' => $mayAddComment && $this->config['comments_order'] === 'DESC',
-                'hasCommentFormBelow' => $mayAddComment && $this->config['comments_order'] === 'ASC',
-                'commentForm' => $mayAddComment ? $this->prepareCommentForm($this->comment) : null,
-                'messages' => new HtmlString($this->messages)
-            ]);
+        $view = new View("{$this->pluginsFolder}twocents/views/", $this->lang);
+        return $view->render('comments', [
+            'comments' => array_map(
+                function ($comment) {
+                    return (object) array(
+                        'isCurrent' => $this->isCurrentComment($comment),
+                        'view' => $this->prepareCommentView($comment)
+                    );
+                },
+                $comments
+            ),
+            'hasCommentFormAbove' => $mayAddComment && $this->config['comments_order'] === 'DESC',
+            'hasCommentFormBelow' => $mayAddComment && $this->config['comments_order'] === 'ASC',
+            'commentForm' => $mayAddComment ? $this->prepareCommentForm($this->comment) : null,
+            'messages' => new HtmlString($this->messages)
+        ]);
     }
 
     private function writeScriptsToBjs()
@@ -219,19 +216,15 @@ class MainController extends Controller
         if (!file_exists($filename)) {
             $filename = "{$this->pluginsFolder}twocents/twocents.js";
         }
-        ob_start();
-        (new View('twocents'))
-            ->template('scripts')
-            ->data([
-                'json' => new HtmlString(json_encode($config)),
-                'filename' => $filename
-            ])
-            ->render();
-        $bjs .= ob_get_clean();
+        $view = new View("{$this->pluginsFolder}twocents/views/", $this->lang);
+        $bjs .= $view->render('scripts', [
+            'json' => new HtmlString(json_encode($config)),
+            'filename' => $filename
+        ]);
     }
 
     /**
-     * @return View
+     * @return string
      */
     private function prepareCommentView(Comment $comment)
     {
@@ -258,13 +251,12 @@ class MainController extends Controller
                 $data['csrfTokenInput'] = new HtmlString($this->csrfProtector->tokenInput());
             }
         }
-        return (new View('twocents'))
-            ->template('comment')
-            ->data($data);
+        $view = new View("{$this->pluginsFolder}twocents/views/", $this->lang);
+        return $view->render('comment', $data);
     }
 
     /**
-     * @return View
+     * @return string
      */
     private function prepareCommentForm(Comment $comment = null)
     {
@@ -289,9 +281,8 @@ class MainController extends Controller
                 'csrfTokenInput' => ''
             ];
         }
-        return (new View('twocents'))
-            ->template('comment-form')
-            ->data($data);
+        $view = new View("{$this->pluginsFolder}twocents/views/", $this->lang);
+        return $view->render('comment-form', $data);
     }
 
     /**
