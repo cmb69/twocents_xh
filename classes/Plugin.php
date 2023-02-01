@@ -21,8 +21,6 @@
 
 namespace Twocents;
 
-use Pfw\SystemCheckService;
-
 class Plugin
 {
     const VERSION = '1.0beta3';
@@ -82,19 +80,17 @@ class Plugin
     {
         global $pth, $plugin_tx;
 
+        $systemCheckService = new SystemCheckService(
+            $pth['folder']['plugins'],
+            $plugin_tx['twocents'],
+            "{$pth['folder']['base']}content/twocents/",
+            new SystemChecker()
+        );
         $view = new View("{$pth['folder']['plugins']}twocents/views/", $plugin_tx['twocents']);
         return $view->render('info', [
             'logo' => "{$pth['folder']['plugins']}twocents/twocents.png",
             'version' => Plugin::VERSION,
-            'checks' => (new SystemCheckService)
-                ->minPhpVersion('5.4.0')
-                ->extension('json')
-                ->minXhVersion('1.6.3')
-                ->writable("{$pth['folder']['base']}content/twocents/")
-                ->writable("{$pth['folder']['plugins']}twocents/config/")
-                ->writable("{$pth['folder']['plugins']}twocents/css/")
-                ->writable("{$pth['folder']['plugins']}twocents/languages/")
-                ->getChecks()
+            'checks' => $systemCheckService->getChecks(),
         ]);
     }
 
