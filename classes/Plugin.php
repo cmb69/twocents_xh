@@ -29,7 +29,7 @@ class Plugin
      * @param string $param
      * @return string
      */
-    public static function getControllerAction(Controller $controller, $param)
+    public static function getControllerAction(MainAdminController $controller, $param)
     {
         $action = preg_replace_callback(
             '/_([a-z])/',
@@ -97,7 +97,15 @@ class Plugin
      */
     private function handleMainAdministration()
     {
-        $controller = new MainAdminController();
+        global $pth, $sn, $plugin_cf, $plugin_tx, $_XH_csrfProtection;
+
+        $controller = new MainAdminController(
+            "{$pth['folder']['plugins']}twocents/",
+            $sn,
+            $plugin_cf['twocents'],
+            $plugin_tx['twocents'],
+            isset($_XH_csrfProtection) ? $_XH_csrfProtection : null
+        );
         ob_start();
         $controller->{self::getControllerAction($controller, 'action')}();
         return ob_get_clean();

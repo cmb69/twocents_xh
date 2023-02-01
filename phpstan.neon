@@ -8,7 +8,7 @@ parameters:
   bootstrapFiles:
     - phpstan.php
   scanFiles:
-#    - ../../cmsimple/classes/CSRFProtection.php
+    - ../../cmsimple/classes/CSRFProtection.php
     - ../../cmsimple/adminfuncs.php
     - ../../cmsimple/functions.php
     - ../../cmsimple/utf8.php

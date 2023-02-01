@@ -22,9 +22,22 @@
 namespace Twocents;
 
 use DomainException;
+use XH\CSRFProtection as CsrfProtector;
 
-class MainController extends Controller
+class MainController
 {
+    /** @var string */
+    private $pluginsFolder;
+
+    /** @var array<string,string> */
+    private $conf;
+
+    /** @var array<string,string> */
+    private $lang;
+
+    /** @var CsrfProtector|null */
+    private $csrfProtector;
+
     /**
      * @var string
      */
@@ -46,13 +59,20 @@ class MainController extends Controller
     private $messages;
 
     /**
+     * @param string $pluginsFolder
+     * @param array<string,string> $conf
+     * @param array<string,string> $lang
+     * @param CsrfProtector|null $csrfProtector
      * @param string $topicname
      * @param bool $readonly
      * @throws DomainException
      */
-    public function __construct($topicname, $readonly)
+    public function __construct($pluginsFolder, array $conf, array $lang, $csrfProtector, $topicname, $readonly)
     {
-        parent::__construct();
+        $this->pluginsFolder = $pluginsFolder;
+        $this->conf = $conf;
+        $this->lang = $lang;
+        $this->csrfProtector = $csrfProtector;
         if (!$this->isValidTopicname($topicname)) {
             throw new DomainException;
         }
@@ -95,9 +115,9 @@ class MainController extends Controller
         if (isset($_GET['twocents_id'])) {
             $this->comment = Comment::find($_GET['twocents_id'], $this->topicname);
         }
-        $comments = Comment::findByTopicname($this->topicname, true, $this->config['comments_order'] === 'ASC');
+        $comments = Comment::findByTopicname($this->topicname, true, $this->conf['comments_order'] === 'ASC');
         $count = count($comments);
-        $itemsPerPage = $this->config['pagination_max'];
+        $itemsPerPage = (int) $this->conf['pagination_max'];
         $pageCount = (int) ceil($count / $itemsPerPage);
         $currentPage = isset($_GET['twocents_page']) ? max(1, min($pageCount, $_GET['twocents_page'])) : 1;
         $comments = array_splice($comments, ($currentPage - 1) * $itemsPerPage, $itemsPerPage);
@@ -177,8 +197,8 @@ class MainController extends Controller
                 },
                 $comments
             ),
-            'hasCommentFormAbove' => $mayAddComment && $this->config['comments_order'] === 'DESC',
-            'hasCommentFormBelow' => $mayAddComment && $this->config['comments_order'] === 'ASC',
+            'hasCommentFormAbove' => $mayAddComment && $this->conf['comments_order'] === 'DESC',
+            'hasCommentFormBelow' => $mayAddComment && $this->conf['comments_order'] === 'ASC',
             'commentForm' => $mayAddComment ? $this->prepareCommentForm($this->comment) : null,
             'messages' => new HtmlString($this->messages)
         ]);
@@ -196,7 +216,7 @@ class MainController extends Controller
         }
         $config = array();
         foreach (array('comments_markup') as $property) {
-            $config[$property] = $this->config[$property];
+            $config[$property] = $this->conf[$property];
         }
         $properties = array(
             'label_new',
@@ -273,7 +293,7 @@ class MainController extends Controller
                 'csrfTokenInput' => new HtmlString($this->csrfProtector->tokenInput())
             ];
         } else {
-            $page = $this->config['comments_order'] === 'ASC' ? '2147483647' : '0';
+            $page = $this->conf['comments_order'] === 'ASC' ? '2147483647' : '0';
             $data += [
                 'url' => $url->with('twocents_page', $page),
                 'csrfTokenInput' => ''
@@ -288,7 +308,7 @@ class MainController extends Controller
      */
     private function renderCaptcha()
     {
-        $pluginname = $this->config['captcha_plugin'];
+        $pluginname = $this->conf['captcha_plugin'];
         $filename = "{$this->pluginsFolder}$pluginname/captcha.php";
         if (!(defined('XH_ADM') && XH_ADM) && $pluginname && is_readable($filename)) {
             include_once $filename;
@@ -320,7 +340,7 @@ class MainController extends Controller
      */
     private function renderMessage(Comment $comment)
     {
-        if ($this->config['comments_markup'] == 'HTML') {
+        if ($this->conf['comments_markup'] == 'HTML') {
             return $comment->getMessage();
         } else {
             return preg_replace('/(?:\r\n|\r|\n)/', tag('br'), XH_hsc($comment->getMessage()));
@@ -353,8 +373,8 @@ class MainController extends Controller
         $this->comment->setUser(trim($_POST['twocents_user']));
         $this->comment->setEmail(trim($_POST['twocents_email']));
         $message = trim($_POST['twocents_message']);
-        if (!(defined('XH_ADM') && XH_ADM) && $this->config['comments_markup'] == 'HTML') {
-            $htmlCleaner = new HtmlCleaner("{$this->pluginsFolder}twocents/", $this->isXhtml);
+        if (!(defined('XH_ADM') && XH_ADM) && $this->conf['comments_markup'] == 'HTML') {
+            $htmlCleaner = new HtmlCleaner("{$this->pluginsFolder}twocents/", false);
             $message = $htmlCleaner->clean($message);
         }
         $this->comment->setMessage($message);
@@ -386,15 +406,15 @@ class MainController extends Controller
      */
     private function isModerated()
     {
-        return $this->config['comments_moderated'] && !(defined('XH_ADM') && XH_ADM);
+        return $this->conf['comments_moderated'] && !(defined('XH_ADM') && XH_ADM);
     }
 
     private function sendNotificationEmail()
     {
-        $email = $this->config['email_address'];
+        $email = $this->conf['email_address'];
         if (!(defined('XH_ADM') && XH_ADM) && $email !== '') {
             $message = $this->comment->getMessage();
-            if ($this->config['comments_markup'] === 'HTML') {
+            if ($this->conf['comments_markup'] === 'HTML') {
                 $message = strip_tags($message);
             }
             $url = Url::getCurrent()->getAbsolute()
@@ -407,7 +427,7 @@ class MainController extends Controller
             );
             $body = $attribution. "\n\n> " . str_replace("\n", "\n> ", $message);
             $replyTo = str_replace(["\n", "\r"], '', $this->comment->getEmail());
-            $mailer = new Mailer(new MailHelper(), ($this->config['email_linebreak'] === 'LF') ? "\n" : "\r\n");
+            $mailer = new Mailer(new MailHelper(), ($this->conf['email_linebreak'] === 'LF') ? "\n" : "\r\n");
             $mailer->send($email, $this->lang['email_subject'], $body, "From: $email\r\nReply-To: $replyTo");
         }
     }
@@ -456,7 +476,7 @@ class MainController extends Controller
      */
     private function validateCaptcha()
     {
-        $pluginname = $this->config['captcha_plugin'];
+        $pluginname = $this->conf['captcha_plugin'];
         $filename = "{$this->pluginsFolder}$pluginname/captcha.php";
         if (!(defined('XH_ADM') && XH_ADM) && $pluginname && is_readable($filename)) {
             include_once $filename;

@@ -40,9 +40,16 @@ class RealblogBridge implements CommentsBridge
      */
     public static function handle($topic)
     {
-        global $plugin_cf, $plugin_tx;
+        global $pth, $plugin_cf, $plugin_tx, $_XH_csrfProtection;
 
-        $controller = new MainController($topic, false);
+        $controller = new MainController(
+            $pth['folder']['plugins'],
+            $plugin_cf['twocents'],
+            $plugin_tx['twocents'],
+            isset($_XH_csrfProtection) ? $_XH_csrfProtection : null,
+            $topic,
+            false
+        );
         $action = Plugin::getControllerAction($controller, 'twocents_action');
         ob_start();
         $controller->{$action}();

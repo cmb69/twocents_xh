@@ -21,21 +21,59 @@
 
 namespace Twocents;
 
-class MainAdminController extends Controller
+use XH\CSRFProtection as CsrfProtector;
+
+class MainAdminController
 {
+    /** @var string */
+    private $pluginFolder;
+
+    /** @var string */
+    private $scriptName;
+
+    /** @var array<string,string> */
+    private $conf;
+
+    /** @var array<string,string> */
+    private $lang;
+
+    /** @var CsrfProtector|null */
+    private $csrfProtector;
+
     /**
      * @var ?HtmlString
      */
     private $message;
 
+    /**
+     * @param string $pluginFolder
+     * @param string $scriptName
+     * @param array<string,string> $conf
+     * @param array<string,string> $lang
+     * @param CsrfProtector|null $csrfProtector
+     */
+    public function __construct(
+        $pluginFolder,
+        $scriptName,
+        array $conf,
+        array $lang,
+        $csrfProtector
+    ) {
+        $this->pluginFolder = $pluginFolder;
+        $this->scriptName = $scriptName;
+        $this->conf = $conf;
+        $this->lang = $lang;
+        $this->csrfProtector = $csrfProtector;
+    }
+
     public function defaultAction()
     {
-        if ($this->config['comments_markup'] == 'HTML') {
+        if ($this->conf['comments_markup'] == 'HTML') {
             $button = 'convert_to_plain_text';
         } else {
             $button = 'convert_to_html';
         }
-        $view = new View("{$this->pluginsFolder}twocents/views/", $this->lang);
+        $view = new View("{$this->pluginFolder}views/", $this->lang);
         echo $view->render('admin', [
             'action' => "{$this->scriptName}?&twocents",
             'csrfTokenInput' => new HtmlString($this->csrfProtector->tokenInput()),
@@ -120,8 +158,8 @@ class MainAdminController extends Controller
             $comments = CommentsComment::findByTopicname($topic->getName());
             foreach ($comments as $comment) {
                 $message = $comment->getMessage();
-                if ($this->config['comments_markup'] == 'HTML') {
-                    $htmlCleaner = new HtmlCleaner("{$this->pluginsFolder}twocents/", $this->isXhtml);
+                if ($this->conf['comments_markup'] == 'HTML') {
+                    $htmlCleaner = new HtmlCleaner($this->pluginFolder, false);
                     $message = $htmlCleaner->clean($message);
                 } else {
                     $message = $this->plainify($message);
@@ -147,8 +185,8 @@ class MainAdminController extends Controller
             $comments = GbookComment::findByTopicname($topic->getName());
             foreach ($comments as $comment) {
                 $message = $comment->getMessage();
-                if ($this->config['comments_markup'] == 'HTML') {
-                    $htmlCleaner = new HtmlCleaner("{$this->pluginsFolder}twocents/", $this->isXhtml);
+                if ($this->conf['comments_markup'] == 'HTML') {
+                    $htmlCleaner = new HtmlCleaner($this->pluginFolder, false);
                     $message = $htmlCleaner->clean($message);
                 } else {
                     $message = $this->plainify($message);

@@ -42,10 +42,17 @@ EOT
  */
 function twocents($topicname, $readonly = false)
 {
-    global $plugin_tx;
+    global $pth, $plugin_cf, $plugin_tx, $_XH_csrfProtection;
 
     try {
-        $controller = new Twocents\MainController($topicname, $readonly);
+        $controller = new Twocents\MainController(
+            $pth['folder']['plugins'],
+            $plugin_cf['twocents'],
+            $plugin_tx['twocents'],
+            isset($_XH_csrfProtection) ? $_XH_csrfProtection : null,
+            $topicname,
+            $readonly
+        );
     } catch (DomainException $ex) {
         return XH_message('fail', $plugin_tx['twocents']['error_topicname']);
     }
