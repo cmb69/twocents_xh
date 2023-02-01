@@ -354,7 +354,8 @@ class MainController extends Controller
         $this->comment->setEmail(trim($_POST['twocents_email']));
         $message = trim($_POST['twocents_message']);
         if (!(defined('XH_ADM') && XH_ADM) && $this->config['comments_markup'] == 'HTML') {
-            $message = $this->purify($message);
+            $htmlCleaner = new HtmlCleaner("{$this->pluginsFolder}twocents/", $this->isXhtml);
+            $message = $htmlCleaner->clean($message);
         }
         $this->comment->setMessage($message);
         $isSpam = false;

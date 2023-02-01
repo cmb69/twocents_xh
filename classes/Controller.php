@@ -54,7 +54,7 @@ abstract class Controller
     /**
      * @var bool
      */
-    private $isXhtml;
+    protected $isXhtml;
 
     public function __construct()
     {
@@ -68,29 +68,5 @@ abstract class Controller
             $this->csrfProtector = $_XH_csrfProtection;
         }
         $this->isXhtml = (bool) $cf['xhtml']['endtags'];
-    }
-
-    /**
-     * @param string $message
-     * @return string
-     */
-    protected function purify($message)
-    {
-        include_once "{$this->pluginsFolder}twocents/htmlpurifier/HTMLPurifier.standalone.php";
-        $config = HTMLPurifier_Config::createDefault();
-        if (!$this->isXhtml) {
-            $config->set('HTML.Doctype', 'HTML 4.01 Transitional');
-        }
-        $config->set('HTML.Allowed', 'p,blockquote,br,b,strong,i,em,a[href]');
-        $config->set('AutoFormat.AutoParagraph', true);
-        $config->set('AutoFormat.RemoveEmpty', true);
-        $config->set('AutoFormat.RemoveEmpty.RemoveNbsp', true);
-        $config->set('Cache.SerializerPath', "{$this->pluginsFolder}twocents/cache");
-        $config->set('HTML.Nofollow', true);
-        $config->set('Output.TidyFormat', true);
-        $config->set('Output.Newline', "\n");
-        $purifier = new HTMLPurifier($config);
-        $message = str_replace(array('&nbsp;', "\C2\A0"), ' ', $message);
-        return $purifier->purify($message);
     }
 }
