@@ -1,242 +1,98 @@
 <!DOCTYPE html>
-<html lang="en">
-
+<html xmlns="http://www.w3.org/1999/xhtml" lang="en" xml:lang="en">
 <head>
-<meta http-equiv="content-type" content="text/html;charset=utf-8">
-<title>Twocents_XH – User Manual</title>
-<link rel="stylesheet" type="text/css" href="./stylesheet.css">
+  <meta charset="utf-8" />
+  <meta name="generator" content="pandoc" />
+  <meta name="viewport" content="width=device-width, initial-scale=1.0, user-scalable=yes" />
+  <title>Twocents_XH – User Manual</title>
+  <style type="text/css">
+    body {
+        font-family: Georgia, serif;
+        line-height: 1.5;
+        margin-left: auto;
+        margin-right: auto;
+        padding-left: 0.5em;
+        padding-right: 0.5em;
+        background: #ffffe1;
+        max-width: 32em;
+    }
+    p {
+        text-align: justify;
+    }
+    pre {
+        color: black;
+        background: #ffe;
+        overflow: auto;
+        padding: 0.2em 0.5em;
+        border: 1px solid silver;
+    }
+  </style>
 </head>
-
 <body>
-
-<article>
-
-<h1>Twocents_XH – User Manual</h1>
-<img src="../twocents.png" style="float: left; margin: 0 1.5em 0.5em 0" alt="empty speech bubble">
-<p>
-    Twocents_XH allows your visitors to add their two cents. ;) You can use it
-    as a general commenting possibility on multiple pages, or as a guestbook on
-    a single page, or both, and it can be used as comments plugin for <a
-    href="http://3-magi.net/?CMSimple_XH/Realblog_XH">Realblog_XH</a>. As markup
-    language a minimal subset of <abbr title="Hypertext Markup
-    Language">HTML</abbr> is optionally available, which can be entered with a
-    simple <abbr title="What You See Is What You Get">WYSIWYG</abbr> editor.
-</p>
-<p>
-    Optionally you can enable comment moderation (i.e. comments will not be
-    published automatically), be notified about new comments via email, and you
-    can add spam prevention by using a <a
-    href="http://www.cmsimple-xh.org/wiki/doku.php/captcha_plugins">conforming
-    <abbr title="Completely Automated Public Turing test to tell Computers and
-    Humans Apart">CAPTCHA</abbr> plugin</a> and a simple bad-word list.
-</p>
-
-<nav id="nav">
-<h2>Table of Contents</h2>
+<h1 id="twocents_xh-user-manual">Twocents_XH – User Manual</h1>
+<p>Twocents_XH allows your visitors to add their two cents. ;) You can use it as a general commenting possibility on multiple pages, or as a guestbook on a single page, or both, and it can be used as comments plugin for <a href="https://github.com/cmb69/realblog_xh">Realblog_XH</a>. As markup language a minimal subset of HTML is optionally available, which can be entered with a simple WYSIWYG editor.</p>
+<p>Optionally you can enable comment moderation (i.e. comments will not be published automatically), be notified about new comments via email, and you can add spam prevention by using a <a href="https://wiki.cmsimple-xh.org/archiv/doku.php/captcha_plugins">conforming CAPTCHA plugin</a> and a simple bad-word list.</p>
 <ul>
-<li><a href="#notice">Important Notice</a></li>
 <li><a href="#requirements">Requirements</a></li>
+<li><a href="#download">Download</a></li>
 <li><a href="#installation">Installation</a></li>
 <li><a href="#settings">Settings</a></li>
 <li><a href="#usage">Usage</a>
 <ul>
-<li><a href="#usage-admin">Administration</a></li>
-</ul>
-</li>
+<li><a href="#administration">Adminstration</a></li>
+</ul></li>
 <li><a href="#limitations">Limitations</a></li>
+<li><a href="#troubleshooting">Troubleshooting</a></li>
 <li><a href="#license">License</a></li>
 <li><a href="#credits">Credits</a></li>
 </ul>
-</nav>
-
-<section id="notice">
-<h2>Important Notice</h2>
-<p class="important">
-    Twocents_XH couldn't be tested so far in various environments. It is a so
-    called beta version. Use with caution!
-</p>
-</section>
-
-<section id="requirements">
-<h2>Requirements</h2>
-<p>
-    Twocents_XH requires CMSimple_XH ≥ 1.6.3, and <abbr
-    title="PHP: Hypertext Preprocessor">PHP</abbr> ≥ 5.4.0 with the <i>JSON</i>
-    extension installed.
-</p>
-</section>
-
-<section id="installation">
-<h2>Installation</h2>
-<p>
-    The installation is done as with many other CMSimple_XH plugins. See the <a
-    href="http://www.cmsimple-xh.org/wiki/doku.php/installation"> CMSimple_XH
-    wiki</a> for further details.
-</p>
-<ol>
-<li class="important">
-    Backup the data on your server.
-</li>
-<li>
-    Unzip the distribution on your computer.
-</li>
-<li>
-    Upload the whole directory <code>twocents/</code> to your server into
-    CMSimple_XH's <code>plugins/</code> directory.
-</li>
-<li>
-    Set write permissions for the subdirectories <code>cache/</code>,
-    <code>css/</code>, <code>config/</code> and <code>languages/</code>.
-</li>
-<li class="important">
-    Browse to <i>Plugins</i> → <i>Twocents</i> and check if all requirements are
-    fulfilled.
-</li>
+<h2 id="requirements">Requirements</h2>
+<p>Twocents_XH is a plugin for <a href="https://www.cmsimple-xh.org/">CMSimple_XH</a>. It requires CMSimple_XH ≥ 1.6.3, and PHP ≥ 5.4.0 with the JSON extension installed.</p>
+<h2 id="download">Download</h2>
+<p>The <a href="https://github.com/cmb69/twocents_xh/releases/latest">lastest release</a> is available for download on Github.</p>
+<h2 id="installation">Installation</h2>
+<p>The installation is done as with many other CMSimple_XH plugins. See the <a href="https://wiki.cmsimple-xh.org/?for-users/working-with-the-cms/plugins">CMSimple_XH Wiki</a> for further details.</p>
+<ol type="1">
+<li><p><strong>Backup the data on your server.</strong></p></li>
+<li><p>Unzip the distribution on your computer.</p></li>
+<li><p>Upload the whole directory <code>twocents/</code> to your server into the <code>plugins/</code> directory of CMSimple_XH.</p></li>
+<li><p>Set write permissions for the subdirectories <code>cache/</code>, <code>css/</code>, <code>config/</code> and <code>languages/</code>.</p></li>
+<li><p>Navigate to <code>Plugins</code> → <code>Twocents</code> and check if all requirements are fulfilled.</p></li>
 </ol>
-</section>
-
-<section id="settings">
-<h2>Settings</h2>
-<p>
-    The plugin's configuration is done as with many other CMSimple_XH plugins in
-    the website's back-end. Select <i>Plugins</i> → <i>Twocents</i>.
-</p>
-<p>
-    You can change the default settings of Twocents_XH under <i>Config</i>.
-    Hints for the options will be displayed when hovering over the help icon
-    with your mouse.
-</p>
-<p>
-    Localization is done under <i>Language</i>. You can translate the character
-    strings to your own language (if there is no appropriate language file
-    available), or customize them according to your needs.
-</p>
-<p>
-    The look of Twocents_XH can be customized under <i>Stylesheet</i>.
-</p>
-</section>
-
-<section id="usage">
-<h2>Usage</h2>
-<p>
-    To place a comment facility on a page, write:
-</p>
-<pre>{{{twocents('%TOPICNAME%')}}}</pre>
-<p>
-    <code>%TOPICNAME%</code> can be an arbitrary name, but it may contain only
-    the letters <code>a</code>-<code>z</code>, the digits
-    <code>0</code>-<code>9</code> and minus signs (<code>-</code>). The
-    topicname is not necessarily related to the page heading; in fact it is just
-    the name of a file that is stored in the subfolder <code>twocents/</code> of
-    CMSimple_XH's content folder. If you like you can display the comments for
-    the same topic on different pages.
-</p>
-<p>
-    Some examples:
-</p>
-<pre>{{{twocents('guestbook')}}}
-{{{twocents('article-1')}}}</pre>
-<p>
-    To mark a certain topic as read-only, so that only the administrator is able
-    to add comments, pass <code>1</code> as second argument to the function,
-    for instance:
-</p>
-<pre>{{{twocents('archived', 1}}}</pre>
-<p>
-    Note that there must be at most one call of twocents on a single page.
-</p>
-<p>
-    You can configure the very simplistic spam protection in the language
-    settings under <i>Spam</i> → <i>Words</i> which a list of comma separated
-    words. If any of these words are contained in the message (the actual case
-    of the letters doesn't matter), the comment will automatically be hidden.
-</p>
-
-<section id="usage-admin">
-<h3>Administration</h3>
-<p>
-    The administration of the comments happens on the pages where the comments
-    are displayed. When you're logged in as administrator, you'll see buttons to
-    edit, hide/show and delete each comment.
-</p>
-<p>
-    In the plugin administration area you can convert existing comments from
-    resp. to HTML, depending on the setting of the configuration option
-    <i>Comments</i> → <i>Markup</i>. Note that it's best to do this only when
-    the site is in maintenance mode, and that you have to change this
-    configuration option after the conversion.
-</p>
-<p>
-    Furthermore there is the possibility to import comments from the <a
-    href="https://ge-webdesign.de/cmsimpleplugins/?Eigene_Plugins/Comments">Comments</a>
-    and <a href="http://www.qualifire.de/cmsimple/en/?GBook">GBook</a> plugins.
-    To use this, you have to copy the data files of the Comments or GBook plugin
-    into Twocents_XH's data folder (which is the subfolder
-    <code>twocents/</code> of CMSimple_XH's <code>content/</code> folder). Note
-    that some of the information will be ignored, e.g. the <abbr title="Internet
-    Protocol">IP</abbr> address and the uploaded image, as well as the markup
-    when Twocents_XH is in plain text mode.
-</p>
-</section>
-
-</section>
-
-<section id="limitations">
-<h2>Limitations</h2>
-<p>
-    Currently, posting comments from very old browsers such as <abbr
-    title="Internet Explorer">IE</abbr> 6 and IE 7 is not possible; the form
-    submission will silently fail.
-</p>
-<p>
-    Twocents_XH uses HTML5 form validation features. These will be critized by
-    validators for HTML 4.01 and XHTML 1.0 templates. Other than that they cause
-    no harm; old browsers will simply ignore them, and contemporary browsers
-    will heed them nonetheless. It is recommended that your template uses the
-    so-called HTML 5 doctype declaration, anyway.
-</p>
-</section>
-
-<section id="license">
-<h2>License</h2>
-<p>
-    Twocents_XH is licensed under <a
-    href="http://www.gnu.org/licenses/gpl.html"><abbr title="General Public
-    License">GPLv3</abbr></a>.
-</p>
-<p>
-    Copyright © 2014-2017 Christoph M. Becker
-</p>
-</section>
-
-<section id="credits">
-<h2>Credits</h2>
-<p>
-    Twocents_XH uses <a href="http://htmlpurifier.org/">HTML Purifier</a>. Many
-    thanks for publishing this great tool under <abbr title="Lesser General
-    Public License">LGPL</abbr>.
-</p>
-<p>
-    The plugin logo has been designed by <a
-    href="http://www.mentalrey.it/">Alessandro Rei</a>. Many thanks for
-    publishing the icon under GPL.
-</p>
-<p>
-    Many thanks to the community at the <a
-    href="http://www.cmsimpleforum.com/">CMSimple_XH forum</a> for tips,
-    suggestions and testing. Special thanks to <i>frase</i> and <i>lck</i> for
-    testing and valuable feedback.
-</p>
-<p>
-    And last but not least many thanks to <a href="http://harteg.dk/">Peter
-    Harteg</a>, the "father" of CMSimple, and all developers of <a
-    href="http://www.cmsimple-xh.org/"> CMSimple_XH</a> without whom this
-    amazing <abbr title="Content Management System">CMS</abbr> wouldn't exist.
-</p>
-</section>
-
-</article>
-
+<h2 id="settings">Settings</h2>
+<p>The configuration of the plugin is done as with many other CMSimple_XH plugins in back-end of the Website. Select <code>Plugins</code> → <code>Twocents</code>.</p>
+<p>You can change the default settings of Twocents_XH under <code>Config</code>. Hints for the options will be displayed when hovering over the help icon with your mouse.</p>
+<p>Localization is done under <code>Language</code>. You can translate the character strings to your own language (if there is no appropriate language file available), or customize them according to your needs.</p>
+<p>The look of Twocents_XH can be customized under <code>Stylesheet</code>.</p>
+<h2 id="usage">Usage</h2>
+<p>To place a comment facility on a page, write:</p>
+<pre><code>{{{twocents(&#39;%TOPICNAME%&#39;)}}}</code></pre>
+<p><code>%TOPICNAME%</code> can be an arbitrary name, but it may contain only the letters <code>a</code>-<code>z</code>, the digits <code>0</code>-<code>9</code> and hyphens (<code>-</code>). The topicname is not necessarily related to the page heading; in fact it is just the name of a file that is stored in the subdirectory <code>twocents/</code> of the <code>content/</code> folder of CMSimple_XH. If you like you can display the comments for the same topic on different pages.</p>
+<p>Some examples:</p>
+<pre><code>{{{twocents(&#39;guestbook&#39;)}}}
+{{{twocents(&#39;article-1&#39;)}}}</code></pre>
+<p>To mark a certain topic as read-only, so that only the administrator is able to add comments, pass <code>true</code> as second argument to the function, for instance:</p>
+<pre><code>{{{twocents(&#39;archived&#39;, true}}}</code></pre>
+<p>Note that there must be at most one call of <code>twocents</code> on a single page.</p>
+<p>You can configure the very simplistic spam protection in the language settings under <code>Spam</code> → <code>Words</code> which a list of comma separated words. If any of these words are contained in the message (the actual case of the letters doesn’t matter), the comment will automatically be hidden.</p>
+<h3 id="administration">Administration</h3>
+<p>The administration of the comments happens on the pages where the comments are displayed. When you are logged in as administrator, you will see buttons to edit, hide/show and delete each comment.</p>
+<p>In the plugin administration area you can convert existing comments from and to HTML, respectively, depending on the setting of the configuration option <code>Comments</code> → <code>Markup</code>. Note that it is best to do this only when the site is in maintenance mode, and that you have to change this configuration option after the conversion.</p>
+<p>Furthermore there is the possibility to import comments from the <a href="https://ge-webdesign.de/cmsimpleplugins/?Eigene_Plugins___Comments">Comments</a> and GBook plugins. To use this, you have to copy the data files of the Comments or GBook plugin into the data folder of Twocents_XH (which is the subfolder <code>twocents/</code> of the <code>content/</code> folder of CMSimple_XH). Note that some of the information will be ignored, e.g. the IP address and the uploaded image, as well as the markup when Twocents_XH is in plain text mode.</p>
+<h2 id="limitations">Limitations</h2>
+<p>Currently, posting comments from very old browsers such as IE 6 and IE 7 is not possible; the form submission will silently fail.</p>
+<p>Twocents_XH uses HTML5 form validation features. These will be critized by validators for HTML 4.01 and XHTML 1.0 templates. Other than that they cause no harm; old browsers will simply ignore them, and contemporary browsers will heed them nonetheless. It is recommended that your template uses the so-called HTML 5 doctype declaration, anyway.</p>
+<h2 id="troubleshooting">Troubleshooting</h2>
+<p>Report bugs and ask for support either on <a href="https://github.com/cmb69/twocents_xh/issues">Github</a> or in the <a href="https://cmsimpleforum.com/">CMSimple_XH Forum</a>.</p>
+<h2 id="license">License</h2>
+<p>Twocents_XH is free software: you can redistribute it and/or modify it under the terms of the GNU General Public License as published by the Free Software Foundation, either version 3 of the License, or (at your option) any later version.</p>
+<p>Twocents_XH is distributed in the hope that it will be useful, but without any warranty; without even the implied warranty of merchantibility or fitness for a particular purpose. See the GNU General Public License for more details.</p>
+<p>You should have received a copy of the GNU General Public License along with Twocents_XH. If not, see https://www.gnu.org/licenses/.</p>
+<p>Copyright © 2014-2017 Christoph M. Becker</p>
+<h2 id="credits">Credits</h2>
+<p>Twocents_XH uses <a href="http://htmlpurifier.org/">HTML Purifier</a>. Many thanks for publishing this great tool under LGPL.</p>
+<p>The plugin logo has been designed by <a href="http://www.mentalrey.it/">Alessandro Rei</a>. Many thanks for publishing the icon under GPL.</p>
+<p>Many thanks to the community at the <a href="http://www.cmsimpleforum.com/">CMSimple_XH Forum</a> for tips, suggestions and testing. Special thanks to <em>frase</em> and <em>lck</em> for testing and valuable feedback.</p>
+<p>And last but not least many thanks to <a href="http://www.harteg.dk/">Peter Harteg</a>, the “father” of CMSimple, and all developers of <a href="https://www.cmsimple-xh.org/">CMSimple_XH</a> without whom this amazing CMS would not exist.</p>
 </body>
-
 </html>
