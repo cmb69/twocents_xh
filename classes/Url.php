@@ -23,6 +23,15 @@ namespace Twocents;
 
 class Url
 {
+    /** @var string */
+    private $path;
+
+    /** @var string */
+    private $page;
+
+    /** @var array */
+    private $params;
+
     public static function getCurrent(): self
     {
         global $sn, $su;
