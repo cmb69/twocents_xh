@@ -23,7 +23,6 @@ namespace Twocents;
 
 use DomainException;
 use Pfw\Url;
-use Pfw\View\HtmlString;
 
 class MainController extends Controller
 {

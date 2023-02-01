@@ -21,8 +21,6 @@
 
 namespace Twocents;
 
-use Pfw\View\HtmlString;
-
 class MainAdminController extends Controller
 {
     /**
