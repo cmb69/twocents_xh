@@ -50,9 +50,9 @@ class Url
      */
     private function __construct($path, $page = '', array $params = [])
     {
-       $this->path = $path;
-       $this->page = $page;
-       $this->params = $params;
+        $this->path = $path;
+        $this->page = $page;
+        $this->params = $params;
     }
 
    /**
