@@ -16,6 +16,11 @@ jobs:
         run: |
           curl -fsSL -o CMSimple_XH-1.7.5.zip https://github.com/cmsimple-xh/cmsimple-xh/releases/download/1.7.5/CMSimple_XH-1.7.5.zip
           unzip -q CMSimple_XH-1.7.5.zip
+      - name: Install Realblog_XH
+        run: |
+          cd cmsimplexh/plugins
+          curl -fsSL -o Realblog_XH-3.0beta9.zip https://github.com/cmb69/realblog_xh/releases/download/3.0beta9/Realblog_XH-3.0beta9.zip
+          unzip -q Realblog_XH-3.0beta9.zip
       - name: Checkout Twocents_XH
         uses: actions/checkout@v3
         with:
