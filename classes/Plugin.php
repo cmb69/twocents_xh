@@ -106,8 +106,6 @@ class Plugin
             $plugin_tx['twocents'],
             isset($_XH_csrfProtection) ? $_XH_csrfProtection : null
         );
-        ob_start();
-        $controller->{self::getControllerAction($controller, 'action')}();
-        return ob_get_clean();
+        return $controller->{self::getControllerAction($controller, 'action')}();
     }
 }

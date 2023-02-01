@@ -66,6 +66,7 @@ class MainAdminController
         $this->csrfProtector = $csrfProtector;
     }
 
+    /** @return string */
     public function defaultAction()
     {
         if ($this->conf['comments_markup'] == 'HTML') {
@@ -74,7 +75,7 @@ class MainAdminController
             $button = 'convert_to_html';
         }
         $view = new View("{$this->pluginFolder}views/", $this->lang);
-        echo $view->render('admin', [
+        return $view->render('admin', [
             'action' => "{$this->scriptName}?&twocents",
             'csrfTokenInput' => new HtmlString($this->csrfProtector->tokenInput()),
             'buttons' => array($button, 'import_comments', 'import_gbook'),
@@ -82,18 +83,21 @@ class MainAdminController
         ]);
     }
 
+    /** @return string */
     public function convertToHtmlAction()
     {
-        $this->convertTo('html');
+        return $this->convertTo('html');
     }
 
+    /** @return string */
     public function convertToPlainTextAction()
     {
-        $this->convertTo('plain');
+        return $this->convertTo('plain');
     }
 
     /**
      * @param string $to
+     * @return string
      */
     private function convertTo($to)
     {
@@ -114,7 +118,7 @@ class MainAdminController
             }
         }
         $this->message = new HtmlString(XH_message('success', $this->lang['message_converted_' . $to], $count));
-        $this->defaultAction();
+        return $this->defaultAction();
     }
 
     /**
@@ -149,6 +153,7 @@ class MainAdminController
         );
     }
 
+    /** @return string */
     public function importCommentsAction()
     {
         $this->csrfProtector->check();
@@ -170,11 +175,12 @@ class MainAdminController
             }
         }
         $this->message = new HtmlString(XH_message('success', $this->lang['message_imported_comments'], $count));
-        $this->defaultAction();
+        return $this->defaultAction();
     }
 
     /**
      * @todo Implement!
+     * @return string
      */
     public function importGbookAction()
     {
@@ -197,6 +203,6 @@ class MainAdminController
             }
         }
         $this->message = new HtmlString(XH_message('success', $this->lang['message_imported_gbook'], $count));
-        $this->defaultAction();
+        return $this->defaultAction();
     }
 }
