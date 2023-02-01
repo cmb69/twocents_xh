@@ -26,10 +26,10 @@ class HtmlString
     /** @var string */
     private $string;
 
-    /** @param string $string */
+    /** @param string|int $string */
     public function __construct($string)
     {
-        $this->string = $string;
+        $this->string = (string) $string;
     }
 
     /** @return string */
