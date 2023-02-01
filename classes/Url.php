@@ -104,7 +104,7 @@ class Url
     private function getQueryString()
     {
         $result = "{$this->page}";
-        $additional = preg_replace('/=(?=&|$)/', '', http_build_query($this->params, null, '&'));
+        $additional = preg_replace('/=(?=&|$)/', '', http_build_query($this->params, "", '&'));
         if ($additional) {
             $result .= "&$additional";
         }
