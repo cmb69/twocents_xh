@@ -66,8 +66,7 @@ class MainAdminController extends Controller
             $comments = Comment::findByTopicname($topic->getName());
             foreach ($comments as $comment) {
                 if ($to == 'html') {
-                    $htmlCleaner = new HtmlCleaner("{$this->pluginsFolder}twocents/", $this->isXhtml);
-                    $message = $htmlCleaner->clean(XH_hsc($comment->getMessage()));
+                    $message = $this->htmlify(XH_hsc($comment->getMessage()));
                 } else {
                     $message = $this->plainify($comment->getMessage());
                 }
