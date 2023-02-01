@@ -19,7 +19,7 @@
  * along with Twocents_XH.  If not, see <http://www.gnu.org/licenses/>.
  */
 
-require_once '../pfw/vendor/autoload.php';
+
 require_once '../../cmsimple/functions.php';
 require_once '../../cmsimple/adminfuncs.php';
 if (file_exists('../../cmsimple/utf8.php')) {
