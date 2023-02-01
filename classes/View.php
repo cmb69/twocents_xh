@@ -65,7 +65,7 @@ class View
 
     /**
      * @param string $_template
-     * @param array<string,mixed>
+     * @param array<string,mixed> $_data
      */
     public function render($_template, array $_data)
     {

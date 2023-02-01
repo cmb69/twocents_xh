@@ -36,7 +36,7 @@ class MainController extends Controller
     private $readonly;
 
     /**
-     * @var Comment
+     * @var Comment|null
      */
     private $comment;
 
@@ -63,7 +63,7 @@ class MainController extends Controller
 
     public function toggleVisibilityAction()
     {
-        if (!XH_ADM) {
+        if (!(defined('XH_ADM') && XH_ADM)) {
             return;
         }
         $this->csrfProtector->check();
@@ -79,7 +79,7 @@ class MainController extends Controller
 
     public function removeCommentAction()
     {
-        if (!XH_ADM) {
+        if (!(defined('XH_ADM') && XH_ADM)) {
             return;
         }
         $this->csrfProtector->check();
@@ -165,7 +165,7 @@ class MainController extends Controller
     {
         $this->writeScriptsToBjs();
         $mayAddComment = (!isset($this->comment) || $this->comment->getId() == null)
-            && (XH_ADM || !$this->readonly);
+            && ((defined('XH_ADM') && XH_ADM) || !$this->readonly);
         $view = new View("{$this->pluginsFolder}twocents/views/", $this->lang);
         return $view->render('comments', [
             'comments' => array_map(
@@ -237,7 +237,7 @@ class MainController extends Controller
         } else {
             $url = Url::getCurrent()->without('twocents_id');
             $data += [
-                'isAdmin' => XH_ADM,
+                'isAdmin' => defined('XH_ADM') && XH_ADM,
                 'url' => $url,
                 'editUrl' => $url->with('twocents_id', $comment->getId()),
                 'comment' => $comment,
@@ -245,7 +245,7 @@ class MainController extends Controller
                 'attribution' => new HtmlString($this->renderAttribution($comment)),
                 'message' => new HtmlString($this->renderMessage($comment))
             ];
-            if (XH_ADM) {
+            if (defined('XH_ADM') && XH_ADM) {
                 $data['csrfTokenInput'] = new HtmlString($this->csrfProtector->tokenInput());
             }
         }
@@ -290,7 +290,7 @@ class MainController extends Controller
     {
         $pluginname = $this->config['captcha_plugin'];
         $filename = "{$this->pluginsFolder}$pluginname/captcha.php";
-        if (!XH_ADM && $pluginname && is_readable($filename)) {
+        if (!(defined('XH_ADM') && XH_ADM) && $pluginname && is_readable($filename)) {
             include_once $filename;
             return call_user_func($pluginname . '_captcha_display');
         } else {
@@ -346,19 +346,20 @@ class MainController extends Controller
 
     public function addCommentAction()
     {
-        if (!XH_ADM && $this->readonly) {
+        if (!(defined('XH_ADM') && XH_ADM) && $this->readonly) {
             $this->defaultAction();
         }
         $this->comment = Comment::make($this->topicname, time());
         $this->comment->setUser(trim($_POST['twocents_user']));
         $this->comment->setEmail(trim($_POST['twocents_email']));
         $message = trim($_POST['twocents_message']);
-        if (!XH_ADM && $this->config['comments_markup'] == 'HTML') {
+        if (!(defined('XH_ADM') && XH_ADM) && $this->config['comments_markup'] == 'HTML') {
             $message = $this->purify($message);
         }
         $this->comment->setMessage($message);
+        $isSpam = false;
         $spamFilter = new SpamFilter;
-        if ($this->isModerated() || ($isSpam = !XH_ADM && $spamFilter->isSpam($message))) {
+        if ($this->isModerated() || ($isSpam = !(defined('XH_ADM') && XH_ADM) && $spamFilter->isSpam($message))) {
             $this->comment->hide();
         }
         $marker = '<div id="twocents_scroll_marker" class="twocents_scroll_marker">'
@@ -384,13 +385,13 @@ class MainController extends Controller
      */
     private function isModerated()
     {
-        return $this->config['comments_moderated'] && !XH_ADM;
+        return $this->config['comments_moderated'] && !(defined('XH_ADM') && XH_ADM);
     }
 
     private function sendNotificationEmail()
     {
         $email = $this->config['email_address'];
-        if (!XH_ADM && $email !== '') {
+        if (!(defined('XH_ADM') && XH_ADM) && $email !== '') {
             $message = $this->comment->getMessage();
             if ($this->config['comments_markup'] === 'HTML') {
                 $message = strip_tags($message);
@@ -412,7 +413,7 @@ class MainController extends Controller
 
     public function updateCommentAction()
     {
-        if (!XH_ADM) {
+        if (!(defined('XH_ADM') && XH_ADM)) {
             return;
         }
         $this->csrfProtector->check();
@@ -456,7 +457,7 @@ class MainController extends Controller
     {
         $pluginname = $this->config['captcha_plugin'];
         $filename = "{$this->pluginsFolder}$pluginname/captcha.php";
-        if (!XH_ADM && $pluginname && is_readable($filename)) {
+        if (!(defined('XH_ADM') && XH_ADM) && $pluginname && is_readable($filename)) {
             include_once $filename;
             if (!call_user_func($pluginname . '_captcha_check')) {
                 $this->messages .= XH_message('fail', $this->lang['error_captcha']);

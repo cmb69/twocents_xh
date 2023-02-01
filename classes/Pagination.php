@@ -52,7 +52,7 @@ class Pagination
     }
 
     /**
-     * @return ?int[]
+     * @return array<int|null>
      */
     public function gatherPages()
     {

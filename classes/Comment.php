@@ -39,7 +39,7 @@ class Comment
         if (is_readable($filename) && ($file = fopen($filename, 'r'))) {
             while (($record = fgetcsv($file)) !== false) {
                 $comment = self::load($name, $record);
-                if (!$visibleOnly || ($comment->isVisible() || XH_ADM)) {
+                if (!$visibleOnly || ($comment->isVisible() || (defined('XH_ADM') && XH_ADM))) {
                     $comments[] = $comment;
                 }
             }

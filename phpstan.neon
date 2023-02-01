@@ -1,12 +1,12 @@
 parameters:
-  level: 0
+  level: 3
   paths:
     - classes/
 #    - tests/
 #    - views/
     - index.php
-#  bootstrapFiles:
-#    - phpstan.php
+  bootstrapFiles:
+    - phpstan.php
   scanFiles:
 #    - ../../cmsimple/classes/CSRFProtection.php
     - ../../cmsimple/adminfuncs.php

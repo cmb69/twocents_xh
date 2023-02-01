@@ -46,7 +46,7 @@ class Plugin
 
     public function run()
     {
-        if (XH_ADM) {
+        if (defined('XH_ADM') && XH_ADM) {
             XH_registerStandardPluginMenuItems(true);
             if (XH_wantsPluginAdministration('twocents')) {
                 $this->handleAdministration();
@@ -56,7 +56,7 @@ class Plugin
 
     protected function handleAdministration()
     {
-        global $admin, $action, $o;
+        global $admin, $o;
 
         $o .= print_plugin_admin('on');
         switch ($admin) {
