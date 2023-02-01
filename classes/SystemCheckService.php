@@ -63,8 +63,6 @@ class SystemCheckService
      */
     public function getChecks()
     {
-        global $pth;
-
         return array(
             $this->checkPhpVersion('5.4.0'),
             $this->checkExtension('json'),
