@@ -30,8 +30,11 @@ if (file_exists('../../cmsimple/utf8.php')) {
 require_once '../../cmsimple/classes/CSRFProtection.php';
 require_once './classes/Comment.php';
 require_once './classes/Db.php';
+require_once './classes/HtmlString.php';
 require_once './classes/Mailer.php';
 require_once './classes/MailHelper.php';
+require_once './classes/MainAdminController.php';
 require_once './classes/Pagination.php';
 require_once './classes/SpamFilter.php';
 require_once './classes/Topic.php';
+require_once './classes/View.php';

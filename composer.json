@@ -5,6 +5,7 @@
         "phpmd/phpmd": "^2.13.0",
         "phpunit/phpunit": "^9.5.0",
         "mikey179/vfsstream": "1.6.*",
-        "phpstan/phpstan": "^1.9.0"
+        "phpstan/phpstan": "^1.9.0",
+        "approvals/approval-tests": "*@dev"
     }
 }
