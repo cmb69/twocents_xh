@@ -60,6 +60,13 @@
     <exec command="git archive -o export.zip HEAD" checkreturn="true"/>
     <unzip file="export.zip" todir="export"/>
     <delete file="export.zip"/>
+    <exec executable="uglifyjs" checkreturn="true">
+      <arg file="export/twocents.js"/>
+      <arg value="--compress"/>
+      <arg value="--mangle"/>
+      <arg value="--output"/>
+      <arg file="export/twocents.min.js"/>
+    </exec>
     <move todir="dist">
       <fileset dir="export">
         <exclude name=".github/**"/>
@@ -71,6 +78,7 @@
         <exclude name="phpstan.*"/>
         <exclude name="phpunit.xml"/>
         <exclude name="teplad.xml"/>
+        <exclude name="twocents.js"/>
       </fileset>
     </move>
     <delete dir="export"/>
