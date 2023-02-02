@@ -1,7 +1,7 @@
 <?php
 
 /**
- * Copyright 2015-2017 Christoph M. Becker
+ * Copyright 2015-2023 Christoph M. Becker
  *
  * This file is part of Twocents_XH.
  *

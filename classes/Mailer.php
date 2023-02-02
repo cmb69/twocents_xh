@@ -3,7 +3,7 @@
 /**
  * Copyright 1999-2009 Gert Ebersbach
  * Copyright 2009-2014 The CMSimple_XH developers
- * Copyright 2014-2017 Christoph M. Becker
+ * Copyright 2014-2023 Christoph M. Becker
  *
  * This file is part of Twocents_XH.
  *
@@ -23,7 +23,7 @@
 /**
  * @copyright 1999-2009 <http://cmsimple.org/>
  * @copyright 2009-2014 The CMSimple_XH developers <http://cmsimple-xh.org/?The_Team>
- * @copyright 2014-2017 Christoph M. Becker <http://3-magi.net/>
+ * @copyright 2014-2023 Christoph M. Becker <http://3-magi.net/>
  * @license   http://www.gnu.org/licenses/gpl-3.0.en.html GNU GPLv3
  */
 

@@ -1,5 +1,5 @@
 /**
- * Copyright 2014-2017 Christoph M. Becker
+ * Copyright 2014-2023 Christoph M. Becker
  *
  * This file is part of Twocents_XH.
  *

@@ -1,7 +1,7 @@
 <h1>Twocents</h1>
 <img src="<?=$logo?>" class="twocents_logo" alt="<?=$this->text('alt_icon')?>">
 <p>Version: <?=$version?></p>
-<p>Copyright &copy; 2014-2017
+<p>Copyright &copy; 2014-2023
     <a href="http://3-magi.net/" target="_blank">Christoph M. Becker</a>
 </p>
 <p class="twocents_license">
