@@ -60,16 +60,19 @@ class MainController
     private $messages;
 
     /**
-     * @param string $pluginsFolder
      * @param array<string,string> $conf
      * @param array<string,string> $lang
      * @param CsrfProtector|null $csrfProtector
-     * @param string $topicname
-     * @param bool $readonly
      * @throws DomainException
      */
-    public function __construct($pluginsFolder, array $conf, array $lang, $csrfProtector, $topicname, $readonly)
-    {
+    public function __construct(
+        string $pluginsFolder,
+        array $conf,
+        array $lang,
+        $csrfProtector,
+        string $topicname,
+        bool $readonly
+    ) {
         $this->pluginsFolder = $pluginsFolder;
         $this->conf = $conf;
         $this->lang = $lang;
@@ -147,12 +150,9 @@ class MainController
     }
 
     /**
-     * @param int $commentCount
-     * @param int $page
-     * @param int $pageCount
      * @return ?string
      */
-    private function preparePaginationView($commentCount, $page, $pageCount)
+    private function preparePaginationView(int $commentCount, int $page, int $pageCount)
     {
         if ($pageCount <= 1) {
             return null;
@@ -168,7 +168,7 @@ class MainController
                     if (isset($page)) {
                         return (object) array(
                             'index' => $page,
-                            'url' => $url->without('twocents_id')->with('twocents_page', $page),
+                            'url' => $url->without('twocents_id')->with('twocents_page', (string) $page),
                             'isCurrent' => $page === $currentPage,
                             'isEllipsis' => false
                         );
@@ -182,10 +182,9 @@ class MainController
     }
 
     /**
-     * @param Comment[] $comments
-     * @return string
+     * @param list<Comment> $comments
      */
-    private function prepareCommentsView(array $comments)
+    private function prepareCommentsView(array $comments): string
     {
         $this->writeScriptsToBjs();
         $mayAddComment = (!isset($this->comment) || $this->comment->getId() == null)
@@ -246,10 +245,7 @@ class MainController
         ]);
     }
 
-    /**
-     * @return string
-     */
-    private function prepareCommentView(Comment $comment)
+    private function prepareCommentView(Comment $comment): string
     {
         $isCurrentComment = $this->isCurrentComment($comment);
         $data = [
@@ -278,10 +274,7 @@ class MainController
         return $view->render('comment', $data);
     }
 
-    /**
-     * @return string
-     */
-    private function prepareCommentForm(Comment $comment = null)
+    private function prepareCommentForm(Comment $comment = null): string
     {
         if (!isset($comment)) {
             $comment = Comment::make("", 0);
@@ -308,10 +301,7 @@ class MainController
         return $view->render('comment-form', $data);
     }
 
-    /**
-     * @return string
-     */
-    private function renderCaptcha()
+    private function renderCaptcha(): string
     {
         $pluginname = $this->conf['captcha_plugin'];
         $filename = "{$this->pluginsFolder}$pluginname/captcha.php";
@@ -323,10 +313,7 @@ class MainController
         }
     }
 
-    /**
-     * @return string
-     */
-    private function renderAttribution(Comment $comment)
+    private function renderAttribution(Comment $comment): string
     {
         $date = date($this->lang['format_date'], $comment->getTime());
         $time = date($this->lang['format_time'], $comment->getTime());
@@ -340,10 +327,7 @@ class MainController
         );
     }
 
-    /**
-     * @return string
-     */
-    private function renderMessage(Comment $comment)
+    private function renderMessage(Comment $comment): string
     {
         if ($this->conf['comments_markup'] == 'HTML') {
             return $comment->getMessage();
@@ -352,19 +336,12 @@ class MainController
         }
     }
 
-    /**
-     * @return bool
-     */
-    private function isCurrentComment(Comment $comment)
+    private function isCurrentComment(Comment $comment): bool
     {
         return isset($this->comment) && $this->comment->getId() == $comment->getId();
     }
 
-    /**
-     * @param string $topicname
-     * @return bool
-     */
-    private function isValidTopicname($topicname)
+    private function isValidTopicname(string $topicname): bool
     {
         return (bool) preg_match('/^[a-z0-9-]+$/i', $topicname);
     }
@@ -407,10 +384,7 @@ class MainController
         $this->defaultAction();
     }
 
-    /**
-     * @return bool
-     */
-    private function isModerated()
+    private function isModerated(): bool
     {
         return $this->conf['comments_moderated'] && !(defined('XH_ADM') && XH_ADM);
     }
@@ -462,10 +436,7 @@ class MainController
         $this->defaultAction();
     }
 
-    /**
-     * @return bool
-     */
-    private function validateFormSubmission()
+    private function validateFormSubmission(): bool
     {
         $isValid = true;
         if (utf8_strlen($this->comment->getUser()) < 2) {
@@ -484,10 +455,7 @@ class MainController
         return $isValid && $this->validateCaptcha();
     }
 
-    /**
-     * @return bool
-     */
-    private function validateCaptcha()
+    private function validateCaptcha(): bool
     {
         $pluginname = $this->conf['captcha_plugin'];
         $filename = "{$this->pluginsFolder}$pluginname/captcha.php";
@@ -501,10 +469,7 @@ class MainController
         return true;
     }
 
-    /**
-     * @return bool
-     */
-    private function isXmlHttpRequest()
+    private function isXmlHttpRequest(): bool
     {
         return isset($_SERVER['HTTP_X_REQUESTED_WITH'])
             && $_SERVER['HTTP_X_REQUESTED_WITH'] === 'XMLHttpRequest';

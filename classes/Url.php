@@ -45,42 +45,30 @@ class Url
     }
 
     /**
-     * @param string $path
-     * @param string $page
      * @param array<string,string> $params
      */
-    private function __construct($path, $page = '', array $params = [])
+    private function __construct(string $path, string $page = '', array $params = [])
     {
         $this->path = $path;
         $this->page = $page;
         $this->params = $params;
     }
 
-   /**
-    * @param string $param
-    * @param mixed $value
-    * @return self
-    */
-    public function with($param, $value)
+    public function with(string $param, string $value): self
     {
         $params = $this->params;
         $params[$param] = $value;
         return new self($this->path, $this->page, $params);
     }
 
-    /**
-     * @param string $param
-     * @return self
-     */
-    public function without($param)
+    public function without(string $param): self
     {
         $params = $this->params;
         unset($params[$param]);
         return new self($this->path, $this->page, $params);
     }
 
-    /** @return string */
-    public function __toString()
+    public function __toString(): string
     {
         $result = $this->path;
         $queryString = $this->getQueryString();
@@ -90,8 +78,7 @@ class Url
         return $result;
     }
 
-    /** @return string */
-    public function getAbsolute()
+    public function getAbsolute(): string
     {
         $result = CMSIMPLE_URL;
         $queryString = $this->getQueryString();
@@ -101,8 +88,7 @@ class Url
         return $result;
     }
 
-    /** @return string */
-    private function getQueryString()
+    private function getQueryString(): string
     {
         $result = "{$this->page}";
         $additional = preg_replace('/=(?=&|$)/', '', http_build_query($this->params, "", '&'));

@@ -46,15 +46,13 @@ class MainAdminController
     private $message;
 
     /**
-     * @param string $pluginFolder
-     * @param string $scriptName
      * @param array<string,string> $conf
      * @param array<string,string> $lang
      * @param CsrfProtector|null $csrfProtector
      */
     public function __construct(
-        $pluginFolder,
-        $scriptName,
+        string $pluginFolder,
+        string $scriptName,
         array $conf,
         array $lang,
         $csrfProtector
@@ -66,8 +64,7 @@ class MainAdminController
         $this->csrfProtector = $csrfProtector;
     }
 
-    /** @return string */
-    public function defaultAction()
+    public function defaultAction(): string
     {
         if ($this->conf['comments_markup'] == 'HTML') {
             $button = 'convert_to_plain_text';
@@ -83,23 +80,17 @@ class MainAdminController
         ]);
     }
 
-    /** @return string */
-    public function convertToHtmlAction()
+    public function convertToHtmlAction(): string
     {
         return $this->convertTo('html');
     }
 
-    /** @return string */
-    public function convertToPlainTextAction()
+    public function convertToPlainTextAction(): string
     {
         return $this->convertTo('plain');
     }
 
-    /**
-     * @param string $to
-     * @return string
-     */
-    private function convertTo($to)
+    private function convertTo(string $to): string
     {
         $this->csrfProtector->check();
         $count = 0;
@@ -121,11 +112,7 @@ class MainAdminController
         return $this->defaultAction();
     }
 
-    /**
-     * @param string $text
-     * @return string
-     */
-    private function htmlify($text)
+    private function htmlify(string $text): string
     {
         return preg_replace(
             array('/(?:\r\n|\r)/', '/\n{2,}/', '/\n/'),
@@ -134,11 +121,7 @@ class MainAdminController
         );
     }
 
-    /**
-     * @param string $html
-     * @return string
-     */
-    private function plainify($html)
+    private function plainify(string $html): string
     {
         return html_entity_decode(
             strip_tags(
@@ -153,8 +136,7 @@ class MainAdminController
         );
     }
 
-    /** @return string */
-    public function importCommentsAction()
+    public function importCommentsAction(): string
     {
         $this->csrfProtector->check();
         $count = 0;
@@ -180,9 +162,8 @@ class MainAdminController
 
     /**
      * @todo Implement!
-     * @return string
      */
-    public function importGbookAction()
+    public function importGbookAction(): string
     {
         $this->csrfProtector->check();
         $count = 0;

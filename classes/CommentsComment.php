@@ -26,10 +26,9 @@ class CommentsComment extends Comment
     const EXT = 'txt';
 
     /**
-     * @param string $name
-     * @return Comment[]
+     * @return array<Comment>
      */
-    public static function findByTopicname($name, $visibleOnly = false, $ascending = true)
+    public static function findByTopicname(string $name, bool $visibleOnly = false, bool $ascending = true): array
     {
         $comments = array();
         Db::lock(LOCK_SH);
@@ -47,11 +46,7 @@ class CommentsComment extends Comment
         return $comments;
     }
 
-    /**
-     * @param string $topicname
-     * @return Comment
-     */
-    protected static function load($topicname, array $record)
+    protected static function load(string $topicname, array $record): Comment
     {
         // image is $record[6]
         $comment = new parent($topicname, (int) $record[5]);

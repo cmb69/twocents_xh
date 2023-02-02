@@ -26,12 +26,9 @@ class Comment
     const EXT = 'csv';
 
     /**
-     * @param string $name
-     * @param bool $visibleOnly
-     * @param bool $ascending
-     * @return Comment[]
+     * @return array<self>
      */
-    public static function findByTopicname($name, $visibleOnly = false, $ascending = true)
+    public static function findByTopicname(string $name, bool $visibleOnly = false, bool $ascending = true): array
     {
         $comments = array();
         Db::lock(LOCK_SH);
@@ -54,11 +51,9 @@ class Comment
     }
 
     /**
-     * @param string $id
-     * @param string $topicname
-     * @return ?Comment
+     * @return ?self
      */
-    public static function find($id, $topicname)
+    public static function find(string $id, string $topicname)
     {
         $comments = self::findByTopicname($topicname);
         foreach ($comments as $comment) {
@@ -70,11 +65,9 @@ class Comment
     }
 
     /**
-     * @param string $topicname
      * @param array<string> $record
-     * @return Comment
      */
-    protected static function load($topicname, array $record)
+    protected static function load(string $topicname, array $record): Comment
     {
         $comment = new self($topicname, (int) $record[1]);
         $comment->id = $record[0];
@@ -86,7 +79,7 @@ class Comment
     }
 
     /**
-     * @var string
+     * @var string|null
      */
     protected $id;
 
@@ -101,17 +94,17 @@ class Comment
     protected $time;
 
     /**
-     * @var string
+     * @var string|null
      */
     protected $user;
 
     /**
-     * @var string
+     * @var string|null
      */
     protected $email;
 
     /**
-     * @var string
+     * @var string|null
      */
     protected $message;
 
@@ -120,106 +113,77 @@ class Comment
      */
     protected $hidden;
 
-    /**
-     * @param string $topicname
-     * @param int $time
-     * @return Comment
-     */
-    public static function make($topicname, $time)
+    public static function make(string $topicname, int $time): self
     {
         return new self($topicname, $time);
     }
 
-    /**
-     * @param string $topicname
-     * @param int $time
-     */
-    protected function __construct($topicname, $time)
+    protected function __construct(string $topicname, int $time)
     {
         $this->topicname = (string) $topicname;
         $this->time = (int) $time;
         $this->hidden = false;
     }
 
-    /**
-     * @return string
-     */
+    /** @return string|null */
     public function getId()
     {
         return $this->id;
     }
 
-    /**
-     * @return string
-     */
-    public function getTopicname()
+    public function getTopicname(): string
     {
         return $this->topicname;
     }
 
-    /**
-     * @return int
-     */
-    public function getTime()
+    public function getTime(): int
     {
         return $this->time;
     }
 
-    /**
-     * @return string
-     */
+    /** @return string|null */
     public function getUser()
     {
         return $this->user;
     }
 
-    /**
-     * @return string
-     */
+    /** @return string|null */
     public function getEmail()
     {
         return $this->email;
     }
 
-    /**
-     * @return string
-     */
+    /** @return string|null */
     public function getMessage()
     {
         return $this->message;
     }
 
-    /**
-     * @return bool
-     */
-    public function isVisible()
+    public function isVisible(): bool
     {
         return !$this->hidden;
     }
 
     /**
-     * @param string $user
      * @return void
      */
-    public function setUser($user)
+    public function setUser(string $user)
     {
         $this->user = (string) $user;
     }
 
     /**
-     * @param string $email
      * @return void
      */
-    public function setEmail($email)
+    public function setEmail(string $email)
     {
         $this->email = (string) $email;
     }
 
     /**
-     * @param string $message
      * @return void
      */
-    public function setMessage($message)
+    public function setMessage(string $message)
     {
         $this->message = (string) $message;
     }
@@ -241,10 +205,9 @@ class Comment
     }
 
     /**
-     * @param string $uniqid
      * @return void
      */
-    public function insert($uniqid)
+    public function insert(string $uniqid)
     {
         $this->id = $uniqid;
         Db::lock(LOCK_EX);

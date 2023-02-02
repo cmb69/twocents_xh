@@ -26,9 +26,9 @@ class Topic
     const EXT = 'csv';
 
     /**
-     * @return Topic[]
+     * @return list<Topic>
      */
-    public static function findAll()
+    public static function findAll(): array
     {
         $topics = array();
         Db::lock(LOCK_SH);
@@ -45,10 +45,9 @@ class Topic
     }
 
     /**
-     * @param string $name
      * @return ?Topic
      */
-    public static function findByName($name)
+    public static function findByName(string $name)
     {
         if (file_exists(Db::getFoldername() . $name . '.' . self::EXT)) {
             return self::load($name);
@@ -57,11 +56,7 @@ class Topic
         }
     }
 
-    /**
-     * @param string $name
-     * @return Topic
-     */
-    protected static function load($name)
+    protected static function load(string $name): Topic
     {
         return new self($name);
     }
@@ -71,18 +66,12 @@ class Topic
      */
     protected $name;
 
-    /**
-     * @param string $name
-     */
-    public function __construct($name)
+    public function __construct(string $name)
     {
         $this->name = (string) $name;
     }
 
-    /**
-     * @return string
-     */
-    public function getName()
+    public function getName(): string
     {
         return $this->name;
     }

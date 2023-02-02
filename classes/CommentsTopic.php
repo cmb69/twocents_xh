@@ -26,9 +26,9 @@ class CommentsTopic extends Topic
     const EXT = 'txt';
 
     /**
-     * @return CommentsTopic[]
+     * @return list<CommentsTopic>
      */
-    public static function findAll()
+    public static function findAll(): array
     {
         $topics = array();
         Db::lock(LOCK_SH);
@@ -44,11 +44,7 @@ class CommentsTopic extends Topic
         return $topics;
     }
 
-    /**
-     * @param string $name
-     * @return CommentsTopic
-     */
-    protected static function load($name)
+    protected static function load(string $name): CommentsTopic
     {
         return new self($name);
     }

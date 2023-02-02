@@ -75,10 +75,9 @@ class SystemCheckService
     }
 
     /**
-     * @param string $version
      * @return array{state:string,label:string,stateLabel:string}
      */
-    private function checkPhpVersion($version)
+    private function checkPhpVersion(string $version)
     {
         $state = $this->systemChecker->checkVersion(PHP_VERSION, $version) ? 'success' : 'fail';
         $label = sprintf($this->lang['syscheck_phpversion'], $version);
@@ -87,11 +86,9 @@ class SystemCheckService
     }
 
     /**
-     * @param string $extension
-     * @param bool $isMandatory
      * @return array{state:string,label:string,stateLabel:string}
      */
-    private function checkExtension($extension, $isMandatory = true)
+    private function checkExtension(string $extension, bool $isMandatory = true)
     {
         $state = $this->systemChecker->checkExtension($extension) ? 'success' : ($isMandatory ? 'fail' : 'warning');
         $label = sprintf($this->lang['syscheck_extension'], $extension);
@@ -100,10 +97,9 @@ class SystemCheckService
     }
 
     /**
-     * @param string $version
      * @return array{state:string,label:string,stateLabel:string}
      */
-    private function checkXhVersion($version)
+    private function checkXhVersion(string $version)
     {
         $state = $this->systemChecker->checkVersion(CMSIMPLE_XH_VERSION, "CMSimple_XH $version") ? 'success' : 'fail';
         $label = sprintf($this->lang['syscheck_xhversion'], $version);
@@ -112,10 +108,9 @@ class SystemCheckService
     }
 
     /**
-     * @param string $folder
      * @return array{state:string,label:string,stateLabel:string}
      */
-    private function checkWritability($folder)
+    private function checkWritability(string $folder)
     {
         $state = $this->systemChecker->checkWritability($folder) ? 'success' : 'warning';
         $label = sprintf($this->lang['syscheck_writable'], $folder);

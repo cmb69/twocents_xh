@@ -38,11 +38,7 @@ class Pagination
      */
     private $radius;
 
-    /**
-     * @param int $page
-     * @param int $pageCount
-     */
-    public function __construct($page, $pageCount)
+    public function __construct(int $page, int $pageCount)
     {
         global $plugin_cf;
 
@@ -54,7 +50,7 @@ class Pagination
     /**
      * @return array<int|null>
      */
-    public function gatherPages()
+    public function gatherPages(): array
     {
         $pages = array(1);
         if ($this->page - $this->radius > 1 + 1) {

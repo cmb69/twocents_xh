@@ -30,32 +30,22 @@ class View
     private $lang;
 
     /**
-     * @param string $viewFolder
      * @param array<string,string> $lang
      */
-    public function __construct($viewFolder, array $lang)
+    public function __construct(string $viewFolder, array $lang)
     {
         $this->viewFolder = $viewFolder;
         $this->lang = $lang;
     }
 
-    /**
-     * @param string $key
-     * @return string
-     */
-    public function text($key)
+    public function text(string $key): string
     {
         $args = func_get_args();
         array_shift($args);
         return vsprintf($this->lang[$key], $args);
     }
 
-    /**
-     * @param string $key
-     * @param int $count
-     * @return string
-     */
-    public function plural($key, $count)
+    public function plural(string $key, int $count): string
     {
         $suffix = $count == 0 ? "_0" : "_1";
         $args = func_get_args();
@@ -64,11 +54,9 @@ class View
     }
 
     /**
-     * @param string $_template
      * @param array<string,mixed> $_data
-     * @return string
      */
-    public function render($_template, array $_data)
+    public function render(string $_template, array $_data): string
     {
         extract($_data);
         ob_start();

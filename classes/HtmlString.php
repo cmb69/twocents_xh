@@ -32,8 +32,7 @@ class HtmlString
         $this->string = (string) $string;
     }
 
-    /** @return string */
-    public function __toString()
+    public function __toString(): string
     {
         return $this->string;
     }

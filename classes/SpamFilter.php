@@ -34,11 +34,8 @@ class SpamFilter
 
         $this->lang = $plugin_tx['twocents'];
     }
-    /**
-     * @param string $message
-     * @return bool
-     */
-    public function isSpam($message)
+
+    public function isSpam(string $message): bool
     {
         $words = array_map(
             function ($word) {

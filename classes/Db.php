@@ -28,10 +28,7 @@ class Db
      */
     protected static $lockFile;
 
-    /**
-     * @return string
-     */
-    public static function getFoldername()
+    public static function getFoldername(): string
     {
         global $pth;
 
@@ -48,10 +45,9 @@ class Db
     }
 
     /**
-     * @param int $operation A lock operation (LOCK_SH, LOCK_EX or LOCK_UN).
      * @return void
      */
-    public static function lock($operation)
+    public static function lock(int $operation)
     {
         switch ($operation) {
             case LOCK_SH:
@@ -66,10 +62,7 @@ class Db
         }
     }
 
-    /**
-     * @return string
-     */
-    protected static function getLockFilename()
+    protected static function getLockFilename(): string
     {
         return self::getFoldername() . '.lock';
     }

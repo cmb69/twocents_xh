@@ -27,10 +27,8 @@ class Plugin
 
     /**
      * @param object $controller
-     * @param string $param
-     * @return string
      */
-    public static function getControllerAction($controller, $param)
+    public static function getControllerAction($controller, string $param): string
     {
         $action = preg_replace_callback(
             '/_([a-z])/',
@@ -74,10 +72,7 @@ class Plugin
         }
     }
 
-    /**
-     * @return string
-     */
-    protected function renderInfo()
+    protected function renderInfo(): string
     {
         global $pth, $plugin_tx;
 
@@ -95,10 +90,7 @@ class Plugin
         ]);
     }
 
-    /**
-     * @return string
-     */
-    private function handleMainAdministration()
+    private function handleMainAdministration(): string
     {
         global $pth, $sn, $plugin_cf, $plugin_tx, $_XH_csrfProtection;
 

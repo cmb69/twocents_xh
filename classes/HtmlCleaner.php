@@ -32,21 +32,13 @@ class HtmlCleaner
     /** @var bool */
     private $wantsXhtml;
 
-    /**
-     * @param string $pluginFolder
-     * @param bool $wantsXhtml
-     */
-    public function __construct($pluginFolder, $wantsXhtml)
+    public function __construct(string $pluginFolder, bool $wantsXhtml)
     {
         $this->pluginFolder = $pluginFolder;
         $this->wantsXhtml = $wantsXhtml;
     }
 
-    /**
-     * @param string $message
-     * @return string
-     */
-    public function clean($message)
+    public function clean(string $message): string
     {
         include_once "{$this->pluginFolder}htmlpurifier/HTMLPurifier.standalone.php";
         $config = HTMLPurifier_Config::createDefault();
