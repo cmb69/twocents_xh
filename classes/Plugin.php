@@ -29,7 +29,7 @@ class Plugin
      * @param string $param
      * @return string
      */
-    public static function getControllerAction(MainAdminController $controller, $param)
+    public static function getControllerAction($controller, $param)
     {
         $action = preg_replace_callback(
             '/_([a-z])/',
