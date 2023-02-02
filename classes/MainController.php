@@ -280,7 +280,7 @@ class MainController
     private function prepareCommentForm(Comment $comment = null)
     {
         if (!isset($comment)) {
-            $comment = Comment::make(null, null);
+            $comment = Comment::make("", 0);
         }
         $url = Url::getCurrent()->without('twocents_id');
         $data = [

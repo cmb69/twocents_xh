@@ -65,10 +65,10 @@ class RealblogBridge implements CommentsBridge
     /**
      * @param string $topic
      * @return string|false
+     * @SuppressWarnings(PHPMD.UnusedFormalParameter)
      */
     public static function getEditUrl($topic)
     {
-        $topic; // unused
         return false;
     }
 }
