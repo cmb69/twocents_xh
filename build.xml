@@ -68,6 +68,7 @@
         <exclude name="README*.md"/>
         <exclude name="build.xml"/>
         <exclude name="composer.*"/>
+        <exclude name="phpstan.*"/>
         <exclude name="phpunit.xml"/>
         <exclude name="teplad.xml"/>
       </fileset>
