@@ -22,11 +22,7 @@
 
 require_once '../../cmsimple/functions.php';
 require_once '../../cmsimple/adminfuncs.php';
-if (file_exists('../../cmsimple/utf8.php')) {
-    include_once '../../cmsimple/utf8.php';
-} else {
-    include_once '../utf8/utf8.php';
-}
+include_once '../../cmsimple/utf8.php';
 require_once '../../cmsimple/classes/CSRFProtection.php';
 require_once './classes/Comment.php';
 require_once './classes/Db.php';
