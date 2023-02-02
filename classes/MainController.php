@@ -350,7 +350,7 @@ class MainController
         }
         $this->comment->setMessage($message);
         $isSpam = false;
-        $spamFilter = new SpamFilter;
+        $spamFilter = new SpamFilter($this->lang['spam_words']);
         if ($this->isModerated() || ($isSpam = !(defined('XH_ADM') && XH_ADM) && $spamFilter->isSpam($message))) {
             $this->comment->hide();
         }

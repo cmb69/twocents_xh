@@ -32,10 +32,7 @@ class SpamFilterTest extends TestCase
 
     public function setUp(): void
     {
-        global $plugin_tx;
-
-        $plugin_tx['twocents']['spam_words'] = 'porn,viagra';
-        $this->subject = new SpamFilter;
+        $this->subject = new SpamFilter('porn,viagra');
     }
 
     /**

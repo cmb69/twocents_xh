@@ -23,14 +23,12 @@ namespace Twocents;
 
 class SpamFilter
 {
-    /** @var array<string,string> */
-    private $lang;
+    /** @var string */
+    private $spamWords;
 
-    public function __construct()
+    public function __construct(string $spamWords)
     {
-        global $plugin_tx;
-
-        $this->lang = $plugin_tx['twocents'];
+        $this->spamWords = $spamWords;
     }
 
     public function isSpam(string $message): bool
@@ -39,7 +37,7 @@ class SpamFilter
             function ($word) {
                 return preg_quote(trim($word), '/');
             },
-            explode(',', $this->lang['spam_words'])
+            explode(',', $this->spamWords)
         );
         $pattern = implode('|', $words);
         return (bool) preg_match("/$pattern/ui", $message);
