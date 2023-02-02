@@ -48,7 +48,7 @@ function twocents($topicname, $readonly = false)
     $action = Twocents\Plugin::getControllerAction($controller, 'twocents_action');
     ob_start();
     $controller->{$action}();
-    return ob_get_clean();
+    return (string) ob_get_clean();
 }
 
 (new Twocents\Plugin())->run();

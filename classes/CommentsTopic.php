@@ -36,8 +36,8 @@ class CommentsTopic extends Topic
                     $topics[] = self::load(basename($entry, '.' . self::EXT));
                 }
             }
+            closedir($dir);
         }
-        closedir($dir);
         Db::lock(LOCK_UN);
         return $topics;
     }

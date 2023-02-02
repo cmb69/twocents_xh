@@ -228,7 +228,7 @@ class MainController
         }
         $view = new View("{$this->pluginsFolder}twocents/views/", $this->lang);
         $bjs .= $view->render('scripts', [
-            'json' => new HtmlString(json_encode($config)),
+            'json' => new HtmlString((string) json_encode($config)),
             'filename' => $filename
         ]);
     }
@@ -295,10 +295,12 @@ class MainController
         $filename = "{$this->pluginsFolder}$pluginname/captcha.php";
         if (!(defined('XH_ADM') && XH_ADM) && $pluginname && is_readable($filename)) {
             include_once $filename;
-            return call_user_func($pluginname . '_captcha_display');
-        } else {
-            return '';
+            $func = $pluginname . '_captcha_display';
+            if (is_callable($func)) {
+                return $func();
+            }
         }
+        return '';
     }
 
     private function renderAttribution(Comment $comment): string
@@ -449,9 +451,12 @@ class MainController
         $filename = "{$this->pluginsFolder}$pluginname/captcha.php";
         if (!(defined('XH_ADM') && XH_ADM) && $pluginname && is_readable($filename)) {
             include_once $filename;
-            if (!call_user_func($pluginname . '_captcha_check')) {
-                $this->messages .= XH_message('fail', $this->lang['error_captcha']);
-                return false;
+            $func = $pluginname . '_captcha_check';
+            if (is_callable($func)) {
+                if (!$func()) {
+                    $this->messages .= XH_message('fail', $this->lang['error_captcha']);
+                    return false;
+                }
             }
         }
         return true;
