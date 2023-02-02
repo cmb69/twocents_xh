@@ -25,9 +25,7 @@ use PHPUnit\Framework\TestCase;
 
 class SpamFilterTest extends TestCase
 {
-    /**
-     * @var SpamFilter
-     */
+    /** @var SpamFilter */
     private $subject;
 
     public function setUp(): void
@@ -37,18 +35,13 @@ class SpamFilterTest extends TestCase
 
     /**
      * @dataProvider provideIsSpamData
-     * @param string $message
-     * @param bool $expected
      */
-    public function testIsSpam($message, $expected)
+    public function testIsSpam(string $message, bool $expected)
     {
         $this->assertSame($expected, $this->subject->isSpam($message));
     }
 
-    /**
-     * @return array
-     */
-    public function provideIsSpamData()
+    public function provideIsSpamData(): array
     {
         return array(
             ['this is no spam', false],

@@ -27,11 +27,8 @@ class PaginationTest extends TestCase
 {
     /**
      * @dataProvider provideGatherPagesData
-     * @var int $page
-     * @var int $pageCount
-     * @var int $radius
      */
-    public function testGatherPages($page, $pageCount, $radius, array $expected)
+    public function testGatherPages(int $page, int $pageCount, int $radius, array $expected)
     {
         global $plugin_cf;
 
@@ -40,10 +37,7 @@ class PaginationTest extends TestCase
         $this->assertEquals($expected, $subject->gatherPages());
     }
 
-    /**
-     * @return array
-     */
-    public function provideGatherPagesData()
+    public function provideGatherPagesData(): array
     {
         return array(
             [1, 3, 2, [1, 2, 3]],

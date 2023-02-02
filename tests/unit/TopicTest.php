@@ -30,14 +30,10 @@ class TopicTest extends TestCase
 {
     const TOPIC = 'foo';
 
-    /**
-     * @var Topic
-     */
+    /** @var Topic */
     protected $subject;
 
-    /**
-     * @var string
-     */
+    /** @var string */
     protected $filename;
 
     public function setUp(): void

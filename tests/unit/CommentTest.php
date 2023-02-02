@@ -41,14 +41,10 @@ class CommentTest extends TestCase
 
     const LINE2 = "4d5e6f,234567,john,,\n";
 
-    /**
-     * @var Comment
-     */
+    /** @var Comment */
     protected $subject;
 
-    /**
-     * @var string
-     */
+    /** @var string */
     protected $filename;
 
     public function setUp(): void
