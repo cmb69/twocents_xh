@@ -1,7 +1,7 @@
-tests/coverage
 vendor
 /classes.svg
 /twocents.min.js
 /README.htm
 /composer.lock
 /.phpunit.cache
+/coverage

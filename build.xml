@@ -39,14 +39,14 @@
     <exec command="phpcompatinfo analyser:run classes" logoutput="true"/>
   </target>
 
-  <target name="unit-tests" description="runs all unit tests">
+  <target name="test" description="runs all developer tests">
     <exec executable="phpunit" passthru="true" checkreturn="true"/>
   </target>
 
   <target name="coverage" description="generates code coverage report">
     <exec executable="phpunit" passthru="true" checkreturn="true">
       <arg value="--coverage-html"/>
-      <arg file="tests/coverage"/>
+      <arg file="coverage"/>
     </exec>
   </target>
 
