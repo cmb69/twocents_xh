@@ -87,6 +87,7 @@ class Topic
         return $this->name;
     }
 
+    /** @return void */
     public function insert()
     {
         Db::lock(LOCK_EX);
@@ -94,6 +95,7 @@ class Topic
         Db::lock(LOCK_UN);
     }
 
+    /** @return void */
     public function delete()
     {
         Db::lock(LOCK_EX);

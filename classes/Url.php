@@ -29,7 +29,7 @@ class Url
     /** @var string */
     private $page;
 
-    /** @var array */
+    /** @var array<string,string> */
     private $params;
 
     public static function getCurrent(): self
@@ -47,6 +47,7 @@ class Url
     /**
      * @param string $path
      * @param string $page
+     * @param array<string,string> $params
      */
     private function __construct($path, $page = '', array $params = [])
     {

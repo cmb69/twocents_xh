@@ -49,6 +49,7 @@ class Db
 
     /**
      * @param int $operation A lock operation (LOCK_SH, LOCK_EX or LOCK_UN).
+     * @return void
      */
     public static function lock($operation)
     {

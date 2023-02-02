@@ -26,6 +26,7 @@ class Plugin
     const VERSION = '1.0beta3';
 
     /**
+     * @param object $controller
      * @param string $param
      * @return string
      */
@@ -44,6 +45,7 @@ class Plugin
         return "{$action}Action";
     }
 
+    /** @return void */
     public function run()
     {
         if (defined('XH_ADM') && XH_ADM) {
@@ -54,6 +56,7 @@ class Plugin
         }
     }
 
+    /** @return void */
     protected function handleAdministration()
     {
         global $admin, $o;

@@ -82,6 +82,7 @@ class MainController
         $this->messages = '';
     }
 
+    /** @return void */
     public function toggleVisibilityAction()
     {
         if (!(defined('XH_ADM') && XH_ADM)) {
@@ -98,6 +99,7 @@ class MainController
         $this->redirectToDefault();
     }
 
+    /** @return void */
     public function removeCommentAction()
     {
         if (!(defined('XH_ADM') && XH_ADM)) {
@@ -111,6 +113,7 @@ class MainController
         $this->redirectToDefault();
     }
 
+    /** @return void */
     public function defaultAction()
     {
         if (isset($_GET['twocents_id'])) {
@@ -205,6 +208,7 @@ class MainController
         ]);
     }
 
+    /** @return void */
     private function writeScriptsToBjs()
     {
         global $bjs;
@@ -365,6 +369,7 @@ class MainController
         return (bool) preg_match('/^[a-z0-9-]+$/i', $topicname);
     }
 
+    /** @return void */
     public function addCommentAction()
     {
         if (!(defined('XH_ADM') && XH_ADM) && $this->readonly) {
@@ -410,6 +415,7 @@ class MainController
         return $this->conf['comments_moderated'] && !(defined('XH_ADM') && XH_ADM);
     }
 
+    /** @return void */
     private function sendNotificationEmail()
     {
         $email = $this->conf['email_address'];
@@ -438,6 +444,7 @@ class MainController
         }
     }
 
+    /** @return void */
     public function updateCommentAction()
     {
         if (!(defined('XH_ADM') && XH_ADM)) {
@@ -503,6 +510,7 @@ class MainController
             && $_SERVER['HTTP_X_REQUESTED_WITH'] === 'XMLHttpRequest';
     }
 
+    /** @return never */
     private function redirectToDefault()
     {
         $url = Url::getCurrent()->without('twocents_action')->getAbsolute();

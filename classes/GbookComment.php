@@ -53,7 +53,7 @@ class GbookComment extends Comment
      */
     protected static function load($topicname, array $record)
     {
-        $comment = new parent($topicname, $record[8]);
+        $comment = new parent($topicname, (int) $record[8]);
         $comment->user = $record[0];
         $comment->email = $record[1];
         $comment->message = "<p><strong>{$record[5]}</strong></p><p>{$record[6]}</p>";

@@ -71,11 +71,12 @@ class Comment
 
     /**
      * @param string $topicname
+     * @param array<string> $record
      * @return Comment
      */
     protected static function load($topicname, array $record)
     {
-        $comment = new self($topicname, $record[1]);
+        $comment = new self($topicname, (int) $record[1]);
         $comment->id = $record[0];
         $comment->user = $record[2];
         $comment->email = $record[3];
@@ -198,6 +199,7 @@ class Comment
 
     /**
      * @param string $user
+     * @return void
      */
     public function setUser($user)
     {
@@ -206,6 +208,7 @@ class Comment
 
     /**
      * @param string $email
+     * @return void
      */
     public function setEmail($email)
     {
@@ -214,6 +217,7 @@ class Comment
 
     /**
      * @param string $message
+     * @return void
      */
     public function setMessage($message)
     {
@@ -236,7 +240,10 @@ class Comment
         $this->hidden = false;
     }
 
-    /** @param string $uniqid */
+    /**
+     * @param string $uniqid
+     * @return void
+     */
     public function insert($uniqid)
     {
         $this->id = $uniqid;
@@ -247,6 +254,7 @@ class Comment
         Db::lock(LOCK_UN);
     }
 
+    /** @return void */
     public function update()
     {
         Db::lock(LOCK_EX);
@@ -268,6 +276,7 @@ class Comment
         Db::lock(LOCK_UN);
     }
 
+    /** @return void */
     public function delete()
     {
         Db::lock(LOCK_EX);
@@ -288,7 +297,7 @@ class Comment
     }
 
     /**
-     * @return array
+     * @return array{string,int,string,string,string,bool}
      */
     protected function toRecord()
     {

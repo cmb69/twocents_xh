@@ -54,7 +54,7 @@ class CommentsComment extends Comment
     protected static function load($topicname, array $record)
     {
         // image is $record[6]
-        $comment = new parent($topicname, $record[5]);
+        $comment = new parent($topicname, (int) $record[5]);
         $comment->user = $record[1];
         $comment->email = $record[2];
         $comment->message = $record[7];
