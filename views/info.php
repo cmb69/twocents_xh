@@ -13,8 +13,8 @@ use Twocents\View;
 
 <h1>Twocents <?=$version?></h1>
 <div>
-    <h2><?=$this->text('syscheck_title')?></h2>
+  <h2><?=$this->text('syscheck_title')?></h2>
 <?php foreach ($checks as $check):?>
-    <p class="xh_<?=$check['state']?>"><?=$this->text('syscheck_message', $check['label'], $check['stateLabel'])?></li>
+  <p class="xh_<?=$check['state']?>"><?=$this->text('syscheck_message', $check['label'], $check['stateLabel'])?></li>
 <?php endforeach?>
 </div>

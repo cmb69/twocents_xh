@@ -12,17 +12,17 @@
 
 <div class="twocents_comments">
 <?php if ($hasCommentFormAbove):?>
-    <?=$messages?>
-    <?=$commentForm?>
+  <?=$messages?>
+  <?=$commentForm?>
 <?php endif?>
 <?php foreach ($comments as $comment):?>
 <?php   if ($comment->isCurrent):?>
-    <?=$messages?>
+  <?=$messages?>
 <?php   endif?>
-    <?=$comment->view?>
+  <?=$comment->view?>
 <?php endforeach?>
 <?php if ($hasCommentFormBelow):?>
-    <?=$messages?>
-    <?=$commentForm?>
+  <?=$messages?>
+  <?=$commentForm?>
 <?php endif?>
 </div>
