@@ -1,3 +1,16 @@
+<?php
+
+use Twocents\View;
+
+/**
+ * @var View $this
+ * @var string $logo
+ * @var string $version
+ * @var list<array{state:string,label:string,stateLabel:string}> $checks
+ */
+
+?>
+
 <h1>Twocents</h1>
 <img src="<?=$logo?>" class="twocents_logo" alt="<?=$this->text('alt_icon')?>">
 <p>Version: <?=$version?></p>

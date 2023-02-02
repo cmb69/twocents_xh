@@ -1,3 +1,17 @@
+<?php
+
+use Twocents\View;
+
+/**
+ * @var View $this
+ * @var string $message
+ * @var string $action
+ * @var string $csrfTokenInput
+ * @var list<string> $buttons
+ */
+
+?>
+
 <h1>Twocents – <?=$this->text('menu_main')?></h1>
 <?=$message?>
 <form action="<?=$action?>" method="post">

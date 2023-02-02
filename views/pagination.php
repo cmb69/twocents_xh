@@ -1,3 +1,15 @@
+<?php
+
+use Twocents\View;
+
+/**
+ * @var View $this
+ * @var int $itemCount
+ * @var list<stdClass> $pages
+ */
+
+?>
+
 <div class="twocents_pagination">
     <span class="twocents_pag_count"><?=$this->plural('comment_count', $itemCount)?></span>
 <?php foreach ($pages as $page):?>

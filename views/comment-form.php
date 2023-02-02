@@ -1,3 +1,20 @@
+<?php
+
+use Twocents\Comment;
+use Twocents\Url;
+use Twocents\View;
+
+/**
+ * @var View $this
+ * @var Url $url
+ * @var Comment $comment
+ * @var string $csrfTokenInput
+ * @var string $captcha
+ * @var string $action
+ */
+
+?>
+
 <form class="twocents_form" method="post" action="<?=$url?>">
     <?=$csrfTokenInput?>
     <input type="hidden" name="twocents_id" value="<?=$comment->getId()?>">

@@ -1,3 +1,27 @@
+<?php
+
+use Twocents\Comment;
+use Twocents\Url;
+use Twocents\View;
+
+/**
+ * @var View $this
+ * @var string $id
+ * @var string $className
+ * @var bool $isCurrentComment
+ * @var string $form
+ * @var bool $isAdmin
+ * @var Url $url
+ * @var Url $editUrl
+ * @var string $csrfTokenInput
+ * @var string $visibility
+ * @var string $attribution
+ * @var string $message
+ * @var Comment $comment
+ */
+
+?>
+
 <div id="<?=$id?>" class="twocents_comment <?=$className?>">
 <?php if ($isCurrentComment):?>
     <?=$form?>
