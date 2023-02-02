@@ -40,9 +40,7 @@ class MainAdminController
     /** @var CsrfProtector|null */
     private $csrfProtector;
 
-    /**
-     * @var ?HtmlString
-     */
+    /** @var HtmlString|null */
     private $message;
 
     /**
@@ -160,9 +158,7 @@ class MainAdminController
         return $this->defaultAction();
     }
 
-    /**
-     * @todo Implement!
-     */
+    /** @todo Implement! */
     public function importGbookAction(): string
     {
         $this->csrfProtector->check();

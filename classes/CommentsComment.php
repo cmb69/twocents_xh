@@ -25,9 +25,7 @@ class CommentsComment extends Comment
 {
     const EXT = 'txt';
 
-    /**
-     * @return array<Comment>
-     */
+    /** @return list<Comment> */
     public static function findByTopicname(string $name, bool $visibleOnly = false, bool $ascending = true): array
     {
         $comments = array();

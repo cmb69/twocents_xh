@@ -25,9 +25,7 @@ class CommentsTopic extends Topic
 {
     const EXT = 'txt';
 
-    /**
-     * @return list<CommentsTopic>
-     */
+    /** @return list<CommentsTopic> */
     public static function findAll(): array
     {
         $topics = array();

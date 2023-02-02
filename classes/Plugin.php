@@ -25,9 +25,7 @@ class Plugin
 {
     const VERSION = '1.0beta3';
 
-    /**
-     * @param object $controller
-     */
+    /** @param object $controller */
     public static function getControllerAction($controller, string $param): string
     {
         $action = preg_replace_callback(

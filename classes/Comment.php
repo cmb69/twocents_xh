@@ -25,9 +25,7 @@ class Comment
 {
     const EXT = 'csv';
 
-    /**
-     * @return array<self>
-     */
+    /** @return array<self> */
     public static function findByTopicname(string $name, bool $visibleOnly = false, bool $ascending = true): array
     {
         $comments = array();
@@ -50,9 +48,7 @@ class Comment
         return $comments;
     }
 
-    /**
-     * @return ?self
-     */
+    /** @return self|null */
     public static function find(string $id, string $topicname)
     {
         $comments = self::findByTopicname($topicname);
@@ -64,9 +60,7 @@ class Comment
         return null;
     }
 
-    /**
-     * @param array<string> $record
-     */
+    /** @param array<string> $record */
     protected static function load(string $topicname, array $record): Comment
     {
         $comment = new self($topicname, (int) $record[1]);
@@ -78,39 +72,25 @@ class Comment
         return $comment;
     }
 
-    /**
-     * @var string|null
-     */
+    /** @var string|null */
     protected $id;
 
-    /**
-     * @var string
-     */
+    /** @var string */
     protected $topicname;
 
-    /**
-     * @var int
-     */
+    /** @var int */
     protected $time;
 
-    /**
-     * @var string|null
-     */
+    /** @var string|null */
     protected $user;
 
-    /**
-     * @var string|null
-     */
+    /** @var string|null */
     protected $email;
 
-    /**
-     * @var string|null
-     */
+    /** @var string|null */
     protected $message;
 
-    /**
-     * @var bool
-     */
+    /** @var bool */
     protected $hidden;
 
     public static function make(string $topicname, int $time): self
@@ -164,49 +144,37 @@ class Comment
         return !$this->hidden;
     }
 
-    /**
-     * @return void
-     */
+    /** @return void */
     public function setUser(string $user)
     {
         $this->user = (string) $user;
     }
 
-    /**
-     * @return void
-     */
+    /** @return void */
     public function setEmail(string $email)
     {
         $this->email = (string) $email;
     }
 
-    /**
-     * @return void
-     */
+    /** @return void */
     public function setMessage(string $message)
     {
         $this->message = (string) $message;
     }
 
-    /**
-     * @return void
-     */
+    /** @return void */
     public function hide()
     {
         $this->hidden = true;
     }
 
-    /**
-     * @return void
-     */
+    /** @return void */
     public function show()
     {
         $this->hidden = false;
     }
 
-    /**
-     * @return void
-     */
+    /** @return void */
     public function insert(string $uniqid)
     {
         $this->id = $uniqid;
@@ -259,9 +227,7 @@ class Comment
         Db::lock(LOCK_UN);
     }
 
-    /**
-     * @return array{string,int,string,string,string,bool}
-     */
+    /** @return array{string,int,string,string,string,bool} */
     protected function toRecord()
     {
         return array(

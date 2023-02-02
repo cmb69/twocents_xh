@@ -23,9 +23,7 @@ namespace Twocents;
 
 class Db
 {
-    /**
-     * @var resource
-     */
+    /** @var resource */
     protected static $lockFile;
 
     public static function getFoldername(): string
@@ -44,9 +42,7 @@ class Db
         return $foldername;
     }
 
-    /**
-     * @return void
-     */
+    /** @return void */
     public static function lock(int $operation)
     {
         switch ($operation) {

@@ -25,9 +25,7 @@ class GbookComment extends Comment
 {
     const EXT = 'txt';
 
-    /**
-     * @return list<Comment>
-     */
+    /** @return list<Comment> */
     public static function findByTopicname(string $name, bool $visibleOnly = false, bool $ascending = true): array
     {
         $comments = array();

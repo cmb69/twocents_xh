@@ -23,19 +23,13 @@ namespace Twocents;
 
 class Pagination
 {
-    /**
-     * @var int
-     */
+    /** @var int */
     private $page;
 
-    /**
-     * @var int
-     */
+    /** @var int */
     private $pageCount;
 
-    /**
-     * @var int
-     */
+    /** @var int */
     private $radius;
 
     public function __construct(int $page, int $pageCount)
@@ -47,9 +41,7 @@ class Pagination
         $this->radius = $plugin_cf['twocents']['pagination_radius'];
     }
 
-    /**
-     * @return array<int|null>
-     */
+    /** @return array<int|null> */
     public function gatherPages(): array
     {
         $pages = array(1);

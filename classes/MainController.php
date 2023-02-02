@@ -39,24 +39,16 @@ class MainController
     /** @var CsrfProtector|null */
     private $csrfProtector;
 
-    /**
-     * @var string
-     */
+    /** @var string */
     private $topicname;
 
-    /**
-     * @var bool
-     */
+    /** @var bool */
     private $readonly;
 
-    /**
-     * @var Comment|null
-     */
+    /** @var Comment|null */
     private $comment;
 
-    /**
-     * @var string
-     */
+    /** @var string */
     private $messages;
 
     /**
@@ -149,9 +141,7 @@ class MainController
         }
     }
 
-    /**
-     * @return ?string
-     */
+    /** @return string|null */
     private function preparePaginationView(int $commentCount, int $page, int $pageCount)
     {
         if ($pageCount <= 1) {
@@ -181,9 +171,7 @@ class MainController
             ]);
     }
 
-    /**
-     * @param list<Comment> $comments
-     */
+    /** @param list<Comment> $comments */
     private function prepareCommentsView(array $comments): string
     {
         $this->writeScriptsToBjs();

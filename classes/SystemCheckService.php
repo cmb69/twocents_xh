@@ -23,32 +23,22 @@ namespace Twocents;
 
 class SystemCheckService
 {
-    /**
-     * @var string
-     */
+    /** @var string */
     private $pluginsFolder;
 
-    /**
-     * @var string
-     */
+    /** @var string */
     private $pluginFolder;
 
-    /**
-     * @var array<string,string>
-     */
+    /** @var array<string,string> */
     private $lang;
 
-    /**
-     * @var string
-     */
+    /** @var string */
     private $dataFolder;
 
     /** @var SystemChecker */
     private $systemChecker;
 
-    /**
-     * @param array<string,string> $lang
-     */
+    /** @param array<string,string> $lang */
     public function __construct(string $pluginsFolder, array $lang, string $dataFolder, SystemChecker $systemChecker)
     {
         $this->pluginsFolder = $pluginsFolder;
@@ -58,9 +48,7 @@ class SystemCheckService
         $this->systemChecker = $systemChecker;
     }
 
-    /**
-     * @return array<int,array{state:string,label:string,stateLabel:string}>
-     */
+    /** @return array<int,array{state:string,label:string,stateLabel:string}> */
     public function getChecks()
     {
         return array(
@@ -74,9 +62,7 @@ class SystemCheckService
         );
     }
 
-    /**
-     * @return array{state:string,label:string,stateLabel:string}
-     */
+    /** @return array{state:string,label:string,stateLabel:string} */
     private function checkPhpVersion(string $version)
     {
         $state = $this->systemChecker->checkVersion(PHP_VERSION, $version) ? 'success' : 'fail';
@@ -85,9 +71,7 @@ class SystemCheckService
         return compact('state', 'label', 'stateLabel');
     }
 
-    /**
-     * @return array{state:string,label:string,stateLabel:string}
-     */
+    /** @return array{state:string,label:string,stateLabel:string} */
     private function checkExtension(string $extension, bool $isMandatory = true)
     {
         $state = $this->systemChecker->checkExtension($extension) ? 'success' : ($isMandatory ? 'fail' : 'warning');
@@ -96,9 +80,7 @@ class SystemCheckService
         return compact('state', 'label', 'stateLabel');
     }
 
-    /**
-     * @return array{state:string,label:string,stateLabel:string}
-     */
+    /** @return array{state:string,label:string,stateLabel:string} */
     private function checkXhVersion(string $version)
     {
         $state = $this->systemChecker->checkVersion(CMSIMPLE_XH_VERSION, "CMSimple_XH $version") ? 'success' : 'fail';
@@ -107,9 +89,7 @@ class SystemCheckService
         return compact('state', 'label', 'stateLabel');
     }
 
-    /**
-     * @return array{state:string,label:string,stateLabel:string}
-     */
+    /** @return array{state:string,label:string,stateLabel:string} */
     private function checkWritability(string $folder)
     {
         $state = $this->systemChecker->checkWritability($folder) ? 'success' : 'warning';

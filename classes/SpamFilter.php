@@ -23,9 +23,7 @@ namespace Twocents;
 
 class SpamFilter
 {
-    /**
-     * @var array<string,string>
-     */
+    /** @var array<string,string> */
     private $lang;
 
     public function __construct()
