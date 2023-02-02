@@ -20,7 +20,7 @@
       <arg value="--standard=PSR2"/>
       <arg line="--runtime-set ignore_warnings_on_exit true"/>
       <arg file="classes"/>
-      <arg file="tests/unit"/>
+      <arg file="tests"/>
       <arg file="index.php"/>
     </exec>
   </target>
@@ -31,7 +31,7 @@
 
   <target name="mess" description="detects code flaws">
     <exec executable="phpmd" passthru="true" checkreturn="true">
-      <arg line="classes,tests/unit,index.php ansi codesize,unusedcode --ignore-violations-on-exit"/>
+      <arg line="classes,tests,index.php ansi codesize,unusedcode --ignore-violations-on-exit"/>
     </exec>
   </target>
 
