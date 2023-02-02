@@ -85,14 +85,3 @@
 .twocents_write_button {
     margin: 1em 0;
 }
-
-/* back-end */
-.twocents_logo {
-    float: left;
-    width: 128px;
-    height: 128px;
-    margin: 0 1.5em 0.5em 0;
-}
-.twocents_license {
-    text-align: justify;
-}
