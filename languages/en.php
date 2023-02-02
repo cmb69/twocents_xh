@@ -58,7 +58,6 @@ $plugin_tx['twocents']['cf_comments_moderated']="Hide new comments initially?";
 $plugin_tx['twocents']['cf_comments_order']="Sort the comments in ascending (\"ASC\") or descending (\"DESC\") order?";
 $plugin_tx['twocents']['cf_comments_markup']="The markup type for comments. Leave empty for no markup.";
 $plugin_tx['twocents']['cf_email_address']="An email address where notifications about new comments will be send. Leave empty if you don't want to be notified.";
-$plugin_tx['twocents']['cf_email_linebreak']="The linebreaks to use for the emails. Set to \"LF\" when you receive broken emails.";
 $plugin_tx['twocents']['cf_pagination_max']="The maximum number of comments on a page. Use a very large number, such as 2147483647, to suppress the pagination altogether.";
 $plugin_tx['twocents']['cf_pagination_radius']="The number of page links to show before and after the current page in the pagination.";
 $plugin_tx['twocents']['cf_captcha_plugin']="The (folder)name of a conforming CAPTCHA plugin. Leave empty to eschew the CAPTCHA test.";

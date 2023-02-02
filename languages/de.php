@@ -58,7 +58,6 @@ $plugin_tx['twocents']['cf_comments_moderated']="Neue Kommentare zunächst verst
 $plugin_tx['twocents']['cf_comments_order']="Kommentare in aufsteigender (\"ASC\") oder absteigender (\"DESC\") Reihenfolge sortieren?";
 $plugin_tx['twocents']['cf_comments_markup']="Die Art des Markup für Kommentare. Leer lassen, um kein Markup zu verwenden.";
 $plugin_tx['twocents']['cf_email_address']="Eine E-Mail-Adresse, an die Benachrichtigungen über neue Kommentare gesendet werden. Leer lassen, wenn Sie nicht benachrichtigt werden wollen.";
-$plugin_tx['twocents']['cf_email_linebreak']="Die Zeilenumbrüche, die für die E-Mails verwendet werden sollen. Schalten Sie auf \"LF\" um, wenn Sie korrupte E-Mails erhalten.";
 $plugin_tx['twocents']['cf_pagination_max']="Die Höchstanzahl von Kommentaren auf einer Seite. Ein sehr großer Wert wie  2147483647 unterdrückt die Paginierung vollständig.";
 $plugin_tx['twocents']['cf_pagination_radius']="Die Anzahl von Seitenlinks, die in der Paginierung vor und nach der aktuellen Seite angezeigt werden sollen.";
 $plugin_tx['twocents']['cf_captcha_plugin']="Der (Ordner-)Name eines spezifikationsgerechten CAPTCHA-Plugins. Leer lassen, um auf den CAPTCHA-Test zu verzichten.";

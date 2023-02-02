@@ -9,6 +9,7 @@ parameters:
     - phpstan.php
   scanFiles:
     - ../../cmsimple/classes/CSRFProtection.php
+    - ../../cmsimple/classes/Mail.php
     - ../../cmsimple/adminfuncs.php
     - ../../cmsimple/functions.php
     - ../../cmsimple/utf8.php

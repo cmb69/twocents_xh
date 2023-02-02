@@ -23,6 +23,7 @@ namespace Twocents;
 
 use DomainException;
 use XH\CSRFProtection as CsrfProtector;
+use XH\Mail as Mailer;
 
 class MainController
 {
@@ -427,8 +428,13 @@ class MainController
             );
             $body = $attribution. "\n\n> " . str_replace("\n", "\n> ", $message);
             $replyTo = str_replace(["\n", "\r"], '', $this->comment->getEmail());
-            $mailer = new Mailer(new MailHelper(), ($this->conf['email_linebreak'] === 'LF') ? "\n" : "\r\n");
-            $mailer->send($email, $this->lang['email_subject'], $body, "From: $email\r\nReply-To: $replyTo");
+            $mailer = new Mailer();
+            $mailer->setTo($email);
+            $mailer->setSubject($this->lang['email_subject']);
+            $mailer->setMessage($body);
+            $mailer->addHeader("From", $email);
+            $mailer->addHeader("Reply-To", $replyTo);
+            $mailer->send();
         }
     }
 
@@ -459,7 +465,7 @@ class MainController
             $isValid = false;
             $this->messages .= XH_message('fail', $this->lang['error_user']);
         }
-        $mailer = new Mailer(new MailHelper());
+        $mailer = new Mailer();
         if (!$mailer->isValidAddress($this->comment->getEmail())) {
             $isValid = false;
             $this->messages .= XH_message('fail', $this->lang['error_email']);
