@@ -2,14 +2,6 @@
 
 <project name="Twocents" default="help">
 
-  <fileset id="php-sources" dir=".">
-    <include name="classes/*.php"/>
-  </fileset>
-
-  <fileset id="unit-tests" dir="tests/unit">
-    <include name="*Test.php"/>
-  </fileset>
-
   <target name="help" description="lists available targets">
     <exec command="phing -l" outputProperty="help"/>
     <echo>${help}</echo>
