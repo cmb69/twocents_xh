@@ -25,7 +25,7 @@ class CommentsTopic extends Topic
 {
     const EXT = 'txt';
 
-    /** @return list<CommentsTopic> */
+    /** @return list<Topic> */
     public static function findAll(): array
     {
         $topics = array();
@@ -42,7 +42,7 @@ class CommentsTopic extends Topic
         return $topics;
     }
 
-    protected static function load(string $name): CommentsTopic
+    protected static function load(string $name): Topic
     {
         return new self($name);
     }
