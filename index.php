@@ -20,6 +20,7 @@
  */
 
 use Twocents\Infra\Db;
+use Twocents\Infra\HtmlCleaner;
 use Twocents\Infra\View;
 
 if (!defined('CMSIMPLE_XH_VERSION')) {
@@ -43,6 +44,7 @@ function twocents($topicname, $readonly = false)
             $plugin_tx['twocents'],
             isset($_XH_csrfProtection) ? $_XH_csrfProtection : null,
             new Db($pth['folder']['content'] . 'twocents/'),
+            new HtmlCleaner($pth["folder"]["plugins"] . "twocents/"),
             new View($pth["folder"]["plugins"] . "twocents/views/", $plugin_tx["twocents"]),
             $topicname,
             $readonly

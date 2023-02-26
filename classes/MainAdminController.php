@@ -30,9 +30,6 @@ use XH\CSRFProtection as CsrfProtector;
 class MainAdminController
 {
     /** @var string */
-    private $pluginFolder;
-
-    /** @var string */
     private $scriptName;
 
     /** @var array<string,string> */
@@ -43,6 +40,9 @@ class MainAdminController
 
     /** @var Db */
     private $db;
+
+    /** @var HtmlCleaner */
+    private $htmlCleaner;
 
     /** @var View */
     private $view;
@@ -55,18 +55,18 @@ class MainAdminController
      * @param CsrfProtector|null $csrfProtector
      */
     public function __construct(
-        string $pluginFolder,
         string $scriptName,
         array $conf,
         $csrfProtector,
         Db $db,
+        HtmlCleaner $htmlCleaner,
         View $view
     ) {
-        $this->pluginFolder = $pluginFolder;
         $this->scriptName = $scriptName;
         $this->conf = $conf;
         $this->csrfProtector = $csrfProtector;
         $this->db = $db;
+        $this->htmlCleaner = $htmlCleaner;
         $this->view = $view;
     }
 
@@ -153,8 +153,7 @@ class MainAdminController
             foreach ($comments as $comment) {
                 $message = $comment->message();
                 if ($this->conf['comments_markup'] == 'HTML') {
-                    $htmlCleaner = new HtmlCleaner($this->pluginFolder, false);
-                    $message = $htmlCleaner->clean($message);
+                    $message = $this->htmlCleaner->clean($message);
                 } else {
                     $message = $this->plainify($message);
                 }
@@ -178,8 +177,7 @@ class MainAdminController
             foreach ($oldComments as $comment) {
                 $message = $comment->message();
                 if ($this->conf['comments_markup'] == 'HTML') {
-                    $htmlCleaner = new HtmlCleaner($this->pluginFolder, false);
-                    $message = $htmlCleaner->clean($message);
+                    $message = $this->htmlCleaner->clean($message);
                 } else {
                     $message = $this->plainify($message);
                 }

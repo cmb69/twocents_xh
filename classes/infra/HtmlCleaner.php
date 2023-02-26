@@ -29,22 +29,23 @@ class HtmlCleaner
     /** @var string */
     private $pluginFolder;
 
-    /** @var bool */
-    private $wantsXhtml;
+    /** @var HTMLPurifier|null */
+    private $purifier = null;
 
-    public function __construct(string $pluginFolder, bool $wantsXhtml)
+    public function __construct(string $pluginFolder)
     {
         $this->pluginFolder = $pluginFolder;
-        $this->wantsXhtml = $wantsXhtml;
     }
 
-    public function clean(string $message): string
+    /** @return void */
+    private function init()
     {
+        if ($this->purifier !== null) {
+            return;
+        }
         include_once "{$this->pluginFolder}htmlpurifier/HTMLPurifier.standalone.php";
         $config = HTMLPurifier_Config::createDefault();
-        if (!$this->wantsXhtml) {
-            $config->set('HTML.Doctype', 'HTML 4.01 Transitional');
-        }
+        $config->set('HTML.Doctype', 'HTML 4.01 Transitional');
         $config->set('HTML.Allowed', 'p,blockquote,br,b,strong,i,em,a[href]');
         $config->set('AutoFormat.AutoParagraph', true);
         $config->set('AutoFormat.RemoveEmpty', true);
@@ -53,8 +54,13 @@ class HtmlCleaner
         $config->set('HTML.Nofollow', true);
         $config->set('Output.TidyFormat', true);
         $config->set('Output.Newline', "\n");
-        $purifier = new HTMLPurifier($config);
+        $this->purifier = new HTMLPurifier($config);
+    }
+
+    public function clean(string $message): string
+    {
+        $this->init();
         $message = str_replace(array('&nbsp;', "\C2\A0"), ' ', $message);
-        return $purifier->purify($message);
+        return $this->purifier->purify($message);
     }
 }

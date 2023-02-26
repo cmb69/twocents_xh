@@ -22,6 +22,7 @@
 namespace Twocents;
 
 use Twocents\Infra\Db;
+use Twocents\Infra\HtmlCleaner;
 use Twocents\Infra\SystemChecker;
 use Twocents\Infra\SystemCheckService;
 use Twocents\Infra\View;
@@ -98,11 +99,11 @@ class Plugin
         global $pth, $sn, $plugin_cf, $plugin_tx, $_XH_csrfProtection;
 
         $controller = new MainAdminController(
-            "{$pth['folder']['plugins']}twocents/",
             $sn,
             $plugin_cf['twocents'],
             isset($_XH_csrfProtection) ? $_XH_csrfProtection : null,
             new Db($pth['folder']['content'] . 'twocents/'),
+            new HtmlCleaner($pth["folder"]["plugins"] . "twocents/"),
             new View($pth["folder"]["plugins"] . "twocents/views/", $plugin_tx["twocents"]),
         );
         return $controller->{self::getControllerAction($controller, 'action')}();

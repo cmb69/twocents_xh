@@ -50,6 +50,9 @@ class MainController
     /** @var Db */
     private $db;
 
+    /** @var HtmlCleaner */
+    private $htmlCleaner;
+
     /** @var View */
     private $view;
 
@@ -77,6 +80,7 @@ class MainController
         array $lang,
         $csrfProtector,
         Db $db,
+        HtmlCleaner $htmlCleaner,
         View $view,
         string $topicname,
         bool $readonly
@@ -86,6 +90,7 @@ class MainController
         $this->lang = $lang;
         $this->csrfProtector = $csrfProtector;
         $this->db = $db;
+        $this->htmlCleaner = $htmlCleaner;
         $this->view = $view;
         if (!$this->isValidTopicname($topicname)) {
             throw new DomainException;
@@ -380,8 +385,7 @@ class MainController
         }
         $message = trim($_POST['twocents_message']);
         if (!(defined('XH_ADM') && XH_ADM) && $this->conf['comments_markup'] == 'HTML') {
-            $htmlCleaner = new HtmlCleaner("{$this->pluginsFolder}twocents/", false);
-            $message = $htmlCleaner->clean($message);
+            $message = $this->htmlCleaner->clean($message);
         }
         $hideComment = false;
         $isSpam = false;
