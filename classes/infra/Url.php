@@ -1,7 +1,7 @@
 <?php
 
 /**
- * Copyright (c)) Christoph M. Becker
+ * Copyright (c) Christoph M. Becker
  *
  * This file is part of Twocents_XH.
  *
@@ -19,7 +19,7 @@
  * along with Twocents_XH.  If not, see <http://www.gnu.org/licenses/>.
  */
 
-namespace Twocents;
+namespace Twocents\Infra;
 
 class Url
 {

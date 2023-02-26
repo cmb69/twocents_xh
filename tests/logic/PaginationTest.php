@@ -1,7 +1,7 @@
 <?php
 
 /**
- * Copyright 2014-2023 Christoph M. Becker
+ * Copyright 2017-2023 Christoph M. Becker
  *
  * This file is part of Twocents_XH.
  *
@@ -19,31 +19,26 @@
  * along with Twocents_XH.  If not, see <http://www.gnu.org/licenses/>.
  */
 
-namespace Twocents;
+namespace Twocents\Logic;
 
-class CommentsTopic extends Topic
+use PHPUnit\Framework\TestCase;
+
+class PaginationTest extends TestCase
 {
-    const EXT = 'txt';
-
-    /** @return list<Topic> */
-    public static function findAll(): array
+    /**
+     * @dataProvider provideGatherPagesData
+     */
+    public function testGatherPages(int $page, int $pageCount, int $radius, array $expected)
     {
-        $topics = array();
-        Db::lock(LOCK_SH);
-        if ($dir = opendir(Db::getFoldername())) {
-            while (($entry = readdir($dir)) !== false) {
-                if (pathinfo($entry, PATHINFO_EXTENSION) == self::EXT) {
-                    $topics[] = self::load(basename($entry, '.' . self::EXT));
-                }
-            }
-            closedir($dir);
-        }
-        Db::lock(LOCK_UN);
-        return $topics;
+        $subject = new Pagination($page, $pageCount, $radius);
+        $this->assertEquals($expected, $subject->gatherPages());
     }
 
-    protected static function load(string $name): Topic
+    public function provideGatherPagesData(): array
     {
-        return new self($name);
+        return array(
+            [1, 3, 2, [1, 2, 3]],
+            [4, 7, 1, [1, null, 3, 4, 5, null, 7]]
+        );
     }
 }

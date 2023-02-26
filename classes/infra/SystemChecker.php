@@ -1,7 +1,7 @@
 <?php
 
 /**
- * Copyright 2017-2023 Christoph M. Becker
+ * Copyright (c) Christoph M. Becker
  *
  * This file is part of Twocents_XH.
  *
@@ -19,34 +19,22 @@
  * along with Twocents_XH.  If not, see <http://www.gnu.org/licenses/>.
  */
 
-namespace Twocents;
+namespace Twocents\Infra;
 
-use PHPUnit\Framework\TestCase;
-
-class SpamFilterTest extends TestCase
+class SystemChecker
 {
-    /** @var SpamFilter */
-    private $subject;
-
-    public function setUp(): void
+    public function checkVersion(string $actual, string $minimum): bool
     {
-        $this->subject = new SpamFilter('porn,viagra');
+        return version_compare($actual, $minimum) >= 0;
     }
 
-    /**
-     * @dataProvider provideIsSpamData
-     */
-    public function testIsSpam(string $message, bool $expected)
+    public function checkExtension(string $extension): bool
     {
-        $this->assertSame($expected, $this->subject->isSpam($message));
+        return extension_loaded($extension);
     }
 
-    public function provideIsSpamData(): array
+    public function checkWritability(string $path): bool
     {
-        return array(
-            ['this is no spam', false],
-            ['this is porn spam', true],
-            ['this is ViAgRa spam', true]
-        );
+        return is_writable($path);
     }
 }

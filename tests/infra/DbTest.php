@@ -1,7 +1,7 @@
 <?php
 
 /**
- * Copyright 2017-2023 Christoph M. Becker
+ * Copyright 2023 Christoph M. Becker
  *
  * This file is part of Twocents_XH.
  *
@@ -19,27 +19,24 @@
  * along with Twocents_XH.  If not, see <http://www.gnu.org/licenses/>.
  */
 
-namespace Twocents;
+namespace Twocents\Infra;
 
-class SpamFilter
+use org\bovigo\vfs\vfsStream;
+use PHPUnit\Framework\TestCase;
+
+class DbTest extends TestCase
 {
-    /** @var string */
-    private $spamWords;
-
-    public function __construct(string $spamWords)
+    public function testFindsAllTopics(): void
     {
-        $this->spamWords = $spamWords;
-    }
+        global $pth;
 
-    public function isSpam(string $message): bool
-    {
-        $words = array_map(
-            function ($word) {
-                return preg_quote(trim($word), '/');
-            },
-            explode(',', $this->spamWords)
-        );
-        $pattern = implode('|', $words);
-        return (bool) preg_match("/$pattern/ui", $message);
+        vfsStream::setup("root");
+        $pth = ["folder" => ["content" => vfsStream::url("root/")]];
+        mkdir($pth["folder"]["content"] . "twocents");
+        foreach (["foo", "bar", "baz"] as $name) {
+            touch($pth["folder"]["content"] . "twocents/$name.csv");
+        }
+        $topics = Db::findAllTopics();
+        $this->assertEquals(["foo", "bar", "baz"], $topics);
     }
 }

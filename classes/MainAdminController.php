@@ -21,6 +21,11 @@
 
 namespace Twocents;
 
+use Twocents\Infra\Db;
+use Twocents\Infra\HtmlCleaner;
+use Twocents\Infra\View;
+use Twocents\Value\Comment;
+use Twocents\Value\HtmlString;
 use XH\CSRFProtection as CsrfProtector;
 
 class MainAdminController
@@ -92,19 +97,20 @@ class MainAdminController
     {
         $this->csrfProtector->check();
         $count = 0;
-        $topics = Topic::findAll();
+        $topics = Db::findAllTopics();
         foreach ($topics as $topic) {
-            $comments = Comment::findByTopicname($topic->getName());
+            $newComments = [];
+            $comments = Db::findTopic($topic);
             foreach ($comments as $comment) {
                 if ($to == 'html') {
-                    $message = $this->htmlify(XH_hsc($comment->getMessage()));
+                    $message = $this->htmlify(XH_hsc($comment->message()));
                 } else {
-                    $message = $this->plainify($comment->getMessage());
+                    $message = $this->plainify($comment->message());
                 }
-                $comment->setMessage($message);
-                $comment->update();
+                $newComments[] = $comment->withMessage($message);
                 $count++;
             }
+            Db::storeTopic($topic, $newComments);
         }
         $this->message = new HtmlString(XH_message('success', $this->lang['message_converted_' . $to], $count));
         return $this->defaultAction();
@@ -138,46 +144,47 @@ class MainAdminController
     {
         $this->csrfProtector->check();
         $count = 0;
-        $topics = CommentsTopic::findAll();
+        $topics = Db::findAllTopics("txt");
         foreach ($topics as $topic) {
-            $comments = CommentsComment::findByTopicname($topic->getName());
+            $newComments = [];
+            $comments = Db::findCommentsTopic($topic);
             foreach ($comments as $comment) {
-                $message = $comment->getMessage();
+                $message = $comment->message();
                 if ($this->conf['comments_markup'] == 'HTML') {
                     $htmlCleaner = new HtmlCleaner($this->pluginFolder, false);
                     $message = $htmlCleaner->clean($message);
                 } else {
                     $message = $this->plainify($message);
                 }
-                $comment->setMessage($message);
-                $comment->insert(uniqid());
+                $newComments[] = $comment->withMessage($message);
                 $count++;
             }
+            Db::storeTopic($topic, $newComments);
         }
         $this->message = new HtmlString(XH_message('success', $this->lang['message_imported_comments'], $count));
         return $this->defaultAction();
     }
 
-    /** @todo Implement! */
     public function importGbookAction(): string
     {
         $this->csrfProtector->check();
         $count = 0;
-        $topics = CommentsTopic::findAll();
+        $topics = Db::findAllTopics("txt");
         foreach ($topics as $topic) {
-            $comments = GbookComment::findByTopicname($topic->getName());
-            foreach ($comments as $comment) {
-                $message = $comment->getMessage();
+            $newComments = [];
+            $oldComments = Db::findGbookTopic($topic);
+            foreach ($oldComments as $comment) {
+                $message = $comment->message();
                 if ($this->conf['comments_markup'] == 'HTML') {
                     $htmlCleaner = new HtmlCleaner($this->pluginFolder, false);
                     $message = $htmlCleaner->clean($message);
                 } else {
                     $message = $this->plainify($message);
                 }
-                $comment->setMessage($message);
-                $comment->insert(uniqid());
+                $newComments[] = $comment->withMessage($message);
                 $count++;
             }
+            Db::storeTopic($topic, $newComments);
         }
         $this->message = new HtmlString(XH_message('success', $this->lang['message_imported_gbook'], $count));
         return $this->defaultAction();

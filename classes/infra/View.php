@@ -19,7 +19,7 @@
  * along with Twocents_XH.  If not, see <http://www.gnu.org/licenses/>.
  */
 
-namespace Twocents;
+namespace Twocents\Infra;
 
 class View
 {

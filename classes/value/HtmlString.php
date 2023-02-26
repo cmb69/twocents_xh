@@ -1,7 +1,7 @@
 <?php
 
 /**
- * Copyright 2017-2023 Christoph M. Becker
+ * Copyright 2023 Christoph M. Becker
  *
  * This file is part of Twocents_XH.
  *
@@ -19,29 +19,21 @@
  * along with Twocents_XH.  If not, see <http://www.gnu.org/licenses/>.
  */
 
-namespace Twocents;
+namespace Twocents\Value;
 
-use PHPUnit\Framework\TestCase;
-
-class PaginationTest extends TestCase
+class HtmlString
 {
-    /**
-     * @dataProvider provideGatherPagesData
-     */
-    public function testGatherPages(int $page, int $pageCount, int $radius, array $expected)
-    {
-        global $plugin_cf;
+    /** @var string */
+    private $string;
 
-        $plugin_cf['twocents']['pagination_radius'] = $radius;
-        $subject = new Pagination($page, $pageCount);
-        $this->assertEquals($expected, $subject->gatherPages());
+    /** @param string|int $string */
+    public function __construct($string)
+    {
+        $this->string = (string) $string;
     }
 
-    public function provideGatherPagesData(): array
+    public function __toString(): string
     {
-        return array(
-            [1, 3, 2, [1, 2, 3]],
-            [4, 7, 1, [1, null, 3, 4, 5, null, 7]]
-        );
+        return $this->string;
     }
 }

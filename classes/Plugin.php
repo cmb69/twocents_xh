@@ -21,6 +21,10 @@
 
 namespace Twocents;
 
+use Twocents\Infra\SystemChecker;
+use Twocents\Infra\SystemCheckService;
+use Twocents\Infra\View;
+
 class Plugin
 {
     const VERSION = "1.0";

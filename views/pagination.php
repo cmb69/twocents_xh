@@ -1,6 +1,6 @@
 <?php
 
-use Twocents\View;
+use Twocents\Infra\View;
 
 /**
  * @var View $this

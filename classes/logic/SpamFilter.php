@@ -1,7 +1,7 @@
 <?php
 
 /**
- * Copyright 2023 Christoph M. Becker
+ * Copyright 2017-2023 Christoph M. Becker
  *
  * This file is part of Twocents_XH.
  *
@@ -19,21 +19,27 @@
  * along with Twocents_XH.  If not, see <http://www.gnu.org/licenses/>.
  */
 
-namespace Twocents;
+namespace Twocents\Logic;
 
-class HtmlString
+class SpamFilter
 {
     /** @var string */
-    private $string;
+    private $spamWords;
 
-    /** @param string|int $string */
-    public function __construct($string)
+    public function __construct(string $spamWords)
     {
-        $this->string = (string) $string;
+        $this->spamWords = $spamWords;
     }
 
-    public function __toString(): string
+    public function isSpam(string $message): bool
     {
-        return $this->string;
+        $words = array_map(
+            function ($word) {
+                return preg_quote(trim($word), '/');
+            },
+            explode(',', $this->spamWords)
+        );
+        $pattern = implode('|', $words);
+        return (bool) preg_match("/$pattern/ui", $message);
     }
 }

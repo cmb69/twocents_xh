@@ -19,7 +19,7 @@
  * along with Twocents_XH.  If not, see <http://www.gnu.org/licenses/>.
  */
 
-namespace Twocents;
+namespace Twocents\Logic;
 
 class Pagination
 {
@@ -32,13 +32,11 @@ class Pagination
     /** @var int */
     private $radius;
 
-    public function __construct(int $page, int $pageCount)
+    public function __construct(int $page, int $pageCount, int $radius)
     {
-        global $plugin_cf;
-
         $this->page = (int) $page;
         $this->pageCount = (int) $pageCount;
-        $this->radius = $plugin_cf['twocents']['pagination_radius'];
+        $this->radius = $radius;
     }
 
     /** @return array<int|null> */

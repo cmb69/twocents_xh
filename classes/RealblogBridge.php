@@ -22,6 +22,7 @@
 namespace Twocents;
 
 use Realblog\CommentsBridge;
+use Twocents\Infra\Db;
 
 class RealblogBridge implements CommentsBridge
 {
@@ -31,7 +32,7 @@ class RealblogBridge implements CommentsBridge
      */
     public static function count($topic)
     {
-        return count(Comment::findByTopicname($topic, true));
+        return count(Db::findTopic($topic, true));
     }
 
     /**

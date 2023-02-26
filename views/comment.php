@@ -1,8 +1,8 @@
 <?php
 
-use Twocents\Comment;
-use Twocents\Url;
-use Twocents\View;
+use Twocents\Value\Comment;
+use Twocents\Infra\Url;
+use Twocents\Infra\View;
 
 /**
  * @var View $this
@@ -31,7 +31,7 @@ use Twocents\View;
     <a href="<?=$editUrl?>"><?=$this->text('label_edit')?></a>
     <form method="post" action="<?=$url?>">
       <?=$csrfTokenInput?>
-      <input type="hidden" name="twocents_id" value="<?=$comment->getId()?>">
+      <input type="hidden" name="twocents_id" value="<?=$comment->id()?>">
       <button type="submit" name="twocents_action" value="toggle_visibility"><?=$this->text((string)$visibility)?></button>
       <button type="submit" name="twocents_action" value="remove_comment"><?=$this->text('label_delete')?></button>
     </form>
