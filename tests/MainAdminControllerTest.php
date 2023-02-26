@@ -24,6 +24,7 @@ namespace Twocents;
 use ApprovalTests\Approvals;
 use PHPUnit\Framework\TestCase;
 use Twocents\Infra\Db;
+use Twocents\Infra\View;
 use XH\CSRFProtection as CsrfProtector;
 
 class MainAdminControllerTest extends TestCase
@@ -35,7 +36,8 @@ class MainAdminControllerTest extends TestCase
         $plugin_tx = XH_includeVar("./languages/en.php", 'plugin_tx');
         $lang = $plugin_tx['twocents'];
         $csrfProtector = $this->createStub(CsrfProtector::class);
-        $sut = new MainAdminController("./", "/", $conf, $lang, $csrfProtector, new Db("./"));
+        $view = new View("./views/", $lang);
+        $sut = new MainAdminController("./", "/", $conf, $csrfProtector, new Db("./"), $view);
         $response = $sut->defaultAction();
         Approvals::verifyHtml($response);
     }

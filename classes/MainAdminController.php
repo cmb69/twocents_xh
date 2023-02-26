@@ -38,37 +38,36 @@ class MainAdminController
     /** @var array<string,string> */
     private $conf;
 
-    /** @var array<string,string> */
-    private $lang;
-
     /** @var CsrfProtector|null */
     private $csrfProtector;
 
     /** @var Db */
     private $db;
 
+    /** @var View */
+    private $view;
+
     /** @var HtmlString|null */
     private $message;
 
     /**
      * @param array<string,string> $conf
-     * @param array<string,string> $lang
      * @param CsrfProtector|null $csrfProtector
      */
     public function __construct(
         string $pluginFolder,
         string $scriptName,
         array $conf,
-        array $lang,
         $csrfProtector,
-        Db $db
+        Db $db,
+        View $view
     ) {
         $this->pluginFolder = $pluginFolder;
         $this->scriptName = $scriptName;
         $this->conf = $conf;
-        $this->lang = $lang;
         $this->csrfProtector = $csrfProtector;
         $this->db = $db;
+        $this->view = $view;
     }
 
     public function defaultAction(): string
@@ -78,8 +77,7 @@ class MainAdminController
         } else {
             $button = 'convert_to_html';
         }
-        $view = new View("{$this->pluginFolder}views/", $this->lang);
-        return $view->render('admin', [
+        return $this->view->render('admin', [
             'action' => "{$this->scriptName}?&twocents",
             'csrfTokenInput' => new HtmlString($this->csrfProtector->tokenInput()),
             'buttons' => array($button, 'import_comments', 'import_gbook'),
@@ -107,7 +105,7 @@ class MainAdminController
             $comments = $this->db->findTopic($topic);
             foreach ($comments as $comment) {
                 if ($to == 'html') {
-                    $message = $this->htmlify(XH_hsc($comment->message()));
+                    $message = $this->htmlify($this->view->esc($comment->message()));
                 } else {
                     $message = $this->plainify($comment->message());
                 }
@@ -116,7 +114,7 @@ class MainAdminController
             }
             $this->db->storeTopic($topic, $newComments);
         }
-        $this->message = new HtmlString(XH_message('success', $this->lang['message_converted_' . $to], $count));
+        $this->message = new HtmlString($this->view->message('success', 'message_converted_' . $to, $count));
         return $this->defaultAction();
     }
 
@@ -165,7 +163,7 @@ class MainAdminController
             }
             $this->db->storeTopic($topic, $newComments);
         }
-        $this->message = new HtmlString(XH_message('success', $this->lang['message_imported_comments'], $count));
+        $this->message = new HtmlString($this->view->message('success', 'message_imported_comments', $count));
         return $this->defaultAction();
     }
 
@@ -190,7 +188,7 @@ class MainAdminController
             }
             $this->db->storeTopic($topic, $newComments);
         }
-        $this->message = new HtmlString(XH_message('success', $this->lang['message_imported_gbook'], $count));
+        $this->message = new HtmlString($this->view->message('success', 'message_imported_gbook', $count));
         return $this->defaultAction();
     }
 }

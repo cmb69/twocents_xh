@@ -23,6 +23,7 @@ namespace Twocents;
 
 use Realblog\CommentsBridge;
 use Twocents\Infra\Db;
+use Twocents\Infra\View;
 
 class RealblogBridge implements CommentsBridge
 {
@@ -51,6 +52,7 @@ class RealblogBridge implements CommentsBridge
             $plugin_tx['twocents'],
             isset($_XH_csrfProtection) ? $_XH_csrfProtection : null,
             new Db($pth['folder']['content'] . 'twocents/'),
+            new View($pth["folder"]["plugins"] . "twocents/views/", $plugin_tx["twocents"]),
             $topic,
             false
         );

@@ -50,6 +50,9 @@ class MainController
     /** @var Db */
     private $db;
 
+    /** @var View */
+    private $view;
+
     /** @var string */
     private $topicname;
 
@@ -74,6 +77,7 @@ class MainController
         array $lang,
         $csrfProtector,
         Db $db,
+        View $view,
         string $topicname,
         bool $readonly
     ) {
@@ -82,6 +86,7 @@ class MainController
         $this->lang = $lang;
         $this->csrfProtector = $csrfProtector;
         $this->db = $db;
+        $this->view = $view;
         if (!$this->isValidTopicname($topicname)) {
             throw new DomainException;
         }
@@ -186,8 +191,7 @@ class MainController
         $pagination = new Pagination($page, $pageCount, (int) $this->conf["pagination_radius"]);
         $url = Url::getCurrent();
         $currentPage = $page;
-        $view = new View("{$this->pluginsFolder}twocents/views/", $this->lang);
-        return $view->render('pagination', [
+        return $this->view->render('pagination', [
             'itemCount' => $commentCount,
             'pages' => array_map(
                 function ($page) use ($url, $currentPage) {
@@ -213,8 +217,7 @@ class MainController
         $this->writeScriptsToBjs();
         $mayAddComment = (!isset($this->comment) || $this->comment->id() == null)
             && ((defined('XH_ADM') && XH_ADM) || !$this->readonly);
-        $view = new View("{$this->pluginsFolder}twocents/views/", $this->lang);
-        return $view->render('comments', [
+        return $this->view->render('comments', [
             'comments' => array_map(
                 function ($comment) {
                     return (object) array(
@@ -262,8 +265,7 @@ class MainController
         if (!file_exists($filename)) {
             $filename = "{$this->pluginsFolder}twocents/twocents.js";
         }
-        $view = new View("{$this->pluginsFolder}twocents/views/", $this->lang);
-        $bjs .= $view->render('scripts', [
+        $bjs .= $this->view->render('scripts', [
             'json' => new HtmlString((string) json_encode($config)),
             'filename' => $filename
         ]);
@@ -294,8 +296,7 @@ class MainController
                 $data['csrfTokenInput'] = new HtmlString($this->csrfProtector->tokenInput());
             }
         }
-        $view = new View("{$this->pluginsFolder}twocents/views/", $this->lang);
-        return $view->render('comment', $data);
+        return $this->view->render('comment', $data);
     }
 
     private function prepareCommentForm(?Comment $comment = null): string
@@ -321,8 +322,7 @@ class MainController
                 'csrfTokenInput' => ''
             ];
         }
-        $view = new View("{$this->pluginsFolder}twocents/views/", $this->lang);
-        return $view->render('comment-form', $data);
+        return $this->view->render('comment-form', $data);
     }
 
     private function renderCaptcha(): string
@@ -348,7 +348,7 @@ class MainController
             array(
                 '{DATE}' => $date,
                 '{TIME}' => $time,
-                '{USER}' => XH_hsc($comment->user())
+                '{USER}' => $this->view->esc($comment->user())
             )
         );
     }
@@ -358,7 +358,7 @@ class MainController
         if ($this->conf['comments_markup'] == 'HTML') {
             return $comment->message();
         } else {
-            return preg_replace('/(?:\r\n|\r|\n)/', tag('br'), XH_hsc($comment->message()));
+            return preg_replace('/(?:\r\n|\r|\n)/', tag('br'), $this->view->esc($comment->message()));
         }
     }
 
@@ -407,9 +407,9 @@ class MainController
             $this->sendNotificationEmail();
             $this->comment = null;
             if ($this->isModerated() || $isSpam) {
-                $this->messages .= XH_message('info', $this->lang['message_moderated']);
+                $this->messages .= $this->view->message('info', 'message_moderated');
             } else {
-                $this->messages .= XH_message('success', $this->lang['message_added']);
+                $this->messages .= $this->view->message('success', 'message_added');
             }
             $this->messages .= $marker;
         } else {
@@ -491,16 +491,16 @@ class MainController
         $isValid = true;
         if (utf8_strlen($this->comment->user()) < 2) {
             $isValid = false;
-            $this->messages .= XH_message('fail', $this->lang['error_user']);
+            $this->messages .= $this->view->message('fail', 'error_user');
         }
         $mailer = new Mailer();
         if (!$mailer->isValidAddress($this->comment->email())) {
             $isValid = false;
-            $this->messages .= XH_message('fail', $this->lang['error_email']);
+            $this->messages .= $this->view->message('fail', 'error_email');
         }
         if (utf8_strlen($this->comment->message()) < 2) {
             $isValid = false;
-            $this->messages .= XH_message('fail', $this->lang['error_message']);
+            $this->messages .= $this->view->message('fail', 'error_message');
         }
         return $isValid && $this->validateCaptcha();
     }
@@ -514,7 +514,7 @@ class MainController
             $func = $pluginname . '_captcha_check';
             if (is_callable($func)) {
                 if (!$func()) {
-                    $this->messages .= XH_message('fail', $this->lang['error_captcha']);
+                    $this->messages .= $this->view->message('fail', 'error_captcha');
                     return false;
                 }
             }

@@ -101,9 +101,9 @@ class Plugin
             "{$pth['folder']['plugins']}twocents/",
             $sn,
             $plugin_cf['twocents'],
-            $plugin_tx['twocents'],
             isset($_XH_csrfProtection) ? $_XH_csrfProtection : null,
-            new Db($pth['folder']['content'] . 'twocents/')
+            new Db($pth['folder']['content'] . 'twocents/'),
+            new View($pth["folder"]["plugins"] . "twocents/views/", $plugin_tx["twocents"]),
         );
         return $controller->{self::getControllerAction($controller, 'action')}();
     }
