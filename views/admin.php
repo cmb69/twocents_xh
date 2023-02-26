@@ -16,7 +16,7 @@ use Twocents\Infra\View;
 <?=$message?>
 <form action="<?=$action?>" method="post">
   <input type="hidden" name="admin" value="plugin_main">
-  <?=$csrfTokenInput?>
+  <input name="xh_csrf_token" value="<?=$csrfTokenInput?>">
 <?php foreach ($buttons as $button):?>
   <p>
     <button type="submit" name="action" value="<?=$button?>"><?=$this->text("label_$button")?></button>

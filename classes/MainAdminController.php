@@ -76,7 +76,7 @@ class MainAdminController
         }
         return $this->view->render('admin', [
             'action' => "{$this->scriptName}?&twocents",
-            'csrfTokenInput' => new HtmlString($this->csrfProtector->token()),
+            'csrfTokenInput' => $this->csrfProtector->token(),
             'buttons' => array($button, 'import_comments', 'import_gbook'),
             'message' => $this->message
         ]);

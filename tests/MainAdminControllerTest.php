@@ -25,6 +25,7 @@ use ApprovalTests\Approvals;
 use PHPUnit\Framework\TestCase;
 use Twocents\Infra\CsrfProtector;
 use Twocents\Infra\Db;
+use Twocents\Infra\FakeCsrfProtector;
 use Twocents\Infra\HtmlCleaner;
 use Twocents\Infra\View;
 
@@ -36,7 +37,7 @@ class MainAdminControllerTest extends TestCase
         $conf = $plugin_cf['twocents'];
         $plugin_tx = XH_includeVar("./languages/en.php", 'plugin_tx');
         $lang = $plugin_tx['twocents'];
-        $csrfProtector = $this->createStub(CsrfProtector::class);
+        $csrfProtector = new FakeCsrfProtector;
         $htmlCleaner = $this->createStub(HtmlCleaner::class);
         $view = new View("./views/", $lang);
         $sut = new MainAdminController("/", $conf, $csrfProtector, new Db("./"), $htmlCleaner, $view);
