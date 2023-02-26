@@ -23,25 +23,112 @@ namespace Twocents;
 
 use ApprovalTests\Approvals;
 use PHPUnit\Framework\TestCase;
-use Twocents\Infra\CsrfProtector;
 use Twocents\Infra\Db;
 use Twocents\Infra\FakeCsrfProtector;
 use Twocents\Infra\HtmlCleaner;
 use Twocents\Infra\View;
+use Twocents\Value\Comment;
 
 class MainAdminControllerTest extends TestCase
 {
-    public function testDefaultActionRendersConversionOverview(): void
+    public function testRendersOverview(): void
     {
-        $plugin_cf = XH_includeVar("./config/config.php", 'plugin_cf');
-        $conf = $plugin_cf['twocents'];
-        $plugin_tx = XH_includeVar("./languages/en.php", 'plugin_tx');
-        $lang = $plugin_tx['twocents'];
-        $csrfProtector = new FakeCsrfProtector;
-        $htmlCleaner = $this->createStub(HtmlCleaner::class);
-        $view = new View("./views/", $lang);
-        $sut = new MainAdminController("/", $conf, $csrfProtector, new Db("./"), $htmlCleaner, $view);
+        $sut = $this->sut();
         $response = $sut->defaultAction();
         Approvals::verifyHtml($response);
+    }
+
+    public function testRendersOverviewForHtml(): void
+    {
+        $sut = $this->sut(["conf" => ["comments_markup" => "HTML"]]);
+        $response = $sut->defaultAction();
+        Approvals::verifyHtml($response);
+    }
+
+    public function testConvertsToHtml()
+    {
+        $csrfProtector = new FakeCsrfProtector;
+        $sut = $this->sut(["csrfProtector" => $csrfProtector]);
+        $response = $sut->convertToHtmlAction();
+        $this->assertTrue($csrfProtector->hasChecked());
+        Approvals::verifyHtml($response);
+    }
+
+    public function testConvertsToPlainText()
+    {
+        $csrfProtector = new FakeCsrfProtector;
+        $sut = $this->sut(["csrfProtector" => $csrfProtector]);
+        $response = $sut->convertToPlainTextAction();
+        $this->assertTrue($csrfProtector->hasChecked());
+        Approvals::verifyHtml($response);
+    }
+
+    public function testImportsComments()
+    {
+        $csrfProtector = new FakeCsrfProtector;
+        $sut = $this->sut(["csrfProtector" => $csrfProtector]);
+        $response = $sut->importCommentsAction();
+        $this->assertTrue($csrfProtector->hasChecked());
+        Approvals::verifyHtml($response);
+    }
+
+    public function testImportsGbook()
+    {
+        $csrfProtector = new FakeCsrfProtector;
+        $sut = $this->sut(["csrfProtector" => $csrfProtector]);
+        $response = $sut->importGbookAction();
+        $this->assertTrue($csrfProtector->hasChecked());
+        Approvals::verifyHtml($response);
+    }
+
+    private function sut($options = [])
+    {
+        return new MainAdminController(
+            "/",
+            $this->conf($options["conf"] ?? []),
+            $options["csrfProtector"] ?? new FakeCsrfProtector,
+            $this->db(),
+            $this->htmlCleaner(),
+            $this->view()
+        );
+    }
+
+    private function htmlCleaner()
+    {
+        return $this->createStub(HtmlCleaner::class);
+    }
+
+    private function db()
+    {
+        $db = $this->createStub(Db::class);
+        $db->method("findAllTopics")->willReturn(["topic1"]);
+        $db->method("findTopic")->willReturn([$this->comment()]);
+        $db->method("findCommentsTopic")->willReturn([$this->comment()]);
+        $db->method("findGbookTopic")->willReturn([$this->comment()]);
+        return $db;
+    }
+
+    private function view()
+    {
+        return new View("./views/", XH_includeVar("./languages/en.php", "plugin_tx")["twocents"]);
+    }
+
+    private function conf($options = [])
+    {
+        $conf = XH_includeVar("./config/config.php", "plugin_cf")["twocents"];
+        return $options + $conf;
+    }
+
+    private function comment()
+    {
+        return new Comment(
+            "63fba86870945",
+            "topic1",
+            1677437048,
+            "cmb",
+            "cmb@example.com",
+            "A nice comment",
+            false
+        );
     }
 }
