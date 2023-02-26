@@ -32,6 +32,8 @@
     </exec>
   </target>
 
+  <target name="sat" description="runs all checks" depends="sniff,stan,test"/>
+
   <target name="gen-help" description="builds help.htm from README.md">
     <exec command="pandoc -s --eol=lf --template=help/template.htm -Vlang=en -Vpagetitle=&quot;User Manual&quot; -o help/help.htm README.md -t html" logoutput="true"/>
     <exec command="pandoc -s --eol=lf --template=help/template.htm -Vlang=cs -Vpagetitle=&quot;Benutzerhandbuch&quot; -o help/help_de.htm README_DE.md -t html" logoutput="true"/>
