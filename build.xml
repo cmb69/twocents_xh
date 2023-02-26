@@ -27,10 +27,6 @@
     </exec>
   </target>
 
-  <target name="compat" description="checks PHP requirements">
-    <exec command="phpcompatinfo analyser:run classes" logoutput="true"/>
-  </target>
-
   <target name="test" description="runs all developer tests">
     <exec executable="phpunit" passthru="true" checkreturn="true"/>
   </target>
