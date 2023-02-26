@@ -3,7 +3,9 @@
 <project name="Twocents" default="help">
 
   <target name="help" description="lists available targets">
-    <exec command="phing -l" outputProperty="help"/>
+    <exec executable="phing" outputProperty="help">
+      <arg value="-l"/>
+    </exec>
     <echo>${help}</echo>
   </target>
 
@@ -21,16 +23,6 @@
     <exec executable="phpstan" passthru="true" checkreturn="true"/>
   </target>
 
-  <target name="mess" description="detects code flaws">
-    <exec executable="phpmd" passthru="true" checkreturn="true">
-      <arg line="classes,tests,index.php ansi codesize,unusedcode --ignore-violations-on-exit"/>
-    </exec>
-  </target>
-
-  <target name="compat" description="checks PHP requirements">
-    <exec command="phpcompatinfo analyser:run classes" logoutput="true"/>
-  </target>
-
   <target name="test" description="runs all developer tests">
     <exec executable="phpunit" passthru="true" checkreturn="true"/>
   </target>
@@ -42,14 +34,21 @@
     </exec>
   </target>
 
+  <target name="sat" description="runs all checks" depends="sniff,stan,test"/>
+
   <target name="gen-help" description="builds help.htm from README.md">
-    <exec command="pandoc -s --eol=lf --template=help/template.htm -Vlang=en -Vpagetitle=&quot;User Manual&quot; -o help/help.htm README.md -t html" logoutput="true"/>
-    <exec command="pandoc -s --eol=lf --template=help/template.htm -Vlang=cs -Vpagetitle=&quot;Benutzerhandbuch&quot; -o help/help_de.htm README_DE.md -t html" logoutput="true"/>
+    <exec executable="pandoc" passthru="true" checkreturn="true">
+      <arg line="-s --eol=lf --template=help/template.htm -Vlang=en -Vpagetitle=&quot;User Manual&quot; -o help/help.htm README.md -t html"/>
+    </exec>
+    <exec executable="pandoc" passthru="true" checkreturn="true">
+      <arg line="-s --eol=lf --template=help/template.htm -Vlang=cs -Vpagetitle=&quot;Benutzerhandbuch&quot; -o help/help_de.htm README_DE.md -t html"/>
+    </exec>
   </target>
 
   <target name="build">
-    <fail unless="version" message="version is not defined!"/>
-    <exec command="git archive -o export.zip HEAD" checkreturn="true"/>
+    <exec executable="git" checkreturn="true">
+      <arg line="archive -o export.zip HEAD"/>
+    </exec>
     <unzip file="export.zip" todir="export"/>
     <delete file="export.zip"/>
     <exec executable="uglifyjs" checkreturn="true">
@@ -62,6 +61,7 @@
     <move todir="dist">
       <fileset dir="export">
         <exclude name=".github/**"/>
+        <exclude name=".phive/**"/>
         <exclude name="help/template.htm"/>
         <exclude name="tests/**"/>
         <exclude name="README*.md"/>
@@ -76,7 +76,7 @@
     <delete dir="export"/>
     <copy file="dist/config/config.php" tofile="dist/config/defaultconfig.php"/>
     <copy file="dist/languages/en.php" tofile="dist/languages/default.php"/>
-    <zip destfile="Twocents_XH-${version}.zip" basedir="dist" prefix="twocents/"/>
+    <zip destfile="Twocents_XH-1.0.zip" basedir="dist" prefix="twocents/"/>
     <delete dir="dist"/>
   </target>
 

@@ -23,7 +23,7 @@ namespace Twocents;
 
 class Plugin
 {
-    const VERSION = '1.0beta3';
+    const VERSION = "1.0";
 
     /** @param object $controller */
     public static function getControllerAction($controller, string $param): string

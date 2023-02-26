@@ -1,7 +1,6 @@
-vendor
-/classes.svg
+/vendor
 /twocents.min.js
-/README.htm
 /composer.lock
 /.phpunit.cache
 /coverage
+/tools
