@@ -47,6 +47,9 @@ class MainController
     /** @var CsrfProtector|null */
     private $csrfProtector;
 
+    /** @var Db */
+    private $db;
+
     /** @var string */
     private $topicname;
 
@@ -70,6 +73,7 @@ class MainController
         array $conf,
         array $lang,
         $csrfProtector,
+        Db $db,
         string $topicname,
         bool $readonly
     ) {
@@ -77,6 +81,7 @@ class MainController
         $this->conf = $conf;
         $this->lang = $lang;
         $this->csrfProtector = $csrfProtector;
+        $this->db = $db;
         if (!$this->isValidTopicname($topicname)) {
             throw new DomainException;
         }
@@ -92,7 +97,7 @@ class MainController
             return;
         }
         $this->csrfProtector->check();
-        $comments = Db::findTopic($this->topicname);
+        $comments = $this->db->findTopic($this->topicname);
         $newComments = [];
         foreach ($comments as $comment) {
             if ($comment->id() === $_POST["twocents_id"]) {
@@ -105,7 +110,7 @@ class MainController
             } else {
                 $newComments[] = $comment;
             }
-            Db::storeTopic($this->topicname, $newComments);
+            $this->db->storeTopic($this->topicname, $newComments);
         }
         $this->redirectToDefault();
     }
@@ -117,14 +122,14 @@ class MainController
             return;
         }
         $this->csrfProtector->check();
-        $comments = Db::findTopic($this->topicname);
+        $comments = $this->db->findTopic($this->topicname);
         $newComments = [];
         foreach ($comments as $comment) {
             if ($comment->id() !== $_POST["twocents_id"]) {
                 $newComments[] = $comment;
             }
         }
-        Db::storeTopic($this->topicname, $newComments);
+        $this->db->storeTopic($this->topicname, $newComments);
         $this->redirectToDefault();
     }
 
@@ -133,7 +138,7 @@ class MainController
     {
         if (isset($_GET['twocents_id'])) {
             $this->comment = null;
-            $comments = Db::findTopic($this->topicname);
+            $comments = $this->db->findTopic($this->topicname);
             foreach ($comments as $comment) {
                 if ($comment->id() === $_GET["twocents_id"]) {
                     $this->comment = $comment;
@@ -141,7 +146,7 @@ class MainController
                 }
             }
         }
-        $comments = Db::findTopic($this->topicname, !(defined('XH_ADM') && XH_ADM));
+        $comments = $this->db->findTopic($this->topicname, !(defined('XH_ADM') && XH_ADM));
         $order = $this->conf['comments_order'] === 'ASC' ? 1 : -1;
         usort($comments, function ($a, $b) use ($order) {
             return ($a->time() - $b->time()) * $order;
@@ -396,9 +401,9 @@ class MainController
         $marker = '<div id="twocents_scroll_marker" class="twocents_scroll_marker">'
             . '</div>';
         if ($this->validateFormSubmission()) {
-            $comments = Db::findTopic($this->topicname);
+            $comments = $this->db->findTopic($this->topicname);
             $comments[] = $this->comment;
-            Db::storeTopic($this->topicname, $comments);
+            $this->db->storeTopic($this->topicname, $comments);
             $this->sendNotificationEmail();
             $this->comment = null;
             if ($this->isModerated() || $isSpam) {
@@ -455,7 +460,7 @@ class MainController
             return;
         }
         $this->csrfProtector->check();
-        $comments = Db::findTopic($this->topicname);
+        $comments = $this->db->findTopic($this->topicname);
         foreach ($comments as $comment) {
             if ($comment->id() === $_POST["twocents_id"]) {
                 break;
@@ -475,7 +480,7 @@ class MainController
                     $newComments[] = $aComment;
                 }
             }
-            Db::storeTopic($this->topicname, $newComments);
+            $this->db->storeTopic($this->topicname, $newComments);
             $this->comment = null;
         }
         $this->defaultAction();

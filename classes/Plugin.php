@@ -21,6 +21,7 @@
 
 namespace Twocents;
 
+use Twocents\Infra\Db;
 use Twocents\Infra\SystemChecker;
 use Twocents\Infra\SystemCheckService;
 use Twocents\Infra\View;
@@ -101,7 +102,8 @@ class Plugin
             $sn,
             $plugin_cf['twocents'],
             $plugin_tx['twocents'],
-            isset($_XH_csrfProtection) ? $_XH_csrfProtection : null
+            isset($_XH_csrfProtection) ? $_XH_csrfProtection : null,
+            new Db($pth['folder']['content'] . 'twocents/')
         );
         return $controller->{self::getControllerAction($controller, 'action')}();
     }

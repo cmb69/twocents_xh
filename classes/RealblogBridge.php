@@ -32,7 +32,9 @@ class RealblogBridge implements CommentsBridge
      */
     public static function count($topic)
     {
-        return count(Db::findTopic($topic, true));
+        global $pth;
+
+        return count((new Db($pth['folder']['content'] . 'twocents/'))->findTopic($topic, true));
     }
 
     /**
@@ -48,6 +50,7 @@ class RealblogBridge implements CommentsBridge
             $plugin_cf['twocents'],
             $plugin_tx['twocents'],
             isset($_XH_csrfProtection) ? $_XH_csrfProtection : null,
+            new Db($pth['folder']['content'] . 'twocents/'),
             $topic,
             false
         );

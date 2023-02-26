@@ -25,46 +25,50 @@ use Twocents\Value\Comment;
 
 class Db
 {
-    /** @var resource */
-    protected static $lockFile;
+    /** @var string */
+    private $foldername;
 
-    public static function getFoldername(): string
+    public function __construct(string $foldername)
     {
-        global $pth;
+        $this->foldername = $foldername;
+    }
 
-        $foldername = $pth['folder']['content'] . 'twocents/';
-        if (!file_exists($foldername)) {
-            mkdir($foldername, 0777, true);
-            chmod($foldername, 0777);
+    public function getFoldername(): string
+    {
+        if (!file_exists($this->foldername)) {
+            mkdir($this->foldername, 0777, true);
+            chmod($this->foldername, 0777);
         }
-        $lockFilename = $foldername . '.lock';
+        $lockFilename = $this->foldername . '.lock';
         if (!file_exists($lockFilename)) {
             touch($lockFilename);
         }
-        return $foldername;
+        return $this->foldername;
     }
 
-    /** @return void */
-    public static function lock(int $operation)
+    /** @return resource */
+    public function lock(bool $exclusive)
     {
-        switch ($operation) {
-            case LOCK_SH:
-            case LOCK_EX:
-                self::$lockFile = fopen(self::getLockFilename(), 'r');
-                flock(self::$lockFile, $operation);
-                break;
-            case LOCK_UN:
-                flock(self::$lockFile, $operation);
-                fclose(self::$lockFile);
-                break;
-        }
+        $lock = fopen(self::getLockFilename(), 'r');
+        flock($lock, $exclusive ? LOCK_EX : LOCK_SH);
+        return $lock;
+    }
+
+    /**
+     * @param resource $lock
+     * @return void
+     */
+    public function unlock($lock)
+    {
+        flock($lock, LOCK_UN);
+        fclose($lock);
     }
 
     /** @return list<string> */
-    public static function findAllTopics(string $extension = "csv"): array
+    public function findAllTopics(string $extension = "csv"): array
     {
         $topics = array();
-        Db::lock(LOCK_SH);
+        $lock = Db::lock(false);
         if ($dir = opendir(Db::getFoldername())) {
             while (($entry = readdir($dir)) !== false) {
                 if (pathinfo($entry, PATHINFO_EXTENSION) === $extension) {
@@ -73,14 +77,14 @@ class Db
             }
             closedir($dir);
         }
-        Db::lock(LOCK_UN);
+        Db::unlock($lock);
         return $topics;
     }
 
     /** @return list<Comment> */
-    public static function findTopic(string $topic, bool $visibleOnly = false): array
+    public function findTopic(string $topic, bool $visibleOnly = false): array
     {
-        Db::lock(LOCK_SH);
+        $lock = Db::lock(false);
         $comments = [];
         $filename = Db::getFoldername() . $topic . ".csv";
         if (is_readable($filename) && ($file = fopen($filename, 'r'))) {
@@ -101,14 +105,14 @@ class Db
             }
             fclose($file);
         }
-        Db::lock(LOCK_UN);
+        Db::unlock($lock);
         return $comments;
     }
 
     /** @return list<Comment> */
-    public static function findGbookTopic(string $topic): array
+    public function findGbookTopic(string $topic): array
     {
-        Db::lock(LOCK_SH);
+        $lock = Db::lock(false);
         $comments = [];
         $filename = Db::getFoldername() . $topic . ".txt";
         if (($file = fopen($filename, 'r'))) {
@@ -126,14 +130,14 @@ class Db
             }
             fclose($file);
         }
-        Db::lock(LOCK_UN);
+        Db::unlock($lock);
         return $comments;
     }
 
     /** @return list<Comment> */
-    public static function findCommentsTopic(string $topic): array
+    public function findCommentsTopic(string $topic): array
     {
-        Db::lock(LOCK_SH);
+        $lock = Db::lock(false);
         $comments = [];
         $filename = Db::getFoldername() . $topic . ".txt";
         if (($file = fopen($filename, 'r'))) {
@@ -153,7 +157,7 @@ class Db
             }
             fclose($file);
         }
-        Db::lock(LOCK_UN);
+        Db::unlock($lock);
         return $comments;
     }
 
@@ -161,9 +165,9 @@ class Db
      * @param list<Comment> $comments
      * @return void
      */
-    public static function storeTopic(string $topic, array $comments)
+    public function storeTopic(string $topic, array $comments)
     {
-        Db::lock(LOCK_EX);
+        $lock = Db::lock(true);
         $filename = Db::getFoldername() . $topic . ".csv";
         if (($file = fopen($filename, "w"))) {
             foreach ($comments as $comment) {
@@ -171,10 +175,10 @@ class Db
             }
             fclose($file);
         }
-        Db::lock(LOCK_UN);
+        Db::unlock($lock);
     }
 
-    protected static function getLockFilename(): string
+    protected function getLockFilename(): string
     {
         return self::getFoldername() . '.lock';
     }

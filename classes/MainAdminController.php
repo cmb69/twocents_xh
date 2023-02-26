@@ -24,7 +24,6 @@ namespace Twocents;
 use Twocents\Infra\Db;
 use Twocents\Infra\HtmlCleaner;
 use Twocents\Infra\View;
-use Twocents\Value\Comment;
 use Twocents\Value\HtmlString;
 use XH\CSRFProtection as CsrfProtector;
 
@@ -45,6 +44,9 @@ class MainAdminController
     /** @var CsrfProtector|null */
     private $csrfProtector;
 
+    /** @var Db */
+    private $db;
+
     /** @var HtmlString|null */
     private $message;
 
@@ -58,13 +60,15 @@ class MainAdminController
         string $scriptName,
         array $conf,
         array $lang,
-        $csrfProtector
+        $csrfProtector,
+        Db $db
     ) {
         $this->pluginFolder = $pluginFolder;
         $this->scriptName = $scriptName;
         $this->conf = $conf;
         $this->lang = $lang;
         $this->csrfProtector = $csrfProtector;
+        $this->db = $db;
     }
 
     public function defaultAction(): string
@@ -97,10 +101,10 @@ class MainAdminController
     {
         $this->csrfProtector->check();
         $count = 0;
-        $topics = Db::findAllTopics();
+        $topics = $this->db->findAllTopics();
         foreach ($topics as $topic) {
             $newComments = [];
-            $comments = Db::findTopic($topic);
+            $comments = $this->db->findTopic($topic);
             foreach ($comments as $comment) {
                 if ($to == 'html') {
                     $message = $this->htmlify(XH_hsc($comment->message()));
@@ -110,7 +114,7 @@ class MainAdminController
                 $newComments[] = $comment->withMessage($message);
                 $count++;
             }
-            Db::storeTopic($topic, $newComments);
+            $this->db->storeTopic($topic, $newComments);
         }
         $this->message = new HtmlString(XH_message('success', $this->lang['message_converted_' . $to], $count));
         return $this->defaultAction();
@@ -144,10 +148,10 @@ class MainAdminController
     {
         $this->csrfProtector->check();
         $count = 0;
-        $topics = Db::findAllTopics("txt");
+        $topics = $this->db->findAllTopics("txt");
         foreach ($topics as $topic) {
             $newComments = [];
-            $comments = Db::findCommentsTopic($topic);
+            $comments = $this->db->findCommentsTopic($topic);
             foreach ($comments as $comment) {
                 $message = $comment->message();
                 if ($this->conf['comments_markup'] == 'HTML') {
@@ -159,7 +163,7 @@ class MainAdminController
                 $newComments[] = $comment->withMessage($message);
                 $count++;
             }
-            Db::storeTopic($topic, $newComments);
+            $this->db->storeTopic($topic, $newComments);
         }
         $this->message = new HtmlString(XH_message('success', $this->lang['message_imported_comments'], $count));
         return $this->defaultAction();
@@ -169,10 +173,10 @@ class MainAdminController
     {
         $this->csrfProtector->check();
         $count = 0;
-        $topics = Db::findAllTopics("txt");
+        $topics = $this->db->findAllTopics("txt");
         foreach ($topics as $topic) {
             $newComments = [];
-            $oldComments = Db::findGbookTopic($topic);
+            $oldComments = $this->db->findGbookTopic($topic);
             foreach ($oldComments as $comment) {
                 $message = $comment->message();
                 if ($this->conf['comments_markup'] == 'HTML') {
@@ -184,7 +188,7 @@ class MainAdminController
                 $newComments[] = $comment->withMessage($message);
                 $count++;
             }
-            Db::storeTopic($topic, $newComments);
+            $this->db->storeTopic($topic, $newComments);
         }
         $this->message = new HtmlString(XH_message('success', $this->lang['message_imported_gbook'], $count));
         return $this->defaultAction();

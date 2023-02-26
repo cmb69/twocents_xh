@@ -19,6 +19,8 @@
  * along with Twocents_XH.  If not, see <http://www.gnu.org/licenses/>.
  */
 
+use Twocents\Infra\Db;
+
 if (!defined('CMSIMPLE_XH_VERSION')) {
     header("HTTP/1.1 403 Forbidden");
     exit;
@@ -39,6 +41,7 @@ function twocents($topicname, $readonly = false)
             $plugin_cf['twocents'],
             $plugin_tx['twocents'],
             isset($_XH_csrfProtection) ? $_XH_csrfProtection : null,
+            new Db($pth['folder']['content'] . 'twocents/'),
             $topicname,
             $readonly
         );

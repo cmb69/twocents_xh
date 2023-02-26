@@ -28,15 +28,13 @@ class DbTest extends TestCase
 {
     public function testFindsAllTopics(): void
     {
-        global $pth;
-
         vfsStream::setup("root");
-        $pth = ["folder" => ["content" => vfsStream::url("root/")]];
-        mkdir($pth["folder"]["content"] . "twocents");
+        mkdir(vfsStream::url("root/twocents/"));
         foreach (["foo", "bar", "baz"] as $name) {
-            touch($pth["folder"]["content"] . "twocents/$name.csv");
+            touch(vfsStream::url("root/twocents/$name.csv"));
         }
-        $topics = Db::findAllTopics();
+        $sut = new Db(vfsStream::url("root/twocents/"));
+        $topics = $sut->findAllTopics();
         $this->assertEquals(["foo", "bar", "baz"], $topics);
     }
 }
