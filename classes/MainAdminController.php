@@ -97,10 +97,10 @@ class MainAdminController
     {
         $this->csrfProtector->check();
         $count = 0;
-        $topics = $this->db->findAllTopics();
+        $topics = $this->db->findTopics();
         foreach ($topics as $topic) {
             $newComments = [];
-            $comments = $this->db->findTopic($topic);
+            $comments = $this->db->findCommentsOfTopic($topic);
             foreach ($comments as $comment) {
                 if ($to == 'html') {
                     $message = Util::htmlify($this->view->esc($comment->message()));
@@ -120,10 +120,10 @@ class MainAdminController
     {
         $this->csrfProtector->check();
         $count = 0;
-        $topics = $this->db->findAllTopics("txt");
+        $topics = $this->db->findTopics("txt");
         foreach ($topics as $topic) {
             $newComments = [];
-            $comments = $this->db->findCommentsTopic($topic);
+            $comments = $this->db->findCommentsOfCommentsTopic($topic);
             foreach ($comments as $comment) {
                 $message = $comment->message();
                 if ($this->conf['comments_markup'] == 'HTML') {
@@ -144,10 +144,10 @@ class MainAdminController
     {
         $this->csrfProtector->check();
         $count = 0;
-        $topics = $this->db->findAllTopics("txt");
+        $topics = $this->db->findTopics("txt");
         foreach ($topics as $topic) {
             $newComments = [];
-            $oldComments = $this->db->findGbookTopic($topic);
+            $oldComments = $this->db->findCommentsOfGbookTopic($topic);
             foreach ($oldComments as $comment) {
                 $message = $comment->message();
                 if ($this->conf['comments_markup'] == 'HTML') {

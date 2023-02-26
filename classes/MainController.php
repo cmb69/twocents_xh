@@ -107,21 +107,13 @@ class MainController
             return;
         }
         $this->csrfProtector->check();
-        $comments = $this->db->findTopic($this->topicname);
-        $newComments = [];
-        foreach ($comments as $comment) {
-            if ($comment->id() === $_POST["twocents_id"]) {
-                $hidden = $comment->hidden();
-                if ($hidden) {
-                    $newComments[] = $comment->show();
-                } else {
-                    $newComments[] = $comment->hide();
-                }
-            } else {
-                $newComments[] = $comment;
-            }
-            $this->db->storeTopic($this->topicname, $newComments);
+        $comment = $this->db->findComment($this->topicname, $_POST["twocents_id"]);
+        if ($comment->hidden()) {
+            $comment = $comment->show();
+        } else {
+            $comment = $comment->hide();
         }
+        $this->db->updateComment($comment);
         $this->redirectToDefault();
     }
 
@@ -132,14 +124,8 @@ class MainController
             return;
         }
         $this->csrfProtector->check();
-        $comments = $this->db->findTopic($this->topicname);
-        $newComments = [];
-        foreach ($comments as $comment) {
-            if ($comment->id() !== $_POST["twocents_id"]) {
-                $newComments[] = $comment;
-            }
-        }
-        $this->db->storeTopic($this->topicname, $newComments);
+        $comment = $this->db->findComment($this->topicname, $_POST["twocents_id"]);
+        $this->db->deleteComment($comment);
         $this->redirectToDefault();
     }
 
@@ -147,16 +133,9 @@ class MainController
     public function defaultAction()
     {
         if (isset($_GET['twocents_id'])) {
-            $this->comment = null;
-            $comments = $this->db->findTopic($this->topicname);
-            foreach ($comments as $comment) {
-                if ($comment->id() === $_GET["twocents_id"]) {
-                    $this->comment = $comment;
-                    break;
-                }
-            }
+            $this->comment = $this->db->findComment($this->topicname, $_GET['twocents_id']);
         }
-        $comments = $this->db->findTopic($this->topicname, !(defined('XH_ADM') && XH_ADM));
+        $comments = $this->db->findCommentsOfTopic($this->topicname, !(defined('XH_ADM') && XH_ADM));
         $order = $this->conf['comments_order'] === 'ASC' ? 1 : -1;
         usort($comments, function ($a, $b) use ($order) {
             return ($a->time() - $b->time()) * $order;
@@ -307,7 +286,7 @@ class MainController
     private function prepareCommentForm(?Comment $comment = null): string
     {
         if (!isset($comment)) {
-            $comment = new Comment(null, "", 0, "", "", "", true);
+            $comment = new Comment("", "", 0, "", "", "", true);
         }
         $url = Url::getCurrent()->without('twocents_id');
         $data = [
@@ -405,9 +384,7 @@ class MainController
         $marker = '<div id="twocents_scroll_marker" class="twocents_scroll_marker">'
             . '</div>';
         if ($this->validateFormSubmission()) {
-            $comments = $this->db->findTopic($this->topicname);
-            $comments[] = $this->comment;
-            $this->db->storeTopic($this->topicname, $comments);
+            $this->db->insertComment($this->comment);
             $this->sendNotificationEmail();
             $this->comment = null;
             if ($this->isModerated() || $isSpam) {
@@ -464,27 +441,14 @@ class MainController
             return;
         }
         $this->csrfProtector->check();
-        $comments = $this->db->findTopic($this->topicname);
-        foreach ($comments as $comment) {
-            if ($comment->id() === $_POST["twocents_id"]) {
-                break;
-            }
-        }
+        $comment = $this->db->findComment($this->topicname, $_POST["twocents_id"]);
         assert(isset($comment)); // TODO: invalid assertion, but the code already was broken
         $comment = $comment->withUser(trim($_POST['twocents_user']))
             ->withEmail(trim($_POST['twocents_email']))
             ->withMessage(trim($_POST['twocents_message']));
         $this->comment = $comment;
         if ($this->validateFormSubmission()) {
-            $newComments = [];
-            foreach ($comments as $aComment) {
-                if ($aComment->id() === $comment->id()) {
-                    $newComments[] = $comment;
-                } else {
-                    $newComments[] = $aComment;
-                }
-            }
-            $this->db->storeTopic($this->topicname, $newComments);
+            $this->db->updateComment($comment);
             $this->comment = null;
         }
         $this->defaultAction();

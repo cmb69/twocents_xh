@@ -21,6 +21,7 @@
 
 namespace Twocents\Infra;
 
+use Error;
 use Twocents\Value\Comment;
 
 class Db
@@ -65,7 +66,7 @@ class Db
     }
 
     /** @return list<string> */
-    public function findAllTopics(string $extension = "csv"): array
+    public function findTopics(string $extension = "csv"): array
     {
         $topics = array();
         $lock = Db::lock(false);
@@ -82,7 +83,7 @@ class Db
     }
 
     /** @return list<Comment> */
-    public function findTopic(string $topic, bool $visibleOnly = false): array
+    public function findCommentsOfTopic(string $topic, bool $visibleOnly = false): array
     {
         $lock = Db::lock(false);
         $comments = [];
@@ -110,7 +111,7 @@ class Db
     }
 
     /** @return list<Comment> */
-    public function findGbookTopic(string $topic): array
+    public function findCommentsOfGbookTopic(string $topic): array
     {
         $lock = Db::lock(false);
         $comments = [];
@@ -135,7 +136,7 @@ class Db
     }
 
     /** @return list<Comment> */
-    public function findCommentsTopic(string $topic): array
+    public function findCommentsOfCommentsTopic(string $topic): array
     {
         $lock = Db::lock(false);
         $comments = [];
@@ -171,10 +172,91 @@ class Db
         $filename = Db::getFoldername() . $topic . ".csv";
         if (($file = fopen($filename, "w"))) {
             foreach ($comments as $comment) {
+                if ($comment->topicname() !== $topic) {
+                    throw new Error("topic mismatch");
+                }
                 fputcsv($file, $comment->toRecord());
             }
             fclose($file);
         }
+        Db::unlock($lock);
+    }
+
+    public function findComment(string $topic, string $id): ?Comment
+    {
+        $lock = Db::lock(false);
+        $comment = null;
+        $filename = Db::getFoldername() . $topic . ".csv";
+        if (is_readable($filename) && ($file = fopen($filename, 'r'))) {
+            while (($record = fgetcsv($file)) !== false) {
+                if ($record[0] === $id) {
+                    $comment = new Comment(
+                        $record[0],
+                        $topic,
+                        (int) $record[1],
+                        $record[2],
+                        $record[3],
+                        $record[4],
+                        isset($record[5]) ? (bool) $record[5] : false
+                    );
+                    break;
+                }
+            }
+            fclose($file);
+        }
+        Db::unlock($lock);
+        return $comment;
+    }
+
+    /** @return void */
+    public function insertComment(Comment $comment)
+    {
+        $lock = Db::lock(true);
+        $file = fopen(Db::getFoldername() . $comment->topicname() . ".csv", "a");
+        fputcsv($file, $comment->toRecord());
+        fclose($file);
+        Db::unlock($lock);
+    }
+
+    /** @return void */
+    public function updateComment(Comment $comment)
+    {
+        $lock = Db::lock(true);
+        $file = fopen($this->getFoldername() . $comment->topicname() . ".csv", "r+");
+        $temp = fopen('php://temp', "w+");
+        while (($record = fgetcsv($file)) !== false) {
+            if ($record[0] != $comment->id()) {
+                fputcsv($temp, $record);
+            } else {
+                fputcsv($temp, $comment->toRecord());
+            }
+        }
+        ftruncate($file, 0);
+        rewind($file);
+        rewind($temp);
+        stream_copy_to_stream($temp, $file);
+        fclose($file);
+        fclose($temp);
+        Db::unlock($lock);
+    }
+
+    /** @return void */
+    public function deleteComment(Comment $comment)
+    {
+        $lock = Db::lock(true);
+        $file = fopen(Db::getFoldername() . $comment->topicname() . ".csv", "r+");
+        $temp = fopen('php://temp', "w+");
+        while (($record = fgetcsv($file)) !== false) {
+            if ($record[0] != $comment->id()) {
+                fputcsv($temp, $record);
+            }
+        }
+        ftruncate($file, 0);
+        rewind($file);
+        rewind($temp);
+        stream_copy_to_stream($temp, $file);
+        fclose($file);
+        fclose($temp);
         Db::unlock($lock);
     }
 

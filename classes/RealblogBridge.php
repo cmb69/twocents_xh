@@ -36,7 +36,7 @@ class RealblogBridge implements CommentsBridge
     {
         global $pth;
 
-        return count((new Db($pth['folder']['content'] . 'twocents/'))->findTopic($topic, true));
+        return count((new Db($pth['folder']['content'] . 'twocents/'))->findCommentsOfTopic($topic, true));
     }
 
     /**

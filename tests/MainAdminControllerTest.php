@@ -25,6 +25,7 @@ use ApprovalTests\Approvals;
 use PHPUnit\Framework\TestCase;
 use Twocents\Infra\Db;
 use Twocents\Infra\FakeCsrfProtector;
+use Twocents\Infra\FakeDb;
 use Twocents\Infra\HtmlCleaner;
 use Twocents\Infra\View;
 use Twocents\Value\Comment;
@@ -48,26 +49,35 @@ class MainAdminControllerTest extends TestCase
     public function testConvertsToHtml()
     {
         $csrfProtector = new FakeCsrfProtector;
-        $sut = $this->sut(["csrfProtector" => $csrfProtector]);
+        $db = new FakeDb;
+        $db->insertComment($this->comment());
+        $sut = $this->sut(["csrfProtector" => $csrfProtector, "db" => $db]);
         $response = $sut->convertToHtmlAction();
         $this->assertTrue($csrfProtector->hasChecked());
+        $this->assertEquals($this->comment()->topicname(), $db->lastTopicStored);
         Approvals::verifyHtml($response);
     }
 
     public function testConvertsToPlainText()
     {
         $csrfProtector = new FakeCsrfProtector;
-        $sut = $this->sut(["csrfProtector" => $csrfProtector]);
+        $db = new FakeDb;
+        $db->insertComment($this->comment());
+        $sut = $this->sut(["csrfProtector" => $csrfProtector, "db" => $db]);
         $response = $sut->convertToPlainTextAction();
         $this->assertTrue($csrfProtector->hasChecked());
+        $this->assertEquals($this->comment()->topicname(), $db->lastTopicStored);
         Approvals::verifyHtml($response);
     }
 
     public function testImportsComments()
     {
         $csrfProtector = new FakeCsrfProtector;
-        $sut = $this->sut(["csrfProtector" => $csrfProtector]);
+        $db = new FakeDb;
+        $db->insertComment($this->comment());
+        $sut = $this->sut(["csrfProtector" => $csrfProtector, "db" => $db]);
         $response = $sut->importCommentsAction();
+        $this->assertEquals($this->comment()->topicname(), $db->lastTopicStored);
         $this->assertTrue($csrfProtector->hasChecked());
         Approvals::verifyHtml($response);
     }
@@ -75,9 +85,12 @@ class MainAdminControllerTest extends TestCase
     public function testImportsGbook()
     {
         $csrfProtector = new FakeCsrfProtector;
-        $sut = $this->sut(["csrfProtector" => $csrfProtector]);
+        $db = new FakeDb;
+        $db->insertComment($this->comment());
+        $sut = $this->sut(["csrfProtector" => $csrfProtector, "db" => $db]);
         $response = $sut->importGbookAction();
         $this->assertTrue($csrfProtector->hasChecked());
+        $this->assertEquals($this->comment()->topicname(), $db->lastTopicStored);
         Approvals::verifyHtml($response);
     }
 
@@ -87,7 +100,7 @@ class MainAdminControllerTest extends TestCase
             "/",
             $this->conf($options["conf"] ?? []),
             $options["csrfProtector"] ?? new FakeCsrfProtector,
-            $this->db(),
+            $options["db"] ?? new FakeDb,
             $this->htmlCleaner(),
             $this->view()
         );
@@ -96,16 +109,6 @@ class MainAdminControllerTest extends TestCase
     private function htmlCleaner()
     {
         return $this->createStub(HtmlCleaner::class);
-    }
-
-    private function db()
-    {
-        $db = $this->createStub(Db::class);
-        $db->method("findAllTopics")->willReturn(["topic1"]);
-        $db->method("findTopic")->willReturn([$this->comment()]);
-        $db->method("findCommentsTopic")->willReturn([$this->comment()]);
-        $db->method("findGbookTopic")->willReturn([$this->comment()]);
-        return $db;
     }
 
     private function view()

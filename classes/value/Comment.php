@@ -23,7 +23,7 @@ namespace Twocents\Value;
 
 class Comment
 {
-    /** @var string|null */
+    /** @var string */
     private $id;
 
     /** @var string */
@@ -62,7 +62,7 @@ class Comment
         $this->hidden = $hidden;
     }
 
-    public function id(): ?string
+    public function id(): string
     {
         return $this->id;
     }
