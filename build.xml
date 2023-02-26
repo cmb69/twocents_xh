@@ -40,7 +40,6 @@
   </target>
 
   <target name="build">
-    <fail unless="version" message="version is not defined!"/>
     <exec command="git archive -o export.zip HEAD" checkreturn="true"/>
     <unzip file="export.zip" todir="export"/>
     <delete file="export.zip"/>
@@ -69,7 +68,7 @@
     <delete dir="export"/>
     <copy file="dist/config/config.php" tofile="dist/config/defaultconfig.php"/>
     <copy file="dist/languages/en.php" tofile="dist/languages/default.php"/>
-    <zip destfile="Twocents_XH-${version}.zip" basedir="dist" prefix="twocents/"/>
+    <zip destfile="Twocents_XH-1.0.zip" basedir="dist" prefix="twocents/"/>
     <delete dir="dist"/>
   </target>
 
