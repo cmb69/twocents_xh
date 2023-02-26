@@ -25,6 +25,7 @@ use Twocents\Infra\CsrfProtector;
 use Twocents\Infra\Db;
 use Twocents\Infra\HtmlCleaner;
 use Twocents\Infra\View;
+use Twocents\Logic\Util;
 use Twocents\Value\HtmlString;
 
 class MainAdminController
@@ -102,9 +103,9 @@ class MainAdminController
             $comments = $this->db->findTopic($topic);
             foreach ($comments as $comment) {
                 if ($to == 'html') {
-                    $message = $this->htmlify($this->view->esc($comment->message()));
+                    $message = Util::htmlify($this->view->esc($comment->message()));
                 } else {
-                    $message = $this->plainify($comment->message());
+                    $message = Util::plainify($comment->message());
                 }
                 $newComments[] = $comment->withMessage($message);
                 $count++;
@@ -113,30 +114,6 @@ class MainAdminController
         }
         $this->message = new HtmlString($this->view->message('success', 'message_converted_' . $to, $count));
         return $this->defaultAction();
-    }
-
-    private function htmlify(string $text): string
-    {
-        return preg_replace(
-            array('/(?:\r\n|\r)/', '/\n{2,}/', '/\n/'),
-            array("\n", '</p><p>', tag('br')),
-            '<p>' . $text . '</p>'
-        );
-    }
-
-    private function plainify(string $html): string
-    {
-        return html_entity_decode(
-            strip_tags(
-                str_replace(
-                    array('</p><p>', tag('br')),
-                    array(PHP_EOL . PHP_EOL, PHP_EOL),
-                    $html
-                )
-            ),
-            ENT_QUOTES,
-            'UTF-8'
-        );
     }
 
     public function importCommentsAction(): string
@@ -152,7 +129,7 @@ class MainAdminController
                 if ($this->conf['comments_markup'] == 'HTML') {
                     $message = $this->htmlCleaner->clean($message);
                 } else {
-                    $message = $this->plainify($message);
+                    $message = Util::plainify($message);
                 }
                 $newComments[] = $comment->withMessage($message);
                 $count++;
@@ -176,7 +153,7 @@ class MainAdminController
                 if ($this->conf['comments_markup'] == 'HTML') {
                     $message = $this->htmlCleaner->clean($message);
                 } else {
-                    $message = $this->plainify($message);
+                    $message = Util::plainify($message);
                 }
                 $newComments[] = $comment->withMessage($message);
                 $count++;
