@@ -23,10 +23,10 @@ namespace Twocents;
 
 use ApprovalTests\Approvals;
 use PHPUnit\Framework\TestCase;
+use Twocents\Infra\CsrfProtector;
 use Twocents\Infra\Db;
 use Twocents\Infra\HtmlCleaner;
 use Twocents\Infra\View;
-use XH\CSRFProtection as CsrfProtector;
 
 class MainAdminControllerTest extends TestCase
 {
