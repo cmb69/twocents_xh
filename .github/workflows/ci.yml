@@ -11,7 +11,7 @@ jobs:
         uses: shivammathur/setup-php@v2
         with:
           php-version: ${{matrix.php}}
-          tools: composer
+          tools: composer,phive
       - name: Install CMSimple_XH
         run: |
           curl -fsSL -o CMSimple_XH-1.7.5.zip https://github.com/cmsimple-xh/cmsimple-xh/releases/download/1.7.5/CMSimple_XH-1.7.5.zip
@@ -25,11 +25,20 @@ jobs:
         uses: actions/checkout@v3
         with:
           path: 'cmsimplexh/plugins/twocents'
+      - name: Cache tools
+        id: cache-tools
+        uses: actions/cache@v3
+        with:
+          path: cmsimplexh/plugins/twocents/tools
+          key: tools-${{matrix.php}}-${{hashFiles('cmsimplexh/plugins/twocents/.phive')}}
+      - if: ${{steps.cache-tools.outputs.cache-hit != 'true'}}
+        name: phive install
+        run: cd cmsimplexh/plugins/twocents && phive --no-progress install --copy --force-accept-unsigned --trust-gpg-keys 0x31C7E470E2138192,0x4AA394086372C20A,0xA4E55EA12C7C085C,0xCF1A108D0E7AE720,0xD5F0CB76E2DD74F8
       - name: composer install
         run: cd cmsimplexh/plugins/twocents && composer install
       - name: phing sniff
-        run: cd cmsimplexh/plugins/twocents && PATH=vendor/bin:$PATH phing sniff
+        run: cd cmsimplexh/plugins/twocents && PATH=tools:$PATH phing sniff
       - name: phing stan
-        run: cd cmsimplexh/plugins/twocents && PATH=vendor/bin:$PATH phing stan
+        run: cd cmsimplexh/plugins/twocents && PATH=tools:$PATH phing stan
       - name: phing test
-        run: cd cmsimplexh/plugins/twocents && PATH=vendor/bin:$PATH phing test
+        run: cd cmsimplexh/plugins/twocents && PATH=tools:$PATH phing test
