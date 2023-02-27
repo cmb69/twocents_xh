@@ -21,6 +21,8 @@
 
 namespace Twocents\Logic;
 
+use Twocents\Value\Comment;
+
 class Util
 {
     public static function htmlify(string $text): string
@@ -44,6 +46,31 @@ class Util
             ),
             ENT_QUOTES,
             'UTF-8'
+        );
+    }
+
+    /** @return list<string> */
+    public static function validateComment(Comment $comment): array
+    {
+        $result = [];
+        if (utf8_strlen($comment->user()) < 2) {
+            $result[] = "error_user";
+        }
+        if (!Util::isValidEmailAddress($comment->email())) {
+            $result[] = "error_email";
+        }
+        if (utf8_strlen($comment->message()) < 2) {
+            $result[] = "error_message";
+        }
+        return $result;
+    }
+
+    public static function isValidEmailAddress(string $email): bool
+    {
+        return preg_match(
+            '/^[a-zA-Z0-9.!#$%&\'*+\/=?^_`{|}~-]+@[a-zA-Z0-9](?:[a-zA-Z0-9-]{0,61}'
+            . '[a-zA-Z0-9])?(?:\.[a-zA-Z0-9](?:[a-zA-Z0-9-]{0,61}[a-zA-Z0-9])?)*$/',
+            $email
         );
     }
 }

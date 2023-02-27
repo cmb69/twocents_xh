@@ -19,12 +19,15 @@
  * along with Twocents_XH.  If not, see <http://www.gnu.org/licenses/>.
  */
 
+const CMSIMPLE_URL = "http://example.com";
+
 require_once "./vendor/autoload.php";
 
 require_once '../../cmsimple/functions.php';
 require_once '../../cmsimple/adminfuncs.php';
 include_once '../../cmsimple/utf8.php';
 require_once '../../cmsimple/classes/CSRFProtection.php';
+require_once "../../cmsimple/classes/Mail.php";
 
 spl_autoload_register(function (string $className) {
     $parts = explode("\\", $className);

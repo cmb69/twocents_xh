@@ -23,7 +23,6 @@ namespace Twocents;
 
 use ApprovalTests\Approvals;
 use PHPUnit\Framework\TestCase;
-use Twocents\Infra\Db;
 use Twocents\Infra\FakeCsrfProtector;
 use Twocents\Infra\FakeDb;
 use Twocents\Infra\HtmlCleaner;

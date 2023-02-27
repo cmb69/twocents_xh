@@ -22,9 +22,13 @@
 namespace Twocents;
 
 use Realblog\CommentsBridge;
+use Twocents\Infra\Captcha;
+use Twocents\Infra\CsrfProtector;
 use Twocents\Infra\Db;
 use Twocents\Infra\HtmlCleaner;
+use Twocents\Infra\Request;
 use Twocents\Infra\View;
+use XH\Mail as Mailer;
 
 class RealblogBridge implements CommentsBridge
 {
@@ -51,16 +55,25 @@ class RealblogBridge implements CommentsBridge
             $pth['folder']['plugins'],
             $plugin_cf['twocents'],
             $plugin_tx['twocents'],
-            isset($_XH_csrfProtection) ? $_XH_csrfProtection : null,
+            isset($_XH_csrfProtection) ? new CsrfProtector : null,
             new Db($pth['folder']['content'] . 'twocents/'),
             new HtmlCleaner($pth["folder"]["plugins"] . "twocents/"),
+            new Captcha(
+                $pth["folder"]["plugins"],
+                $plugin_cf["twocents"]["captcha_plugin"],
+                defined("XH_ADM") && XH_ADM
+            ),
+            new Mailer,
             new View($pth["folder"]["plugins"] . "twocents/views/", $plugin_tx["twocents"]),
             $topic,
             false
         );
         $action = Plugin::getControllerAction($controller, 'twocents_action');
         ob_start();
-        $controller->{$action}();
+        $response = $controller->{$action}(new Request);
+        if ($response) {
+            $response->fire();
+        }
         $comments = ob_get_clean();
         return '<div class="twocents_realblog_comments">'
             . '<' . $plugin_cf['twocents']['realblog_heading'] . '>'

@@ -13,7 +13,7 @@ use Twocents\Infra\View;
  * @var bool $isAdmin
  * @var Url $url
  * @var Url $editUrl
- * @var string $csrfTokenInput
+ * @var string $csrfToken
  * @var string $visibility
  * @var string $attribution
  * @var string $message
@@ -30,7 +30,7 @@ use Twocents\Infra\View;
   <div class="twocents_admin_tools">
     <a href="<?=$editUrl?>"><?=$this->text('label_edit')?></a>
     <form method="post" action="<?=$url?>">
-      <?=$csrfTokenInput?>
+      <input type="hidden" name="xh_csrf_token" value="<?=$csrfToken?>">
       <input type="hidden" name="twocents_id" value="<?=$comment->id()?>">
       <button type="submit" name="twocents_action" value="toggle_visibility"><?=$this->text((string)$visibility)?></button>
       <button type="submit" name="twocents_action" value="remove_comment"><?=$this->text('label_delete')?></button>

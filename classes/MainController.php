@@ -22,15 +22,19 @@
 namespace Twocents;
 
 use DomainException;
+use Twocents\Infra\Captcha;
+use Twocents\Infra\CsrfProtector;
 use Twocents\Infra\Db;
 use Twocents\Infra\HtmlCleaner;
+use Twocents\Infra\Request;
+use Twocents\Infra\Response;
 use Twocents\Infra\Url;
 use Twocents\Infra\View;
 use Twocents\Logic\Pagination;
 use Twocents\Logic\SpamFilter;
+use Twocents\Logic\Util;
 use Twocents\Value\Comment;
 use Twocents\Value\HtmlString;
-use XH\CSRFProtection as CsrfProtector;
 use XH\Mail as Mailer;
 
 class MainController
@@ -52,6 +56,12 @@ class MainController
 
     /** @var HtmlCleaner */
     private $htmlCleaner;
+
+    /** @var Captcha */
+    private $captcha;
+
+    /** @var Mailer */
+    private $mailer;
 
     /** @var View */
     private $view;
@@ -78,9 +88,11 @@ class MainController
         string $pluginsFolder,
         array $conf,
         array $lang,
-        $csrfProtector,
+        ?CsrfProtector $csrfProtector,
         Db $db,
         HtmlCleaner $htmlCleaner,
+        Captcha $captcha,
+        Mailer $mailer,
         View $view,
         string $topicname,
         bool $readonly
@@ -91,6 +103,8 @@ class MainController
         $this->csrfProtector = $csrfProtector;
         $this->db = $db;
         $this->htmlCleaner = $htmlCleaner;
+        $this->captcha = $captcha;
+        $this->mailer = $mailer;
         $this->view = $view;
         if (!$this->isValidTopicname($topicname)) {
             throw new DomainException;
@@ -100,11 +114,11 @@ class MainController
         $this->messages = '';
     }
 
-    /** @return void */
-    public function toggleVisibilityAction()
+    public function toggleVisibilityAction(Request $request): Response
     {
-        if (!(defined('XH_ADM') && XH_ADM)) {
-            return;
+        $response = new Response;
+        if (!$request->admin()) {
+            return $response;
         }
         $this->csrfProtector->check();
         $comment = $this->db->findComment($this->topicname, $_POST["twocents_id"]);
@@ -114,28 +128,29 @@ class MainController
             $comment = $comment->hide();
         }
         $this->db->updateComment($comment);
-        $this->redirectToDefault();
+        $url = Url::getCurrent()->without('twocents_action')->getAbsolute();
+        return $response->redirect($url);
     }
 
-    /** @return void */
-    public function removeCommentAction()
+    public function removeCommentAction(Request $request): Response
     {
-        if (!(defined('XH_ADM') && XH_ADM)) {
-            return;
+        $response = new Response;
+        if (!$request->admin()) {
+            return $response;
         }
         $this->csrfProtector->check();
         $comment = $this->db->findComment($this->topicname, $_POST["twocents_id"]);
         $this->db->deleteComment($comment);
-        $this->redirectToDefault();
+        $url = Url::getCurrent()->without('twocents_action')->getAbsolute();
+        return $response->redirect($url);
     }
 
-    /** @return void */
-    public function defaultAction()
+    public function defaultAction(Request $request): Response
     {
         if (isset($_GET['twocents_id'])) {
             $this->comment = $this->db->findComment($this->topicname, $_GET['twocents_id']);
         }
-        $comments = $this->db->findCommentsOfTopic($this->topicname, !(defined('XH_ADM') && XH_ADM));
+        $comments = $this->db->findCommentsOfTopic($this->topicname, !$request->admin());
         $order = $this->conf['comments_order'] === 'ASC' ? 1 : -1;
         usort($comments, function ($a, $b) use ($order) {
             return ($a->time() - $b->time()) * $order;
@@ -146,23 +161,23 @@ class MainController
         $currentPage = isset($_GET['twocents_page']) ? max(1, min($pageCount, $_GET['twocents_page'])) : 1;
         $comments = array_splice($comments, ($currentPage - 1) * $itemsPerPage, $itemsPerPage);
         $pagination = $this->preparePaginationView($count, $currentPage, $pageCount);
-        ob_start();
+        $html = "";
         if (isset($pagination)) {
-            echo $pagination;
+            $html .= $pagination;
         }
-        echo $this->prepareCommentsView($comments);
+        $html .= $this->prepareCommentsView($comments, $request);
         if (isset($pagination)) {
-            echo $pagination;
+            $html .= $pagination;
         }
-        $html = ob_get_clean();
         if (!$this->isXmlHttpRequest()) {
-            echo "<div class=\"twocents_container\">$html</div>";
+            $response = new Response;
+            $response->setOutput("<div class=\"twocents_container\">$html</div>");
+            return $response;
         } else {
-            while (ob_get_level()) {
-                ob_end_clean();
-            }
-            echo $html;
-            exit;
+            $response = new Response;
+            $response->setContentType("text/html; charset=UTF-8");
+            $response->setOutput($html);
+            return $response;
         }
     }
 
@@ -196,17 +211,17 @@ class MainController
     }
 
     /** @param list<Comment> $comments */
-    private function prepareCommentsView(array $comments): string
+    private function prepareCommentsView(array $comments, Request $request): string
     {
         $this->writeScriptsToBjs();
         $mayAddComment = (!isset($this->comment) || $this->comment->id() == null)
-            && ((defined('XH_ADM') && XH_ADM) || !$this->readonly);
+            && ($request->admin() || !$this->readonly);
         return $this->view->render('comments', [
             'comments' => array_map(
-                function ($comment) {
+                function ($comment) use ($request) {
                     return (object) array(
                         'isCurrent' => $this->isCurrentComment($comment),
-                        'view' => $this->prepareCommentView($comment)
+                        'view' => $this->prepareCommentView($comment, $request)
                     );
                 },
                 $comments
@@ -255,7 +270,7 @@ class MainController
         ]);
     }
 
-    private function prepareCommentView(Comment $comment): string
+    private function prepareCommentView(Comment $comment, Request $request): string
     {
         $isCurrentComment = $this->isCurrentComment($comment);
         $data = [
@@ -268,7 +283,7 @@ class MainController
         } else {
             $url = Url::getCurrent()->without('twocents_id');
             $data += [
-                'isAdmin' => defined('XH_ADM') && XH_ADM,
+                'isAdmin' => $request->admin(),
                 'url' => $url,
                 'editUrl' => $url->with('twocents_id', $comment->id()),
                 'comment' => $comment,
@@ -276,8 +291,8 @@ class MainController
                 'attribution' => new HtmlString($this->renderAttribution($comment)),
                 'message' => new HtmlString($this->renderMessage($comment)),
             ];
-            if (defined('XH_ADM') && XH_ADM) {
-                $data['csrfTokenInput'] = new HtmlString($this->csrfProtector->tokenInput());
+            if ($request->admin()) {
+                $data['csrfToken'] = $this->csrfProtector->token();
             }
         }
         return $this->view->render('comment', $data);
@@ -292,35 +307,21 @@ class MainController
         $data = [
             'action' => $comment->id() ? 'update' : 'add',
             'comment' => $comment,
-            'captcha' => new HtmlString($this->renderCaptcha()),
+            'captcha' => new HtmlString($this->captcha->render()),
         ];
         if ($comment->id()) {
             $data += [
                 'url' => $url,
-                'csrfTokenInput' => new HtmlString($this->csrfProtector->tokenInput())
+                'csrfToken' => $this->csrfProtector->token(),
             ];
         } else {
             $page = $this->conf['comments_order'] === 'ASC' ? '2147483647' : '0';
             $data += [
                 'url' => $url->with('twocents_page', $page),
-                'csrfTokenInput' => ''
+                'csrfToken' => null
             ];
         }
         return $this->view->render('comment-form', $data);
-    }
-
-    private function renderCaptcha(): string
-    {
-        $pluginname = $this->conf['captcha_plugin'];
-        $filename = "{$this->pluginsFolder}$pluginname/captcha.php";
-        if (!(defined('XH_ADM') && XH_ADM) && $pluginname && is_readable($filename)) {
-            include_once $filename;
-            $func = $pluginname . '_captcha_display';
-            if (is_callable($func)) {
-                return $func();
-            }
-        }
-        return '';
     }
 
     private function renderAttribution(Comment $comment): string
@@ -356,26 +357,25 @@ class MainController
         return (bool) preg_match('/^[a-z0-9-]+$/i', $topicname);
     }
 
-    /** @return void */
-    public function addCommentAction()
+    public function addCommentAction(Request $request): Response
     {
-        if (!(defined('XH_ADM') && XH_ADM) && $this->readonly) {
-            $this->defaultAction();
+        if (!$request->admin() && $this->readonly) {
+            $this->defaultAction($request);
         }
         $message = trim($_POST['twocents_message']);
-        if (!(defined('XH_ADM') && XH_ADM) && $this->conf['comments_markup'] == 'HTML') {
+        if (!$request->admin() && $this->conf['comments_markup'] == 'HTML') {
             $message = $this->htmlCleaner->clean($message);
         }
         $hideComment = false;
         $isSpam = false;
         $spamFilter = new SpamFilter($this->lang['spam_words']);
-        if ($this->isModerated() || ($isSpam = !(defined('XH_ADM') && XH_ADM) && $spamFilter->isSpam($message))) {
+        if ($this->isModerated($request) || ($isSpam = !$request->admin() && $spamFilter->isSpam($message))) {
             $hideComment = true;
         }
         $this->comment = new Comment(
-            uniqid(),
+            "",
             $this->topicname,
-            time(),
+            $request->time(),
             trim($_POST['twocents_user']),
             trim($_POST['twocents_email']),
             $message,
@@ -383,11 +383,15 @@ class MainController
         );
         $marker = '<div id="twocents_scroll_marker" class="twocents_scroll_marker">'
             . '</div>';
-        if ($this->validateFormSubmission()) {
+        $errors = Util::validateComment($this->comment);
+        foreach ($errors as $error) {
+            $this->messages .= $this->view->message("fail", $error);
+        }
+        if (empty($errors) && $this->validateCaptcha()) {
             $this->db->insertComment($this->comment);
-            $this->sendNotificationEmail();
+            $this->sendNotificationEmail($request);
             $this->comment = null;
-            if ($this->isModerated() || $isSpam) {
+            if ($this->isModerated($request) || $isSpam) {
                 $this->messages .= $this->view->message('info', 'message_moderated');
             } else {
                 $this->messages .= $this->view->message('success', 'message_added');
@@ -396,19 +400,19 @@ class MainController
         } else {
             $this->messages = $marker . $this->messages;
         }
-        $this->defaultAction();
+        return $this->defaultAction($request);
     }
 
-    private function isModerated(): bool
+    private function isModerated(Request $request): bool
     {
-        return $this->conf['comments_moderated'] && !(defined('XH_ADM') && XH_ADM);
+        return $this->conf['comments_moderated'] && !$request->admin();
     }
 
     /** @return void */
-    private function sendNotificationEmail()
+    private function sendNotificationEmail(Request $request)
     {
         $email = $this->conf['email_address'];
-        if (!(defined('XH_ADM') && XH_ADM) && $email !== '') {
+        if (!$request->admin() && $email !== '') {
             $comment = $this->comment;
             $message = $comment->message();
             if ($this->conf['comments_markup'] === 'HTML') {
@@ -424,21 +428,19 @@ class MainController
             );
             $body = $attribution. "\n\n> " . str_replace("\n", "\n> ", $message);
             $replyTo = str_replace(["\n", "\r"], '', $comment->email());
-            $mailer = new Mailer();
-            $mailer->setTo($email);
-            $mailer->setSubject($this->lang['email_subject']);
-            $mailer->setMessage($body);
-            $mailer->addHeader("From", $email);
-            $mailer->addHeader("Reply-To", $replyTo);
-            $mailer->send();
+            $this->mailer->setTo($email);
+            $this->mailer->setSubject($this->lang['email_subject']);
+            $this->mailer->setMessage($body);
+            $this->mailer->addHeader("From", $email);
+            $this->mailer->addHeader("Reply-To", $replyTo);
+            $this->mailer->send();
         }
     }
 
-    /** @return void */
-    public function updateCommentAction()
+    public function updateCommentAction(Request $request): Response
     {
-        if (!(defined('XH_ADM') && XH_ADM)) {
-            return;
+        if (!$request->admin()) {
+            return new Response;
         }
         $this->csrfProtector->check();
         $comment = $this->db->findComment($this->topicname, $_POST["twocents_id"]);
@@ -447,60 +449,29 @@ class MainController
             ->withEmail(trim($_POST['twocents_email']))
             ->withMessage(trim($_POST['twocents_message']));
         $this->comment = $comment;
-        if ($this->validateFormSubmission()) {
+        $errors = Util::validateComment($this->comment);
+        foreach ($errors as $error) {
+            $this->messages .= $this->view->message("fail", $error);
+        }
+        if (empty($errors) && $this->validateCaptcha()) {
             $this->db->updateComment($comment);
             $this->comment = null;
         }
-        $this->defaultAction();
-    }
-
-    private function validateFormSubmission(): bool
-    {
-        $isValid = true;
-        if (utf8_strlen($this->comment->user()) < 2) {
-            $isValid = false;
-            $this->messages .= $this->view->message('fail', 'error_user');
-        }
-        $mailer = new Mailer();
-        if (!$mailer->isValidAddress($this->comment->email())) {
-            $isValid = false;
-            $this->messages .= $this->view->message('fail', 'error_email');
-        }
-        if (utf8_strlen($this->comment->message()) < 2) {
-            $isValid = false;
-            $this->messages .= $this->view->message('fail', 'error_message');
-        }
-        return $isValid && $this->validateCaptcha();
+        return $this->defaultAction($request);
     }
 
     private function validateCaptcha(): bool
     {
-        $pluginname = $this->conf['captcha_plugin'];
-        $filename = "{$this->pluginsFolder}$pluginname/captcha.php";
-        if (!(defined('XH_ADM') && XH_ADM) && $pluginname && is_readable($filename)) {
-            include_once $filename;
-            $func = $pluginname . '_captcha_check';
-            if (is_callable($func)) {
-                if (!$func()) {
-                    $this->messages .= $this->view->message('fail', 'error_captcha');
-                    return false;
-                }
-            }
+        $result = $this->captcha->check();
+        if (!$result) {
+            $this->messages .= $this->view->message('fail', 'error_captcha');
         }
-        return true;
+        return $result;
     }
 
     private function isXmlHttpRequest(): bool
     {
         return isset($_SERVER['HTTP_X_REQUESTED_WITH'])
             && $_SERVER['HTTP_X_REQUESTED_WITH'] === 'XMLHttpRequest';
-    }
-
-    /** @return never */
-    private function redirectToDefault()
-    {
-        $url = Url::getCurrent()->without('twocents_action')->getAbsolute();
-        header("Location: $url", true, 303);
-        exit;
     }
 }

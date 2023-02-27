@@ -109,9 +109,9 @@ class FakeDb extends Db
 
     public function deleteComment(Comment $comment)
     {
-        foreach ($this->data[$comment->topicname()] as &$aComment) {
+        foreach ($this->data[$comment->topicname()] as $i => $aComment) {
             if ($aComment->id() === $comment->id()) {
-                unset($aComment);
+                unset($this->data[$comment->topicname()][$i]);
             }
         }
     }

@@ -8,7 +8,7 @@ use Twocents\Infra\View;
  * @var View $this
  * @var Url $url
  * @var Comment $comment
- * @var string $csrfTokenInput
+ * @var string|null $csrfToken
  * @var string $captcha
  * @var string $action
  */
@@ -16,7 +16,9 @@ use Twocents\Infra\View;
 ?>
 
 <form class="twocents_form" method="post" action="<?=$url?>">
-  <?=$csrfTokenInput?>
+<?if (isset($csrfToken)):?>
+  <input type="hidden" name="xh_csrf_token" value="<?=$csrfToken?>">
+<?endif?>
   <input type="hidden" name="twocents_id" value="<?=$comment->id()?>">
   <div>
     <label>

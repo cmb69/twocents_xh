@@ -19,9 +19,13 @@
  * along with Twocents_XH.  If not, see <http://www.gnu.org/licenses/>.
  */
 
+use Twocents\Infra\Captcha;
+use Twocents\Infra\CsrfProtector;
 use Twocents\Infra\Db;
 use Twocents\Infra\HtmlCleaner;
 use Twocents\Infra\View;
+use Twocents\Infra\Request;
+use XH\Mail as Mailer;
 
 if (!defined('CMSIMPLE_XH_VERSION')) {
     header("HTTP/1.1 403 Forbidden");
@@ -42,9 +46,15 @@ function twocents($topicname, $readonly = false)
             $pth['folder']['plugins'],
             $plugin_cf['twocents'],
             $plugin_tx['twocents'],
-            isset($_XH_csrfProtection) ? $_XH_csrfProtection : null,
+            isset($_XH_csrfProtection) ? new CsrfProtector : null,
             new Db($pth['folder']['content'] . 'twocents/'),
             new HtmlCleaner($pth["folder"]["plugins"] . "twocents/"),
+            new Captcha(
+                $pth["folder"]["plugins"],
+                $plugin_cf["twocents"]["captcha_plugin"],
+                defined("XH_ADM") && XH_ADM
+            ),
+            new Mailer,
             new View($pth["folder"]["plugins"] . "twocents/views/", $plugin_tx["twocents"]),
             $topicname,
             $readonly
@@ -54,7 +64,10 @@ function twocents($topicname, $readonly = false)
     }
     $action = Twocents\Plugin::getControllerAction($controller, 'twocents_action');
     ob_start();
-    $controller->{$action}();
+    $response = $controller->{$action}(new Request);
+    if ($response) {
+        $response->fire();
+    }
     return (string) ob_get_clean();
 }
 
