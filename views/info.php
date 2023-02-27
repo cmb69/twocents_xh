@@ -5,7 +5,7 @@ use Twocents\Infra\View;
 /**
  * @var View $this
  * @var string $version
- * @var list<array{state:string,label:string,stateLabel:string}> $checks
+ * @var list<array{key:string,arg:string,class:string,state:string}> $checks
  */
 
 ?>
@@ -14,6 +14,6 @@ use Twocents\Infra\View;
 <div>
   <h2><?=$this->text('syscheck_title')?></h2>
 <?php foreach ($checks as $check):?>
-  <p class="xh_<?=$check['state']?>"><?=$this->text('syscheck_message', $check['label'], $check['stateLabel'])?></li>
+  <p class="<?=$check['class']?>"><?=$this->text($check['key'], $check['arg'])?>: <?=$this->text($check['state'])?></li>
 <?php endforeach?>
 </div>

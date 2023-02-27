@@ -26,7 +26,6 @@ use Twocents\Infra\CsrfProtector;
 use Twocents\Infra\Db;
 use Twocents\Infra\HtmlCleaner;
 use Twocents\Infra\SystemChecker;
-use Twocents\Infra\SystemCheckService;
 use Twocents\Infra\View;
 use XH\Mail as Mailer;
 
@@ -50,7 +49,7 @@ class Dic
 
     public static function makeInfoController(): InfoController
     {
-        return new InfoController(self::makeSystemCheckService(), self::makeView());
+        return new InfoController(new SystemChecker, self::makeDb(), self::makeView());
     }
 
     public static function testMakeMainAdminController(): MainAdminController
@@ -90,18 +89,6 @@ class Dic
         global $pth;
 
         return new HtmlCleaner($pth["folder"]["plugins"] . "twocents/");
-    }
-
-    private static function makeSystemCheckService(): SystemCheckService
-    {
-        global $plugin_tx, $pth;
-
-        return new SystemCheckService(
-            $pth["folder"]["plugins"],
-            $plugin_tx["twocents"],
-            "{$pth["folder"]["base"]}content/twocents/",
-            new SystemChecker
-        );
     }
 
     private static function makeView(): View

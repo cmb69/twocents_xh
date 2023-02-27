@@ -1,7 +1,7 @@
 <?php
 
 /**
- * Copyright 2014-2023 Christoph M. Becker
+ * Copyright 2023 Christoph M. Becker
  *
  * This file is part of Twocents_XH.
  *
@@ -19,26 +19,25 @@
  * along with Twocents_XH.  If not, see <http://www.gnu.org/licenses/>.
  */
 
-use Twocents\Dic;
-use Twocents\Infra\Request;
+namespace Twocents;
 
-/**
- * @var string $admin
- * @var string $o
- */
+use ApprovalTests\Approvals;
+use PHPUnit\Framework\TestCase;
+use Twocents\Infra\FakeDb;
+use Twocents\Infra\FakeRequest;
+use Twocents\Infra\FakeSystemChecker;
+use Twocents\Infra\View;
 
-XH_registerStandardPluginMenuItems(true);
-
-if (XH_wantsPluginAdministration('twocents')) {
-    $o .= print_plugin_admin('on');
-    switch ($admin) {
-        case '':
-            $o .= Dic::makeInfoController()(new Request);
-            break;
-        case 'plugin_main':
-            $o .= Dic::testMakeMainAdminController()();
-            break;
-        default:
-            $o .= plugin_admin_common();
+class InfoControllerClass extends TestCase
+{
+    public function testRendersPluginInfo(): void
+    {
+        $sut = new InfoController(
+            new FakeSystemChecker,
+            new FakeDb,
+            new View("./views/", XH_includeVar("./languages/en.php", "plugin_tx")["twocents"])
+        );
+        $response = $sut(new FakeRequest(["pth" => ["folder" => ["plugins" => "./plugins/"]]]));
+        Approvals::verifyHtml($response);
     }
 }

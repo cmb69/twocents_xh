@@ -21,28 +21,96 @@
 
 namespace Twocents;
 
-use Twocents\Infra\SystemCheckService;
+use Twocents\Infra\Db;
+use Twocents\Infra\Request;
+use Twocents\Infra\SystemChecker;
 use Twocents\Infra\View;
 
 class InfoController
 {
-    /** @var SystemCheckService */
-    private $systemCheckService;
+    /** @var SystemChecker */
+    private $systemChecker;
+
+    /** @var Db */
+    private $db;
 
     /** @var View */
     private $view;
 
-    public function __construct(SystemCheckService $systemCheckService, View $view)
+    public function __construct(SystemChecker $systemChecker, Db $db, View $view)
     {
-        $this->systemCheckService = $systemCheckService;
+        $this->systemChecker = $systemChecker;
+        $this->db = $db;
         $this->view = $view;
     }
 
-    public function __invoke(): string
+    public function __invoke(Request $request): string
     {
         return $this->view->render("info", [
             "version" => TWOCENTS_VERSION,
-            "checks" => $this->systemCheckService->getChecks(),
+            "checks" => $this->getChecks($request),
         ]);
+    }
+
+    /** @return list<array{key:string,arg:string,class:string,state:string}> */
+    private function getChecks(Request $request)
+    {
+        return array(
+            $this->checkPhpVersion('7.1.0'),
+            $this->checkExtension('json'),
+            $this->checkXhVersion('1.7.0'),
+            $this->checkWritability($this->db->getFoldername()),
+            $this->checkWritability($request->pluginsFolder() . "twocents/config/"),
+            $this->checkWritability($request->pluginsFolder() . "twocents/css/"),
+            $this->checkWritability($request->pluginsFolder() . "twocents/languages/"),
+        );
+    }
+
+    /** @return array{key:string,arg:string,class:string,state:string} */
+    private function checkPhpVersion(string $version)
+    {
+        $state = $this->systemChecker->checkVersion(PHP_VERSION, $version) ? 'success' : 'fail';
+        return [
+            "key" => "syscheck_phpversion",
+            "arg" => $version,
+            "class" => "xh_$state",
+            "state" => "syscheck_$state",
+        ];
+    }
+
+    /** @return array{key:string,arg:string,class:string,state:string} */
+    private function checkExtension(string $extension)
+    {
+        $state = $this->systemChecker->checkExtension($extension) ? 'success' : 'fail';
+        return [
+            "key" => "syscheck_extension",
+            "arg" => $extension,
+            "class" => "xh_$state",
+            "state" => "syscheck_$state",
+        ];
+    }
+
+    /** @return array{key:string,arg:string,class:string,state:string} */
+    private function checkXhVersion(string $version)
+    {
+        $state = $this->systemChecker->checkVersion(CMSIMPLE_XH_VERSION, "CMSimple_XH $version") ? 'success' : 'fail';
+        return [
+            "key" => "syscheck_xhversion",
+            "arg" => $version,
+            "class" => "xh_$state",
+            "state" => "syscheck_$state",
+        ];
+    }
+
+    /** @return array{key:string,arg:string,class:string,state:string} */
+    private function checkWritability(string $folder)
+    {
+        $state = $this->systemChecker->checkWritability($folder) ? 'success' : 'warning';
+        return [
+            "key" => "syscheck_writable",
+            "arg" => $folder,
+            "class" => "xh_$state",
+            "state" => "syscheck_$state",
+        ];
     }
 }

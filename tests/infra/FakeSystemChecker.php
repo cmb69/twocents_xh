@@ -1,7 +1,7 @@
 <?php
 
 /**
- * Copyright 2014-2023 Christoph M. Becker
+ * Copyright 2023 Christoph M. Becker
  *
  * This file is part of Twocents_XH.
  *
@@ -19,26 +19,22 @@
  * along with Twocents_XH.  If not, see <http://www.gnu.org/licenses/>.
  */
 
-use Twocents\Dic;
-use Twocents\Infra\Request;
+namespace Twocents\Infra;
 
-/**
- * @var string $admin
- * @var string $o
- */
+class FakeSystemChecker extends SystemChecker
+{
+    public function checkVersion(string $actual, string $minimum): bool
+    {
+        return false;
+    }
 
-XH_registerStandardPluginMenuItems(true);
+    public function checkExtension(string $extension): bool
+    {
+        return false;
+    }
 
-if (XH_wantsPluginAdministration('twocents')) {
-    $o .= print_plugin_admin('on');
-    switch ($admin) {
-        case '':
-            $o .= Dic::makeInfoController()(new Request);
-            break;
-        case 'plugin_main':
-            $o .= Dic::testMakeMainAdminController()();
-            break;
-        default:
-            $o .= plugin_admin_common();
+    public function checkWritability(string $path): bool
+    {
+        return false;
     }
 }
