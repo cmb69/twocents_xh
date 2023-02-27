@@ -19,25 +19,29 @@
  * along with Twocents_XH.  If not, see <http://www.gnu.org/licenses/>.
  */
 
-use Twocents\Dic;
+namespace Twocents;
 
-/**
- * @var string $admin
- * @var string $o
- */
+use PHPUnit\Framework\TestCase;
 
-XH_registerStandardPluginMenuItems(true);
+class DicTest extends TestCase
+{
+    public function setUp(): void
+    {
+        global $pth, $plugin_cf, $plugin_tx, $sn;
 
-if (XH_wantsPluginAdministration('twocents')) {
-    $o .= print_plugin_admin('on');
-    switch ($admin) {
-        case '':
-            $o .= Dic::makeInfoController()();
-            break;
-        case 'plugin_main':
-            $o .= Dic::testMakeMainAdminController()();
-            break;
-        default:
-            $o .= plugin_admin_common();
+        $pth = ["folder" => ["base" => "", "content" => "", "plugins" => ""]];
+        $plugin_cf = ["twocents" => []];
+        $plugin_tx = ["twocents" => []];
+        $sn = "/";
+    }
+
+    public function testMakesInfoController(): void
+    {
+        $this->assertInstanceOf(InfoController::class, Dic::makeInfoController());
+    }
+
+    public function testMakesMainAdminController(): void
+    {
+        $this->assertInstanceOf(MainAdminController::class, Dic::testMakeMainAdminController());
     }
 }

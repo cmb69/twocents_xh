@@ -36,7 +36,7 @@ class MainAdminController
     /** @var array<string,string> */
     private $conf;
 
-    /** @var CsrfProtector|null */
+    /** @var CsrfProtector */
     private $csrfProtector;
 
     /** @var Db */
@@ -68,7 +68,23 @@ class MainAdminController
         $this->view = $view;
     }
 
-    public function defaultAction(): string
+    public function __invoke(): string
+    {
+        switch ($_POST["action"] ?? "") {
+            default:
+                return $this->defaultAction();
+            case "convert_to_html":
+                return $this->convertToHtmlAction();
+            case "convert_to_plain_text":
+                return $this->convertToPlainTextAction();
+            case "import_comments":
+                return $this->importCommentsAction();
+            case "import_gbook":
+                return $this->importGbookAction();
+        }
+    }
+
+    private function defaultAction(): string
     {
         if ($this->conf['comments_markup'] == 'HTML') {
             $button = 'convert_to_plain_text';
@@ -77,18 +93,18 @@ class MainAdminController
         }
         return $this->view->render('admin', [
             'action' => "{$this->scriptName}?&twocents",
-            'csrfTokenInput' => $this->csrfProtector->token(),
+            'csrfToken' => $this->csrfProtector->token(),
             'buttons' => array($button, 'import_comments', 'import_gbook'),
             'message' => $this->message
         ]);
     }
 
-    public function convertToHtmlAction(): string
+    private function convertToHtmlAction(): string
     {
         return $this->convertTo('html');
     }
 
-    public function convertToPlainTextAction(): string
+    private function convertToPlainTextAction(): string
     {
         return $this->convertTo('plain');
     }
@@ -116,7 +132,7 @@ class MainAdminController
         return $this->defaultAction();
     }
 
-    public function importCommentsAction(): string
+    private function importCommentsAction(): string
     {
         $this->csrfProtector->check();
         $count = 0;
@@ -140,7 +156,7 @@ class MainAdminController
         return $this->defaultAction();
     }
 
-    public function importGbookAction(): string
+    private function importGbookAction(): string
     {
         $this->csrfProtector->check();
         $count = 0;

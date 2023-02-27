@@ -19,25 +19,30 @@
  * along with Twocents_XH.  If not, see <http://www.gnu.org/licenses/>.
  */
 
-use Twocents\Dic;
+namespace Twocents;
 
-/**
- * @var string $admin
- * @var string $o
- */
+use Twocents\Infra\SystemCheckService;
+use Twocents\Infra\View;
 
-XH_registerStandardPluginMenuItems(true);
+class InfoController
+{
+    /** @var SystemCheckService */
+    private $systemCheckService;
 
-if (XH_wantsPluginAdministration('twocents')) {
-    $o .= print_plugin_admin('on');
-    switch ($admin) {
-        case '':
-            $o .= Dic::makeInfoController()();
-            break;
-        case 'plugin_main':
-            $o .= Dic::testMakeMainAdminController()();
-            break;
-        default:
-            $o .= plugin_admin_common();
+    /** @var View */
+    private $view;
+
+    public function __construct(SystemCheckService $systemCheckService, View $view)
+    {
+        $this->systemCheckService = $systemCheckService;
+        $this->view = $view;
+    }
+
+    public function __invoke(): string
+    {
+        return $this->view->render("info", [
+            "version" => TWOCENTS_VERSION,
+            "checks" => $this->systemCheckService->getChecks(),
+        ]);
     }
 }

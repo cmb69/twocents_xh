@@ -44,12 +44,12 @@ class MainControllerTest extends TestCase
 
     public function testTogglesVisibility(): void
     {
-        $_POST = ["twocents_id" => $this->comment()->id()];
+        $_POST = ["twocents_action" => "toggle_visibility", "twocents_id" => $this->comment()->id()];
         $csrfProtector = new FakeCsrfProtector;
         $db = new FakeDb;
         $db->insertComment($this->comment());
         $sut = $this->sut(["csrfProtector" => $csrfProtector, "db" => $db]);
-        $response = $sut->toggleVisibilityAction(new FakeRequest);
+        $response = $sut(new FakeRequest);
         $comment = $db->findComment($this->comment()->topicname(), $this->comment()->id());
         $this->assertTrue($comment->hidden());
         $this->assertEquals("http://example.com?Twocents", $response->location());
@@ -57,12 +57,12 @@ class MainControllerTest extends TestCase
 
     public function testRemovesComment(): void
     {
-        $_POST = ["twocents_id" => $this->comment()->id()];
+        $_POST = ["twocents_action" => "remove_comment", "twocents_id" => $this->comment()->id()];
         $csrfProtector = new FakeCsrfProtector;
         $db = new FakeDb;
         $db->insertComment($this->comment());
         $sut = $this->sut(["csrfProtector" => $csrfProtector, "db" => $db]);
-        $response = $sut->removeCommentAction(new FakeRequest);
+        $response = $sut(new FakeRequest);
         $this->assertTrue($csrfProtector->hasChecked());
         $this->assertNull($db->findComment($this->comment()->topicname(), $this->comment()->id()));
         $this->assertEquals("http://example.com?Twocents", $response->location());
@@ -74,13 +74,14 @@ class MainControllerTest extends TestCase
         $db = new FakeDb;
         $db->insertComment($this->comment());
         $sut = $this->sut(["csrfProtector" => $csrfProtector, "db" => $db]);
-        $response = $sut->defaultAction(new FakeRequest);
+        $response = $sut(new FakeRequest);
         Approvals::verifyHtml($response->output());
     }
 
     public function testAddsComment(): void
     {
         $_POST = [
+            "twocents_action" => "add_comment",
             "twocents_user" => "cmb",
             "twocents_email" => "cmb69@gmx.de",
             "twocents_message" => "I fixed that typo",
@@ -88,7 +89,7 @@ class MainControllerTest extends TestCase
         $csrfProtector = new FakeCsrfProtector;
         $sut = $this->sut(["csrfProtector" => $csrfProtector]);
         $request = new FakeRequest(["server" => ["REQUEST_TIME" => "1677493797"]]);
-        $response = $sut->addCommentAction($request);
+        $response = $sut($request);
         Approvals::verifyHtml($response->output());
     }
 
@@ -96,6 +97,7 @@ class MainControllerTest extends TestCase
     {
         $comment = $this->comment();
         $_POST = [
+            "twocents_action" => "update_comment",
             "twocents_id" => $comment->id(),
             "twocents_user" => "cmb",
             "twocents_email" => "cmb69@gmx.de",
@@ -105,7 +107,7 @@ class MainControllerTest extends TestCase
         $db = new FakeDb;
         $db->insertComment($comment);
         $sut = $this->sut(["csrfProtector" => $csrfProtector, "db" => $db]);
-        $response = $sut->updateCommentAction(new FakeRequest);
+        $response = $sut(new FakeRequest);
         Approvals::verifyHtml($response->output());
     }
 

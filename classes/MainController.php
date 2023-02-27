@@ -114,7 +114,23 @@ class MainController
         $this->messages = '';
     }
 
-    public function toggleVisibilityAction(Request $request): Response
+    public function __invoke(Request $request): Response
+    {
+        switch ($_POST["twocents_action"] ?? "") {
+            default:
+                return $this->defaultAction($request);
+            case "toggle_visibility":
+                return $this->toggleVisibilityAction($request);
+            case "remove_comment":
+                return $this->removeCommentAction($request);
+            case "add_comment":
+                return $this->addCommentAction($request);
+            case "update_comment":
+                return $this->updateCommentAction($request);
+        }
+    }
+
+    private function toggleVisibilityAction(Request $request): Response
     {
         $response = new Response;
         if (!$request->admin()) {
@@ -132,7 +148,7 @@ class MainController
         return $response->redirect($url);
     }
 
-    public function removeCommentAction(Request $request): Response
+    private function removeCommentAction(Request $request): Response
     {
         $response = new Response;
         if (!$request->admin()) {
@@ -145,7 +161,7 @@ class MainController
         return $response->redirect($url);
     }
 
-    public function defaultAction(Request $request): Response
+    private function defaultAction(Request $request): Response
     {
         if (isset($_GET['twocents_id'])) {
             $this->comment = $this->db->findComment($this->topicname, $_GET['twocents_id']);
@@ -357,7 +373,7 @@ class MainController
         return (bool) preg_match('/^[a-z0-9-]+$/i', $topicname);
     }
 
-    public function addCommentAction(Request $request): Response
+    private function addCommentAction(Request $request): Response
     {
         if (!$request->admin() && $this->readonly) {
             $this->defaultAction($request);
@@ -437,7 +453,7 @@ class MainController
         }
     }
 
-    public function updateCommentAction(Request $request): Response
+    private function updateCommentAction(Request $request): Response
     {
         if (!$request->admin()) {
             return new Response;

@@ -32,6 +32,8 @@ if (!defined('CMSIMPLE_XH_VERSION')) {
     exit;
 }
 
+const TWOCENTS_VERSION = "1.0";
+
 /**
  * @param string $topicname
  * @param bool $readonly
@@ -62,13 +64,7 @@ function twocents($topicname, $readonly = false)
     } catch (DomainException $ex) {
         return XH_message('fail', $plugin_tx['twocents']['error_topicname']);
     }
-    $action = Twocents\Plugin::getControllerAction($controller, 'twocents_action');
     ob_start();
-    $response = $controller->{$action}(new Request);
-    if ($response) {
-        $response->fire();
-    }
+    $controller(new Request)->fire();
     return (string) ob_get_clean();
 }
-
-(new Twocents\Plugin())->run();

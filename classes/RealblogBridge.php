@@ -68,12 +68,8 @@ class RealblogBridge implements CommentsBridge
             $topic,
             false
         );
-        $action = Plugin::getControllerAction($controller, 'twocents_action');
         ob_start();
-        $response = $controller->{$action}(new Request);
-        if ($response) {
-            $response->fire();
-        }
+        $controller(new Request)->fire();
         $comments = ob_get_clean();
         return '<div class="twocents_realblog_comments">'
             . '<' . $plugin_cf['twocents']['realblog_heading'] . '>'

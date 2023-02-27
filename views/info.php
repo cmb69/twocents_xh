@@ -4,7 +4,6 @@ use Twocents\Infra\View;
 
 /**
  * @var View $this
- * @var string $logo
  * @var string $version
  * @var list<array{state:string,label:string,stateLabel:string}> $checks
  */
