@@ -34,6 +34,11 @@ class Request
         return (int) $this->server()["REQUEST_TIME"];
     }
 
+    public function pluginsFolder(): string
+    {
+        return $this->pth()["folder"]["plugins"];
+    }
+
     /**
      * @codeCoverageIgnore
      * @return array<string,string>
@@ -41,5 +46,12 @@ class Request
     protected function server(): array
     {
         return $_SERVER;
+    }
+
+    /** @return array{folder:array<string,string>,file:array<string,string>} */
+    protected function pth(): array
+    {
+        global $pth;
+        return $pth;
     }
 }

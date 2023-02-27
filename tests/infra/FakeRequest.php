@@ -32,11 +32,16 @@ class FakeRequest extends Request
 
     public function admin(): bool
     {
-        return true;
+        return $this->options["adm"] ?? true;
     }
 
     protected function server(): array
     {
         return $this->options["server"] ?? [];
+    }
+
+    protected function pth(): array
+    {
+        return $this->options["pth"] ?? [];
     }
 }

@@ -22,13 +22,8 @@
 namespace Twocents;
 
 use Realblog\CommentsBridge;
-use Twocents\Infra\Captcha;
-use Twocents\Infra\CsrfProtector;
 use Twocents\Infra\Db;
-use Twocents\Infra\HtmlCleaner;
 use Twocents\Infra\Request;
-use Twocents\Infra\View;
-use XH\Mail as Mailer;
 
 class RealblogBridge implements CommentsBridge
 {
@@ -49,28 +44,9 @@ class RealblogBridge implements CommentsBridge
      */
     public static function handle($topic)
     {
-        global $pth, $plugin_cf, $plugin_tx, $_XH_csrfProtection;
+        global $plugin_cf, $plugin_tx;
 
-        $controller = new MainController(
-            $pth['folder']['plugins'],
-            $plugin_cf['twocents'],
-            $plugin_tx['twocents'],
-            isset($_XH_csrfProtection) ? new CsrfProtector : null,
-            new Db($pth['folder']['content'] . 'twocents/'),
-            new HtmlCleaner($pth["folder"]["plugins"] . "twocents/"),
-            new Captcha(
-                $pth["folder"]["plugins"],
-                $plugin_cf["twocents"]["captcha_plugin"],
-                defined("XH_ADM") && XH_ADM
-            ),
-            new Mailer,
-            new View($pth["folder"]["plugins"] . "twocents/views/", $plugin_tx["twocents"]),
-            $topic,
-            false
-        );
-        ob_start();
-        $controller(new Request)->fire();
-        $comments = ob_get_clean();
+        $comments = Dic::makeMainController()(new Request, $topic, false)->fire();
         return '<div class="twocents_realblog_comments">'
             . '<' . $plugin_cf['twocents']['realblog_heading'] . '>'
             .  $plugin_tx['twocents']['realblog_heading']

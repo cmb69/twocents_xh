@@ -19,13 +19,8 @@
  * along with Twocents_XH.  If not, see <http://www.gnu.org/licenses/>.
  */
 
-use Twocents\Infra\Captcha;
-use Twocents\Infra\CsrfProtector;
-use Twocents\Infra\Db;
-use Twocents\Infra\HtmlCleaner;
-use Twocents\Infra\View;
+use Twocents\Dic;
 use Twocents\Infra\Request;
-use XH\Mail as Mailer;
 
 if (!defined('CMSIMPLE_XH_VERSION')) {
     header("HTTP/1.1 403 Forbidden");
@@ -41,30 +36,5 @@ const TWOCENTS_VERSION = "1.0";
  */
 function twocents($topicname, $readonly = false)
 {
-    global $pth, $plugin_cf, $plugin_tx, $_XH_csrfProtection;
-
-    try {
-        $controller = new Twocents\MainController(
-            $pth['folder']['plugins'],
-            $plugin_cf['twocents'],
-            $plugin_tx['twocents'],
-            isset($_XH_csrfProtection) ? new CsrfProtector : null,
-            new Db($pth['folder']['content'] . 'twocents/'),
-            new HtmlCleaner($pth["folder"]["plugins"] . "twocents/"),
-            new Captcha(
-                $pth["folder"]["plugins"],
-                $plugin_cf["twocents"]["captcha_plugin"],
-                defined("XH_ADM") && XH_ADM
-            ),
-            new Mailer,
-            new View($pth["folder"]["plugins"] . "twocents/views/", $plugin_tx["twocents"]),
-            $topicname,
-            $readonly
-        );
-    } catch (DomainException $ex) {
-        return XH_message('fail', $plugin_tx['twocents']['error_topicname']);
-    }
-    ob_start();
-    $controller(new Request)->fire();
-    return (string) ob_get_clean();
+    return Dic::makeMainController()(new Request, $topicname, $readonly)->fire();
 }

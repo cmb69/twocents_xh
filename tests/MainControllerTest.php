@@ -49,7 +49,7 @@ class MainControllerTest extends TestCase
         $db = new FakeDb;
         $db->insertComment($this->comment());
         $sut = $this->sut(["csrfProtector" => $csrfProtector, "db" => $db]);
-        $response = $sut(new FakeRequest);
+        $response = $sut(new FakeRequest, "test-topic", false);
         $comment = $db->findComment($this->comment()->topicname(), $this->comment()->id());
         $this->assertTrue($comment->hidden());
         $this->assertEquals("http://example.com?Twocents", $response->location());
@@ -62,7 +62,7 @@ class MainControllerTest extends TestCase
         $db = new FakeDb;
         $db->insertComment($this->comment());
         $sut = $this->sut(["csrfProtector" => $csrfProtector, "db" => $db]);
-        $response = $sut(new FakeRequest);
+        $response = $sut(new FakeRequest, "test-topic", false);
         $this->assertTrue($csrfProtector->hasChecked());
         $this->assertNull($db->findComment($this->comment()->topicname(), $this->comment()->id()));
         $this->assertEquals("http://example.com?Twocents", $response->location());
@@ -74,8 +74,22 @@ class MainControllerTest extends TestCase
         $db = new FakeDb;
         $db->insertComment($this->comment());
         $sut = $this->sut(["csrfProtector" => $csrfProtector, "db" => $db]);
-        $response = $sut(new FakeRequest);
+        $request = new FakeRequest(["pth" => ["folder" => ["plugins" => ""]]]);
+        $response = $sut($request, "test-topic", false);
         Approvals::verifyHtml($response->output());
+    }
+
+    public function testRendersEditForm(): void
+    {
+        $_GET = ["twocents_id" => $this->comment()->id()];
+        $csrfProtector = new FakeCsrfProtector;
+        $db = new FakeDb;
+        $db->insertComment($this->comment());
+        $sut = $this->sut(["csrfProtector" => $csrfProtector, "db" => $db]);
+        $request = new FakeRequest(["pth" => ["folder" => ["plugins" => ""]]]);
+        $response = $sut($request, "test-topic", false);
+        Approvals::verifyHtml($response->output());
+
     }
 
     public function testAddsComment(): void
@@ -88,8 +102,31 @@ class MainControllerTest extends TestCase
         ];
         $csrfProtector = new FakeCsrfProtector;
         $sut = $this->sut(["csrfProtector" => $csrfProtector]);
-        $request = new FakeRequest(["server" => ["REQUEST_TIME" => "1677493797"]]);
-        $response = $sut($request);
+        $request = new FakeRequest([
+            "server" => ["REQUEST_TIME" => "1677493797"],
+            "pth" => ["folder" => ["plugins" => ""]],
+        ]);
+        $response = $sut($request, "test-topic", false);
+        Approvals::verifyHtml($response->output());
+    }
+
+    public function testOnlyAdminCanAddCommentIfReadOnly(): void
+    {
+        $_POST = [
+            "twocents_action" => "add_comment",
+            "twocents_user" => "cmb",
+            "twocents_email" => "cmb69@gmx.de",
+            "twocents_message" => "I fixed that typo",
+        ];
+        $db = new FakeDb;
+        $db->insertComment($this->comment());
+        $sut = $this->sut(["csrfProtector" => null, "db" => $db]);
+        $request = new FakeRequest([
+            "adm" => false,
+            "server" => ["REQUEST_TIME" => "1677493797"],
+            "pth" => ["folder" => ["plugins" => ""]],
+        ]);
+        $response = $sut($request, "test-topic", true);
         Approvals::verifyHtml($response->output());
     }
 
@@ -107,14 +144,14 @@ class MainControllerTest extends TestCase
         $db = new FakeDb;
         $db->insertComment($comment);
         $sut = $this->sut(["csrfProtector" => $csrfProtector, "db" => $db]);
-        $response = $sut(new FakeRequest);
+        $request = new FakeRequest(["pth" => ["folder" => ["plugins" => ""]]]);
+        $response = $sut($request, "test-topic", false);
         Approvals::verifyHtml($response->output());
     }
 
     private function sut($options = [])
     {
         return new MainController(
-            "../",
             $this->conf(),
             $this->text(),
             $options["csrfProtector"] ?? new FakeCsrfProtector,
@@ -122,9 +159,7 @@ class MainControllerTest extends TestCase
             $this->createStub(HtmlCleaner::class),
             new FakeCaptcha,
             $this->createStub(Mailer::class),
-            new View("./views/", $this->text()),
-            "test-topic",
-            false
+            new View("./views/", $this->text())
         );
     }
 

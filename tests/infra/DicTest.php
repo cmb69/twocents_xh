@@ -27,12 +27,18 @@ class DicTest extends TestCase
 {
     public function setUp(): void
     {
-        global $pth, $plugin_cf, $plugin_tx, $sn;
+        global $pth, $cf, $plugin_cf, $plugin_tx, $sn;
 
         $pth = ["folder" => ["base" => "", "content" => "", "plugins" => ""]];
-        $plugin_cf = ["twocents" => []];
+        $cf = ["mailform" => ["lf_only" => ""]];
+        $plugin_cf = ["twocents" => ["captcha_plugin" => ""]];
         $plugin_tx = ["twocents" => []];
         $sn = "/";
+    }
+
+    public function testMakesMainController(): void
+    {
+        $this->assertInstanceOf(MainController::class, Dic::makeMainController());
     }
 
     public function testMakesInfoController(): void

@@ -65,7 +65,7 @@ class Response
         return $this->location;
     }
 
-    /** @return void|never */
+    /** @return string|never */
     public function fire()
     {
         if ($this->contentType !== null) {
@@ -84,6 +84,6 @@ class Response
             echo $this->output;
             exit;
         }
-        echo $this->output;
+        return $this->output;
     }
 }
