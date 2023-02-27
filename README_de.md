@@ -133,13 +133,6 @@ Zur Zeit ist das Posten von Kommentaren von sehr alten Browsern,
 wie IE 6 und IE 7, ist nicht möglich;
 das Absenden des Formulars schlägt ohne Meldung fehl.
 
-Twocents_XH verwendet HTML5 Formularvalidierungs-Features. Diese werden von
-Validatoren für HTML 4.01 und XHTML 1.0 Templates beanstanded. Darüberhinaus
-verursachen Sie keine Probleme; alte Browser werden sie einfach ignorieren,
-und zeitgemäße Browser werden sie trotzdem beachten. Es wird ohnehin
-empfohlen im Template die so genannte HTML5 Doctype-Declaration zu
-verwenden.
-
 ## Problembehebung
 
 Melden Sie Programmfehler und stellen Sie Supportanfragen entweder auf

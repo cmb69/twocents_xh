@@ -29,7 +29,7 @@ class Util
     {
         return preg_replace(
             array('/(?:\r\n|\r)/', '/\n{2,}/', '/\n/'),
-            array("\n", '</p><p>', tag('br')),
+            array("\n", '</p><p>', "<br>"),
             '<p>' . $text . '</p>'
         );
     }
@@ -39,7 +39,7 @@ class Util
         return html_entity_decode(
             strip_tags(
                 str_replace(
-                    array('</p><p>', tag('br')),
+                    array('</p><p>', "<br>"),
                     array(PHP_EOL . PHP_EOL, PHP_EOL),
                     $html
                 )

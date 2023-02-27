@@ -122,12 +122,6 @@ and the uploaded image, as well as the markup when Twocents_XH is in plain text 
 Currently, posting comments from very old browsers such as IE 6 and IE 7
 is not possible; the form submission will silently fail.
 
-Twocents_XH uses HTML5 form validation features. These will be critized by
-validators for HTML 4.01 and XHTML 1.0 templates. Other than that they cause
-no harm; old browsers will simply ignore them, and contemporary browsers
-will heed them nonetheless. It is recommended that your template uses the
-so-called HTML 5 doctype declaration, anyway.
-
 ## Troubleshooting
 
 Report bugs and ask for support either on

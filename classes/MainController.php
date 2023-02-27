@@ -344,7 +344,7 @@ class MainController
         if ($this->conf['comments_markup'] == 'HTML') {
             return $comment->message();
         } else {
-            return preg_replace('/(?:\r\n|\r|\n)/', tag('br'), $this->view->esc($comment->message()));
+            return preg_replace('/(?:\r\n|\r|\n)/', "<br>", $this->view->esc($comment->message()));
         }
     }
 
