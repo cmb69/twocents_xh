@@ -23,6 +23,7 @@ namespace Twocents;
 
 use Twocents\Infra\Db;
 use Twocents\Infra\Request;
+use Twocents\Infra\Response;
 use Twocents\Infra\SystemChecker;
 use Twocents\Infra\View;
 
@@ -44,12 +45,12 @@ class InfoController
         $this->view = $view;
     }
 
-    public function __invoke(Request $request): string
+    public function __invoke(Request $request): Response
     {
-        return $this->view->render("info", [
+        return Response::create($this->view->render("info", [
             "version" => TWOCENTS_VERSION,
             "checks" => $this->getChecks($request),
-        ]);
+        ]));
     }
 
     /** @return list<array{key:string,arg:string,class:string,state:string}> */

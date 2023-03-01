@@ -24,6 +24,7 @@ namespace Twocents;
 use Twocents\Infra\CsrfProtector;
 use Twocents\Infra\Db;
 use Twocents\Infra\HtmlCleaner;
+use Twocents\Infra\Response;
 use Twocents\Infra\View;
 use Twocents\Logic\Util;
 
@@ -47,9 +48,6 @@ class MainAdminController
     /** @var View */
     private $view;
 
-    /** @var string|null */
-    private $message;
-
     /** @param array<string,string> $conf */
     public function __construct(
         string $scriptName,
@@ -67,15 +65,15 @@ class MainAdminController
         $this->view = $view;
     }
 
-    public function __invoke(): string
+    public function __invoke(): Response
     {
         switch ($_POST["action"] ?? "") {
             default:
                 return $this->defaultAction();
             case "convert_to_html":
-                return $this->convertToHtmlAction();
+                return $this->convertTo("html");
             case "convert_to_plain_text":
-                return $this->convertToPlainTextAction();
+                return $this->convertTo("plain");
             case "import_comments":
                 return $this->importCommentsAction();
             case "import_gbook":
@@ -83,14 +81,14 @@ class MainAdminController
         }
     }
 
-    private function defaultAction(): string
+    private function defaultAction(): Response
     {
         if ($this->conf['comments_markup'] == 'HTML') {
             $button = 'convert_to_plain_text';
         } else {
             $button = 'convert_to_html';
         }
-        return $this->view->render('admin', [
+        return Response::create($this->view->render('admin', [
             'action' => "{$this->scriptName}?&twocents",
             'csrf_token' => $this->csrfProtector->token(),
             "buttons" => [
@@ -98,21 +96,10 @@ class MainAdminController
                 ["value" => "import_comments", "label" => "label_import_comments"],
                 ["value" => "import_gbook", "label" => "label_import_gbook"],
             ],
-            'message' => $this->message
-        ]);
+        ]));
     }
 
-    private function convertToHtmlAction(): string
-    {
-        return $this->convertTo('html');
-    }
-
-    private function convertToPlainTextAction(): string
-    {
-        return $this->convertTo('plain');
-    }
-
-    private function convertTo(string $to): string
+    private function convertTo(string $to): Response
     {
         $this->csrfProtector->check();
         $count = 0;
@@ -131,11 +118,12 @@ class MainAdminController
             }
             $this->db->storeTopic($topic, $newComments);
         }
-        $this->message = $this->view->message('success', 'message_converted_' . $to, $count);
-        return $this->defaultAction();
+        return $this->defaultAction()->merge(Response::create(
+            $this->view->message('success', 'message_converted_' . $to, $count)
+        ));
     }
 
-    private function importCommentsAction(): string
+    private function importCommentsAction(): Response
     {
         $this->csrfProtector->check();
         $count = 0;
@@ -155,11 +143,12 @@ class MainAdminController
             }
             $this->db->storeTopic($topic, $newComments);
         }
-        $this->message = $this->view->message('success', 'message_imported_comments', $count);
-        return $this->defaultAction();
+        return $this->defaultAction()->merge(Response::create(
+            $this->view->message('success', 'message_imported_comments', $count)
+        ));
     }
 
-    private function importGbookAction(): string
+    private function importGbookAction(): Response
     {
         $this->csrfProtector->check();
         $count = 0;
@@ -179,7 +168,8 @@ class MainAdminController
             }
             $this->db->storeTopic($topic, $newComments);
         }
-        $this->message = $this->view->message('success', 'message_imported_gbook', $count);
-        return $this->defaultAction();
+        return $this->defaultAction()->merge(Response::create(
+            $this->view->message('success', 'message_imported_gbook', $count)
+        ));
     }
 }

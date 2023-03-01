@@ -28,7 +28,7 @@ use Twocents\Infra\FakeRequest;
 use Twocents\Infra\FakeSystemChecker;
 use Twocents\Infra\View;
 
-class InfoControllerClass extends TestCase
+class InfoControllerTest extends TestCase
 {
     public function testRendersPluginInfo(): void
     {
@@ -38,6 +38,6 @@ class InfoControllerClass extends TestCase
             new View("./views/", XH_includeVar("./languages/en.php", "plugin_tx")["twocents"])
         );
         $response = $sut(new FakeRequest(["pth" => ["folder" => ["plugins" => "./plugins/"]]]));
-        Approvals::verifyHtml($response);
+        Approvals::verifyHtml($response->output());
     }
 }

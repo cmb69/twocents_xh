@@ -89,7 +89,6 @@ class MainControllerTest extends TestCase
         $request = new FakeRequest(["pth" => ["folder" => ["plugins" => ""]]]);
         $response = $sut($request, "test-topic", false);
         Approvals::verifyHtml($response->output());
-
     }
 
     public function testAddsComment(): void

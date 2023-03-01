@@ -23,6 +23,27 @@ namespace Twocents\Infra;
 
 class Response
 {
+    public static function create(string $output): self
+    {
+        $that = new Response;
+        $that->output = $output;
+        return $that;
+    }
+
+    public static function createContentType(string $contentType): self
+    {
+        $that = new Response;
+        $that->contentType = $contentType;
+        return $that;
+    }
+
+    public static function createRedirect(string $location): self
+    {
+        $that = new Response;
+        $that->location = $location;
+        return $that;
+    }
+
     /** @var string */
     private $output = "";
 
@@ -38,15 +59,11 @@ class Response
         return $this;
     }
 
-    public function setContentType(string $contentType): self
+    public function merge(Response $other): self
     {
-        $this->contentType = $contentType;
-        return $this;
-    }
-
-    public function redirect(string $location): self
-    {
-        $this->location = $location;
+        assert($this->contentType === null);
+        assert($this->location === null);
+        $this->output .= $other->output;
         return $this;
     }
 

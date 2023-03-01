@@ -35,14 +35,14 @@ class MainAdminControllerTest extends TestCase
     {
         $sut = $this->sut();
         $response = $sut();
-        Approvals::verifyHtml($response);
+        Approvals::verifyHtml($response->output());
     }
 
     public function testRendersOverviewForHtml(): void
     {
         $sut = $this->sut(["conf" => ["comments_markup" => "HTML"]]);
         $response = $sut();
-        Approvals::verifyHtml($response);
+        Approvals::verifyHtml($response->output());
     }
 
     public function testConvertsToHtml()
@@ -55,7 +55,7 @@ class MainAdminControllerTest extends TestCase
         $response = $sut();
         $this->assertTrue($csrfProtector->hasChecked());
         $this->assertEquals($this->comment()->topicname(), $db->lastTopicStored);
-        Approvals::verifyHtml($response);
+        Approvals::verifyHtml($response->output());
     }
 
     public function testConvertsToPlainText()
@@ -68,7 +68,7 @@ class MainAdminControllerTest extends TestCase
         $response = $sut();
         $this->assertTrue($csrfProtector->hasChecked());
         $this->assertEquals($this->comment()->topicname(), $db->lastTopicStored);
-        Approvals::verifyHtml($response);
+        Approvals::verifyHtml($response->output());
     }
 
     public function testImportsComments()
@@ -81,7 +81,7 @@ class MainAdminControllerTest extends TestCase
         $response = $sut();
         $this->assertEquals($this->comment()->topicname(), $db->lastTopicStored);
         $this->assertTrue($csrfProtector->hasChecked());
-        Approvals::verifyHtml($response);
+        Approvals::verifyHtml($response->output());
     }
 
     public function testImportsGbook()
@@ -94,7 +94,7 @@ class MainAdminControllerTest extends TestCase
         $response = $sut();
         $this->assertTrue($csrfProtector->hasChecked());
         $this->assertEquals($this->comment()->topicname(), $db->lastTopicStored);
-        Approvals::verifyHtml($response);
+        Approvals::verifyHtml($response->output());
     }
 
     private function sut($options = [])

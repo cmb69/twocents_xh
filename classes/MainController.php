@@ -61,12 +61,6 @@ class MainController
     /** @var View */
     private $view;
 
-    /** @var Request */
-    private $request;
-
-    /** @var Response */
-    private $response;
-
     /**
      * @param array<string,string> $conf
      * @param array<string,string> $lang
@@ -93,36 +87,27 @@ class MainController
 
     public function __invoke(Request $request, string $topic, bool $readonly): Response
     {
-        $this->request = $request;
-        $this->response = new Response;
         if (!preg_match('/^[a-z0-9-]+$/i', $topic)) {
-            return $this->response->setOutput($this->view->message("fail", "error_topicname"));
+            return Response::create($this->view->message("fail", "error_topicname"));
         }
         switch ($_POST["twocents_action"] ?? "") {
             default:
-                $this->defaultAction($topic, $readonly);
-                break;
+                return $this->defaultAction($request, $topic, $readonly);
             case "toggle_visibility":
-                $this->toggleVisibilityAction($topic);
-                break;
+                return $this->toggleVisibilityAction($request, $topic);
             case "remove_comment":
-                $this->removeCommentAction($topic);
-                break;
+                return $this->removeCommentAction($request, $topic);
             case "add_comment":
-                $this->addCommentAction($topic, $readonly);
-                break;
+                return $this->addCommentAction($request, $topic, $readonly);
             case "update_comment":
-                $this->updateCommentAction($topic, $readonly);
-                break;
+                return $this->updateCommentAction($request, $topic, $readonly);
         }
-        return $this->response;
     }
 
-    /** @return void */
-    private function toggleVisibilityAction(string $topic)
+    private function toggleVisibilityAction(Request $request, string $topic): Response
     {
-        if (!$this->request->admin()) {
-            return;
+        if (!$request->admin()) {
+            return Response::create("");
         }
         $this->csrfProtector->check();
         $comment = $this->db->findComment($topic, $_POST["twocents_id"]);
@@ -133,29 +118,32 @@ class MainController
         }
         $this->db->updateComment($comment);
         $url = Url::getCurrent()->without('twocents_action')->getAbsolute();
-        $this->response->redirect($url);
+        return Response::createRedirect($url);
     }
 
-    /** @return void */
-    private function removeCommentAction(string $topic)
+    private function removeCommentAction(Request $request, string $topic): Response
     {
-        if (!$this->request->admin()) {
-            return;
+        if (!$request->admin()) {
+            return Response::create("");
         }
         $this->csrfProtector->check();
         $comment = $this->db->findComment($topic, $_POST["twocents_id"]);
         $this->db->deleteComment($comment);
         $url = Url::getCurrent()->without('twocents_action')->getAbsolute();
-        $this->response->redirect($url);
+        return Response::createRedirect($url);
     }
 
-    /** @return void */
-    private function defaultAction(string $topic, bool $readonly, string $messages = "", ?Comment $current = null)
-    {
+    private function defaultAction(
+        Request $request,
+        string $topic,
+        bool $readonly,
+        string $messages = "",
+        ?Comment $current = null
+    ): Response {
         if (isset($_GET['twocents_id'])) {
             $current = $this->db->findComment($topic, $_GET['twocents_id']);
         }
-        $comments = $this->db->findCommentsOfTopic($topic, !$this->request->admin());
+        $comments = $this->db->findCommentsOfTopic($topic, !$request->admin());
         $order = $this->conf['comments_order'] === 'ASC' ? 1 : -1;
         usort($comments, function ($a, $b) use ($order) {
             return ($a->time() - $b->time()) * $order;
@@ -170,14 +158,14 @@ class MainController
         if (isset($pagination)) {
             $html .= $pagination;
         }
-        $html .= $this->renderCommentsView($comments, $readonly, $messages, $current);
+        $html .= $this->renderCommentsView($request, $comments, $readonly, $messages, $current);
         if (isset($pagination)) {
             $html .= $pagination;
         }
         if (!$this->isXmlHttpRequest()) {
-            $this->response->setOutput("<div class=\"twocents_container\">$html</div>");
+            return Response::create("<div class=\"twocents_container\">$html</div>");
         } else {
-            $this->response->setContentType("text/html; charset=UTF-8")->setOutput($html);
+            return Response::createContentType("text/html; charset=UTF-8")->setOutput($html);
         }
     }
 
@@ -223,13 +211,18 @@ class MainController
     }
 
     /** @param list<Comment> $comments */
-    private function renderCommentsView(array $comments, bool $readonly, string $messages, ?Comment $current = null): string
-    {
-        $this->writeScriptsToBjs($this->request->pluginsFolder());
+    private function renderCommentsView(
+        Request $request,
+        array $comments,
+        bool $readonly,
+        string $messages,
+        ?Comment $current = null
+    ): string {
+        $this->writeScriptsToBjs($request->pluginsFolder());
         $mayAddComment = (!isset($current) || $current->id() == null)
-            && ($this->request->admin() || !$readonly);
+            && ($request->admin() || !$readonly);
         return $this->view->render('comments', [
-            'comments' => $this->commentRecords($comments, $current),
+            'comments' => $this->commentRecords($request, $comments, $current),
             'has_comment_form_above' => $mayAddComment && $this->conf['comments_order'] === 'DESC',
             'has_comment_form_below' => $mayAddComment && $this->conf['comments_order'] === 'ASC',
             'comment_form' => $mayAddComment ? $this->renderCommentForm($current) : null,
@@ -241,14 +234,14 @@ class MainController
      * @param list<Comment> $comments
      * @return list<array{isCurrent:bool,view:html}>
      */
-    private function commentRecords(array $comments, ?Comment $current):array
+    private function commentRecords(Request $request, array $comments, ?Comment $current):array
     {
         $records = [];
         foreach ($comments as $comment) {
             $isCurrentComment = $current !== null && $current->id() == $comment->id();
             $records[] = [
                 'isCurrent' => $isCurrentComment,
-                'view' => $this->renderCommentView($comment, $isCurrentComment)
+                'view' => $this->renderCommentView($request, $comment, $isCurrentComment)
             ];
         }
         return $records;
@@ -291,7 +284,7 @@ class MainController
         ]);
     }
 
-    private function renderCommentView(Comment $comment, bool $isCurrentComment): string
+    private function renderCommentView(Request $request, Comment $comment, bool $isCurrentComment): string
     {
         $url = Url::getCurrent()->without('twocents_id');
         return $this->view->render('comment', [
@@ -299,14 +292,14 @@ class MainController
             'css_class' => !$comment->hidden() ? '' : ' twocents_hidden',
             'is_current_comment' => $isCurrentComment,
             'form' => $isCurrentComment ? $this->renderCommentForm($comment) : null,
-            'is_admin' => !$isCurrentComment ? $this->request->admin() : null,
+            'is_admin' => !$isCurrentComment ? $request->admin() : null,
             'url' => !$isCurrentComment ? (string) $url : null,
             'edit_url' => !$isCurrentComment ? (string) $url->with('twocents_id', $comment->id()) : null,
             'comment_id' => !$isCurrentComment ? $comment->id() : null,
             'visibility' => !$isCurrentComment ? (!$comment->hidden() ? 'label_hide' : 'label_show') : null,
             'attribution' => !$isCurrentComment ? $this->renderAttribution($comment) : null,
             'message' => !$isCurrentComment ? $this->renderMessage($comment) : null,
-            'csrf_token' => $this->request->admin() ? $this->csrfProtector->token() : null,
+            'csrf_token' => $request->admin() ? $this->csrfProtector->token() : null,
         ]);
     }
 
@@ -356,27 +349,26 @@ class MainController
         }
     }
 
-    /** @return void */
-    private function addCommentAction(string $topic, bool $readonly)
+    private function addCommentAction(Request $request, string $topic, bool $readonly): Response
     {
-        if (!$this->request->admin() && $readonly) {
-            $this->defaultAction($topic, $readonly);
-            return;
+        if (!$request->admin() && $readonly) {
+            return $this->defaultAction($request, $topic, $readonly);
         }
         $message = trim($_POST['twocents_message']);
-        if (!$this->request->admin() && $this->conf['comments_markup'] == 'HTML') {
+        if (!$request->admin() && $this->conf['comments_markup'] == 'HTML') {
             $message = $this->htmlCleaner->clean($message);
         }
         $hideComment = false;
         $isSpam = false;
         $spamFilter = new SpamFilter($this->lang['spam_words']);
-        if ($this->isModerated() || ($isSpam = !$this->request->admin() && $spamFilter->isSpam($message))) {
+        if (($this->conf['comments_moderated'] && !$request->admin())
+                || ($isSpam = !$request->admin() && $spamFilter->isSpam($message))) {
             $hideComment = true;
         }
         $comment = new Comment(
             "",
             $topic,
-            $this->request->time(),
+            $request->time(),
             trim($_POST['twocents_user']),
             trim($_POST['twocents_email']),
             $message,
@@ -387,9 +379,11 @@ class MainController
         $messages = $this->validateComment($comment);
         if (empty($messages)) {
             $this->db->insertComment($comment);
-            $this->sendNotificationEmail($comment);
+            if (!$request->admin()) {
+                $this->sendNotificationEmail($comment);
+            }
             $comment = null;
-            if ($this->isModerated() || $isSpam) {
+            if (($this->conf['comments_moderated'] && !$request->admin()) || $isSpam) {
                 $messages .= $this->view->message('info', 'message_moderated');
             } else {
                 $messages .= $this->view->message('success', 'message_added');
@@ -398,19 +392,14 @@ class MainController
         } else {
             $messages = $marker . $messages;
         }
-        $this->defaultAction($topic, $readonly, $messages, $comment);
-    }
-
-    private function isModerated(): bool
-    {
-        return $this->conf['comments_moderated'] && !$this->request->admin();
+        return $this->defaultAction($request, $topic, $readonly, $messages, $comment);
     }
 
     /** @return void */
     private function sendNotificationEmail(Comment $comment)
     {
         $email = $this->conf['email_address'];
-        if (!$this->request->admin() && $email !== '') {
+        if ($email !== '') {
             $message = $comment->message();
             if ($this->conf['comments_markup'] === 'HTML') {
                 $message = strip_tags($message);
@@ -434,11 +423,10 @@ class MainController
         }
     }
 
-    /** @return void */
-    private function updateCommentAction(string $topic, bool $readonly)
+    private function updateCommentAction(Request $request, string $topic, bool $readonly): Response
     {
-        if (!$this->request->admin()) {
-            return;
+        if (!$request->admin()) {
+            return Response::create("");
         }
         $this->csrfProtector->check();
         $comment = $this->db->findComment($topic, $_POST["twocents_id"]);
@@ -451,7 +439,7 @@ class MainController
             $this->db->updateComment($comment);
             $comment = null;
         }
-        $this->defaultAction($topic, $readonly, $messages, $comment);
+        return $this->defaultAction($request, $topic, $readonly, $messages, $comment);
     }
 
     private function validateComment(Comment $comment): string
