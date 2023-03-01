@@ -26,7 +26,6 @@ use Twocents\Infra\Db;
 use Twocents\Infra\HtmlCleaner;
 use Twocents\Infra\View;
 use Twocents\Logic\Util;
-use Twocents\Value\HtmlString;
 
 class MainAdminController
 {
@@ -48,7 +47,7 @@ class MainAdminController
     /** @var View */
     private $view;
 
-    /** @var HtmlString|null */
+    /** @var string|null */
     private $message;
 
     /** @param array<string,string> $conf */
@@ -93,8 +92,12 @@ class MainAdminController
         }
         return $this->view->render('admin', [
             'action' => "{$this->scriptName}?&twocents",
-            'csrfToken' => $this->csrfProtector->token(),
-            'buttons' => array($button, 'import_comments', 'import_gbook'),
+            'csrf_token' => $this->csrfProtector->token(),
+            "buttons" => [
+                ["value" => $button, "label" => "label_$button"],
+                ["value" => "import_comments", "label" => "label_import_comments"],
+                ["value" => "import_gbook", "label" => "label_import_gbook"],
+            ],
             'message' => $this->message
         ]);
     }
@@ -128,7 +131,7 @@ class MainAdminController
             }
             $this->db->storeTopic($topic, $newComments);
         }
-        $this->message = new HtmlString($this->view->message('success', 'message_converted_' . $to, $count));
+        $this->message = $this->view->message('success', 'message_converted_' . $to, $count);
         return $this->defaultAction();
     }
 
@@ -152,7 +155,7 @@ class MainAdminController
             }
             $this->db->storeTopic($topic, $newComments);
         }
-        $this->message = new HtmlString($this->view->message('success', 'message_imported_comments', $count));
+        $this->message = $this->view->message('success', 'message_imported_comments', $count);
         return $this->defaultAction();
     }
 
@@ -176,7 +179,7 @@ class MainAdminController
             }
             $this->db->storeTopic($topic, $newComments);
         }
-        $this->message = new HtmlString($this->view->message('success', 'message_imported_gbook', $count));
+        $this->message = $this->view->message('success', 'message_imported_gbook', $count);
         return $this->defaultAction();
     }
 }

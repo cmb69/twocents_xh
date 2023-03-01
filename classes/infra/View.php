@@ -39,14 +39,14 @@ class View
     /** @param scalar $args */
     public function text(string $key, ...$args): string
     {
-        return sprintf($this->text[$key], ...$args);
+        return $this->esc(sprintf($this->text[$key], ...$args));
     }
 
     /** @param scalar $args */
     public function plural(string $key, int $count, ...$args): string
     {
         $suffix = $count == 0 ? "_0" : "_1";
-        return sprintf($this->text["{$key}{$suffix}"], $count, ...$args);
+        return $this->esc(sprintf($this->text["{$key}{$suffix}"], $count, ...$args));
     }
 
     /** @param scalar $args */
@@ -68,5 +68,10 @@ class View
     public function esc($value): string
     {
         return XH_hsc((string) $value);
+    }
+
+    public function raw(string $string): string
+    {
+        return $string;
     }
 }

@@ -1,43 +1,41 @@
 <?php
 
-use Twocents\Value\Comment;
-use Twocents\Infra\Url;
 use Twocents\Infra\View;
 
 /**
  * @var View $this
  * @var string $id
- * @var string $className
- * @var bool $isCurrentComment
- * @var string $form
- * @var bool $isAdmin
- * @var Url $url
- * @var Url $editUrl
- * @var string $csrfToken
- * @var string $visibility
- * @var string $attribution
- * @var string $message
- * @var Comment $comment
+ * @var string $css_class
+ * @var bool $is_current_comment
+ * @var ?html $form
+ * @var ?bool $is_admin
+ * @var ?string $url
+ * @var ?string $edit_url
+ * @var ?string $comment_id
+ * @var ?string $visibility
+ * @var ?html $attribution
+ * @var ?html $message
+ * @var ?string $csrf_token
  */
 
 ?>
 
-<div id="<?=$id?>" class="twocents_comment <?=$className?>">
-<?php if ($isCurrentComment):?>
-  <?=$form?>
-<?php else:?>
-<?php   if ($isAdmin):?>
+<div id="<?=$this->esc($id)?>" class="twocents_comment <?=$this->esc($css_class)?>">
+<?if ($is_current_comment):?>
+  <?=$this->raw($form)?>
+<?else:?>
+<?  if ($is_admin):?>
   <div class="twocents_admin_tools">
-    <a href="<?=$editUrl?>"><?=$this->text('label_edit')?></a>
-    <form method="post" action="<?=$url?>">
-      <input type="hidden" name="xh_csrf_token" value="<?=$csrfToken?>">
-      <input type="hidden" name="twocents_id" value="<?=$comment->id()?>">
-      <button type="submit" name="twocents_action" value="toggle_visibility"><?=$this->text((string)$visibility)?></button>
+    <a href="<?=$this->esc($edit_url)?>"><?=$this->text('label_edit')?></a>
+    <form method="post" action="<?=$this->esc($url)?>">
+      <input type="hidden" name="xh_csrf_token" value="<?=$this->esc($csrf_token)?>">
+      <input type="hidden" name="twocents_id" value="<?=$this->esc($comment_id)?>">
+      <button type="submit" name="twocents_action" value="toggle_visibility"><?=$this->text($visibility)?></button>
       <button type="submit" name="twocents_action" value="remove_comment"><?=$this->text('label_delete')?></button>
     </form>
   </div>
-<?php   endif?>
-  <div class="twocents_attribution"><?=$attribution?></div>
-  <div class="twocents_message"><?=$message?></div>
-<?php endif?>
+<?  endif?>
+  <div class="twocents_attribution"><?=$this->raw($attribution)?></div>
+  <div class="twocents_message"><?=$this->raw($message)?></div>
+<?endif?>
 </div>

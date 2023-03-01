@@ -4,21 +4,21 @@ use Twocents\Infra\View;
 
 /**
  * @var View $this
- * @var int $itemCount
- * @var list<stdClass> $pages
+ * @var int $item_count
+ * @var list<array{index:?int,url:?string,is_current:?bool,is_ellipsis:bool}> $pages
  */
 
 ?>
 
 <div class="twocents_pagination">
-  <span class="twocents_pag_count"><?=$this->plural('comment_count', $itemCount)?></span>
-<?php foreach ($pages as $page):?>
-<?php   if ($page->isEllipsis):?>
+  <span class="twocents_pag_count"><?=$this->plural('comment_count', $item_count)?></span>
+<?foreach ($pages as $page):?>
+<?  if ($page['is_ellipsis']):?>
   <span class="twocents_pag_ellipsis">…</span>
-<?php   elseif ($page->isCurrent):?>
-  <span class="twocents_pag_current"><?=$page->index?></span>
-<?php   else:?>
-  <a class="twocents_button" href="<?=$page->url?>"><?=$page->index?></a>
-<?php   endif?>
-<?php endforeach?>
+<?  elseif ($page['is_current']):?>
+  <span class="twocents_pag_current"><?=$this->esc($page['index'])?></span>
+<?  else:?>
+  <a class="twocents_button" href="<?=$this->esc($page['url'])?>"><?=$this->esc($page['index'])?></a>
+<?  endif?>
+<?endforeach?>
 </div>

@@ -1,28 +1,31 @@
 <?php
 
+use Twocents\Infra\View;
+
 /**
- * @var bool $hasCommentFormAbove
- * @var bool $hasCommentFormBelow
- * @var string $messages
- * @var string $commentForm
- * @var list<stdClass> $comments
+ * @var View $this
+ * @var list<array{isCurrent:bool,view:html}> $comments
+ * @var bool $has_comment_form_above
+ * @var bool $has_comment_form_below
+ * @var html $comment_form
+ * @var html $messages
  */
 
 ?>
 
 <div class="twocents_comments">
-<?php if ($hasCommentFormAbove):?>
-  <?=$messages?>
-  <?=$commentForm?>
-<?php endif?>
-<?php foreach ($comments as $comment):?>
-<?php   if ($comment->isCurrent):?>
-  <?=$messages?>
-<?php   endif?>
-  <?=$comment->view?>
-<?php endforeach?>
-<?php if ($hasCommentFormBelow):?>
-  <?=$messages?>
-  <?=$commentForm?>
-<?php endif?>
+<?if ($has_comment_form_above):?>
+  <?=$this->raw($messages)?>
+  <?=$this->raw($comment_form)?>
+<?endif?>
+<?foreach ($comments as $comment):?>
+<?  if ($comment['isCurrent']):?>
+  <?=$this->raw($messages)?>
+<?  endif?>
+  <?=$this->raw($comment['view'])?>
+<?endforeach?>
+<?if ($has_comment_form_below):?>
+  <?=$this->raw($messages)?>
+  <?=$this->raw($comment_form)?>
+<?endif?>
 </div>

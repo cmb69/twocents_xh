@@ -10,10 +10,10 @@ use Twocents\Infra\View;
 
 ?>
 
-<h1>Twocents <?=$version?></h1>
+<h1>Twocents <?=$this->esc($version)?></h1>
 <div>
   <h2><?=$this->text('syscheck_title')?></h2>
-<?php foreach ($checks as $check):?>
-  <p class="<?=$check['class']?>"><?=$this->text($check['key'], $check['arg'])?>: <?=$this->text($check['state'])?></li>
-<?php endforeach?>
+<?foreach ($checks as $check):?>
+  <p class="<?=$this->esc($check['class'])?>"><?=$this->text($check['key'], $check['arg'])?>: <?=$this->text($check['state'])?></li>
+<?endforeach?>
 </div>

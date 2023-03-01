@@ -1,5 +1,7 @@
 parameters:
   level: 6
+  typeAliases:
+    html: string
   paths:
     - classes/
     - views/
