@@ -47,7 +47,7 @@ class RealblogBridge implements CommentsBridge
     {
         global $plugin_cf, $plugin_tx;
 
-        $comments = Responder::respond(Dic::makeMainController()(new Request, $topic, false));
+        $comments = Responder::respond(Dic::makeMainController()(Request::current(), $topic, false));
         return '<div class="twocents_realblog_comments">'
             . '<' . $plugin_cf['twocents']['realblog_heading'] . '>'
             .  $plugin_tx['twocents']['realblog_heading']

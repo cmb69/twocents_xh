@@ -35,13 +35,18 @@ class FakeRequest extends Request
         return $this->options["adm"] ?? true;
     }
 
-    protected function server(): array
+    public function query(): string
     {
-        return $this->options["server"] ?? [];
+        return $this->options["query"] ?? "";
     }
 
-    protected function pth(): array
+    public function time(): int
     {
-        return $this->options["pth"] ?? [];
+        return $this->options["time"] ?? 0;
+    }
+
+    protected function post(): array
+    {
+        return $this->options["post"] ?? [];
     }
 }

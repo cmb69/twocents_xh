@@ -33,11 +33,12 @@ class InfoControllerTest extends TestCase
     public function testRendersPluginInfo(): void
     {
         $sut = new InfoController(
+            "./plugins/twocents/",
             new FakeSystemChecker,
             new FakeDb,
             new View("./views/", XH_includeVar("./languages/en.php", "plugin_tx")["twocents"])
         );
-        $response = $sut(new FakeRequest(["pth" => ["folder" => ["plugins" => "./plugins/"]]]));
+        $response = $sut(new FakeRequest());
         Approvals::verifyHtml($response->output());
     }
 }

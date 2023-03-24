@@ -26,7 +26,6 @@ use Twocents\Infra\CsrfProtector;
 use Twocents\Infra\Db;
 use Twocents\Infra\HtmlCleaner;
 use Twocents\Infra\Request;
-use Twocents\Infra\Url;
 use Twocents\Infra\View;
 use Twocents\Logic\Pagination;
 use Twocents\Logic\SpamFilter;
@@ -34,10 +33,14 @@ use Twocents\Logic\Util;
 use Twocents\Value\Comment;
 use Twocents\Value\Html;
 use Twocents\Value\Response;
+use Twocents\Value\Url;
 use XH\Mail as Mailer;
 
 class MainController
 {
+    /** @var string */
+    private $pluginFolder;
+
     /** @var array<string,string> */
     private $conf;
 
@@ -70,6 +73,7 @@ class MainController
      * @param array<string,string> $lang
      */
     public function __construct(
+        string $pluginFolder,
         array $conf,
         array $lang,
         ?CsrfProtector $csrfProtector,
@@ -79,6 +83,7 @@ class MainController
         Mailer $mailer,
         View $view
     ) {
+        $this->pluginFolder = $pluginFolder;
         $this->conf = $conf;
         $this->lang = $lang;
         $this->csrfProtector = $csrfProtector;
@@ -121,7 +126,7 @@ class MainController
             $comment = $comment->hide();
         }
         $this->db->updateComment($comment);
-        $url = Url::getCurrent()->without('twocents_action')->getAbsolute();
+        $url = $request->url()->without('twocents_action')->absolute();
         return Response::redirect($url);
     }
 
@@ -133,7 +138,7 @@ class MainController
         $this->csrfProtector->check();
         $comment = $this->db->findComment($topic, $_POST["twocents_id"]);
         $this->db->deleteComment($comment);
-        $url = Url::getCurrent()->without('twocents_action')->getAbsolute();
+        $url = $request->url()->without('twocents_action')->absolute();
         return Response::redirect($url);
     }
 
@@ -144,8 +149,8 @@ class MainController
         string $messages = "",
         ?Comment $current = null
     ): Response {
-        if (isset($_GET['twocents_id'])) {
-            $current = $this->db->findComment($topic, $_GET['twocents_id']);
+        if (is_string($request->url()->param("twocents_id"))) {
+            $current = $this->db->findComment($topic, $request->url()->param("twocents_id"));
         }
         $comments = $this->db->findCommentsOfTopic($topic, !$request->admin());
         $order = $this->conf['comments_order'] === 'ASC' ? 1 : -1;
@@ -155,9 +160,11 @@ class MainController
         $count = count($comments);
         $itemsPerPage = (int) $this->conf['pagination_max'];
         $pageCount = (int) ceil($count / $itemsPerPage);
-        $currentPage = isset($_GET['twocents_page']) ? max(1, min($pageCount, $_GET['twocents_page'])) : 1;
+        $currentPage = is_string($request->url()->param("twocents_page"))
+            ? max(1, min($pageCount, $request->url()->param("twocents_page")))
+            : 1;
         $comments = array_splice($comments, ($currentPage - 1) * $itemsPerPage, $itemsPerPage);
-        $pagination = $this->renderPaginationView($count, $currentPage, $pageCount);
+        $pagination = $this->renderPaginationView($request->url(), $count, $currentPage, $pageCount);
         $html = "";
         if (isset($pagination)) {
             $html .= $pagination;
@@ -170,7 +177,7 @@ class MainController
             $response = Response::create("<div class=\"twocents_container\">$html</div>");
             if (!$this->jsWritten) {
                 $response = $response->withHjs($this->view->renderMeta("twocents", $this->jsConf()))
-                    ->withBjs($this->view->renderScript($request->pluginsFolder() . "twocents/twocents.min.js"));
+                    ->withBjs($this->view->renderScript($this->pluginFolder . "twocents/twocents.min.js"));
                 $this->jsWritten = true;
             }
             return $response;
@@ -180,13 +187,12 @@ class MainController
     }
 
     /** @return string|null */
-    private function renderPaginationView(int $commentCount, int $page, int $pageCount)
+    private function renderPaginationView(Url $url, int $commentCount, int $page, int $pageCount)
     {
         if ($pageCount <= 1) {
             return null;
         }
         $pagination = new Pagination($page, $pageCount, (int) $this->conf["pagination_radius"]);
-        $url = Url::getCurrent();
         return $this->view->render('pagination', [
             'item_count' => $commentCount,
             'pages' => $this->pageRecords($pagination->gatherPages(), $url, $page),
@@ -204,7 +210,7 @@ class MainController
             if ($page !== null) {
                 $records[] = [
                     'index' => $page,
-                    'url' => (string) $url->without('twocents_id')->with('twocents_page', (string) $page),
+                    'url' => $url->without('twocents_id')->with('twocents_page', (string) $page)->relative(),
                     'is_current' => $page === $currentPage,
                     'is_ellipsis' => false
                 ];
@@ -234,7 +240,7 @@ class MainController
             'comments' => $this->commentRecords($request, $comments, $current),
             'has_comment_form_above' => $mayAddComment && $this->conf['comments_order'] === 'DESC',
             'has_comment_form_below' => $mayAddComment && $this->conf['comments_order'] === 'ASC',
-            'comment_form' => $mayAddComment ? Html::of($this->renderCommentForm($current)) : null,
+            'comment_form' => $mayAddComment ? Html::of($this->renderCommentForm($request->url(), $current)) : null,
             'messages' => Html::of($messages),
         ]);
     }
@@ -280,15 +286,15 @@ class MainController
 
     private function renderCommentView(Request $request, Comment $comment, bool $isCurrentComment): string
     {
-        $url = Url::getCurrent()->without('twocents_id');
+        $url = $request->url()->without('twocents_id');
         return $this->view->render('comment', [
             'id' => 'twocents_comment_' . $comment->id(),
             'css_class' => !$comment->hidden() ? '' : ' twocents_hidden',
             'is_current_comment' => $isCurrentComment,
-            'form' => $isCurrentComment ? Html::of($this->renderCommentForm($comment)) : null,
+            'form' => $isCurrentComment ? Html::of($this->renderCommentForm($request->url(), $comment)) : null,
             'is_admin' => !$isCurrentComment ? $request->admin() : null,
-            'url' => !$isCurrentComment ? (string) $url : null,
-            'edit_url' => !$isCurrentComment ? (string) $url->with('twocents_id', $comment->id()) : null,
+            'url' => !$isCurrentComment ? $url->relative() : null,
+            'edit_url' => !$isCurrentComment ? $url->with('twocents_id', $comment->id())->relative() : null,
             'comment_id' => !$isCurrentComment ? $comment->id() : null,
             'visibility' => !$isCurrentComment ? (!$comment->hidden() ? 'label_hide' : 'label_show') : null,
             'attribution' => !$isCurrentComment ? Html::of($this->renderAttribution($comment)) : null,
@@ -297,12 +303,12 @@ class MainController
         ]);
     }
 
-    private function renderCommentForm(?Comment $comment = null): string
+    private function renderCommentForm(Url $url, ?Comment $comment = null): string
     {
         if (!isset($comment)) {
             $comment = new Comment("", "", 0, "", "", "", true);
         }
-        $url = Url::getCurrent()->without('twocents_id');
+        $url = $url->without('twocents_id');
         if (!$comment->id()) {
             $page = $this->conf['comments_order'] === 'ASC' ? '2147483647' : '0';
             $url = $url->with('twocents_page', $page);
@@ -315,7 +321,7 @@ class MainController
             "comment_email" => $comment->email(),
             "comment_message" => $comment->message(),
             'captcha' => Html::of($this->captcha->render()),
-            "url" => (string) $url,
+            "url" => $url->relative(),
             "csrf_token" => $comment->id() ? $this->csrfProtector->token() : null,
         ]);
     }
@@ -348,7 +354,7 @@ class MainController
         if (!$request->admin() && $readonly) {
             return $this->defaultAction($request, $topic, $readonly);
         }
-        $message = trim($_POST['twocents_message']);
+        ["user" => $user, "email" => $email, "message" => $message] = $request->commentPost();
         if (!$request->admin() && $this->conf['comments_markup'] == 'HTML') {
             $message = $this->htmlCleaner->clean($message);
         }
@@ -359,22 +365,14 @@ class MainController
                 || ($isSpam = !$request->admin() && $spamFilter->isSpam($message))) {
             $hideComment = true;
         }
-        $comment = new Comment(
-            "",
-            $topic,
-            $request->time(),
-            trim($_POST['twocents_user']),
-            trim($_POST['twocents_email']),
-            $message,
-            $hideComment
-        );
+        $comment = new Comment("", $topic, $request->time(), $user, $email, $message, $hideComment);
         $marker = '<div id="twocents_scroll_marker" class="twocents_scroll_marker">'
             . '</div>';
         $messages = $this->validateComment($comment);
         if (empty($messages)) {
             $this->db->insertComment($comment);
             if (!$request->admin()) {
-                $this->sendNotificationEmail($comment);
+                $this->sendNotificationEmail($request->url(), $comment);
             }
             $comment = null;
             if (($this->conf['comments_moderated'] && !$request->admin()) || $isSpam) {
@@ -390,7 +388,7 @@ class MainController
     }
 
     /** @return void */
-    private function sendNotificationEmail(Comment $comment)
+    private function sendNotificationEmail(Url $url, Comment $comment)
     {
         $email = $this->conf['email_address'];
         if ($email !== '') {
@@ -398,7 +396,7 @@ class MainController
             if ($this->conf['comments_markup'] === 'HTML') {
                 $message = strip_tags($message);
             }
-            $url = Url::getCurrent()->getAbsolute()
+            $url = $url->absolute()
                 . "#twocents_comment_" . $comment->id();
             $attribution = sprintf(
                 $this->lang['email_attribution'],
@@ -425,9 +423,8 @@ class MainController
         $this->csrfProtector->check();
         $comment = $this->db->findComment($topic, $_POST["twocents_id"]);
         assert(isset($comment)); // TODO: invalid assertion, but the code already was broken
-        $comment = $comment->withUser(trim($_POST['twocents_user']))
-            ->withEmail(trim($_POST['twocents_email']))
-            ->withMessage(trim($_POST['twocents_message']));
+        ["user" => $user, "email" => $email, "message" => $message] = $request->commentPost();
+        $comment = $comment->withUser($user)->withEmail($email)->withMessage($message);
         $messages = $this->validateComment($comment);
         if (empty($messages)) {
             $this->db->updateComment($comment);

@@ -21,37 +21,65 @@
 
 namespace Twocents\Infra;
 
+use Twocents\Value\Url;
+
 class Request
 {
+    /** @codeCoverageIgnore */
+    public static function current(): self
+    {
+        return new self;
+    }
+
+    public function url(): Url
+    {
+        $rest = $this->query();
+        if ($rest !== "") {
+            $rest = "?" . $rest;
+        }
+        return Url::from(CMSIMPLE_URL . $rest);
+    }
+
     /** @codeCoverageIgnore */
     public function admin(): bool
     {
         return defined('XH_ADM') && XH_ADM;
     }
 
-    public function time(): int
+    /** @codeCoverageIgnore */
+    protected function query(): string
     {
-        return (int) $this->server()["REQUEST_TIME"];
+        return $_SERVER["QUERY_STRING"];
     }
 
-    public function pluginsFolder(): string
+    /** @codeCoverageIgnore */
+    public function time(): int
     {
-        return $this->pth()["folder"]["plugins"];
+        return (int) $_SERVER["REQUEST_TIME"];
+    }
+
+    /** @return array{user:string,email:string,message:string} */
+    public function commentPost(): array
+    {
+        return [
+            "user" => $this->trimmedPostString("twocents_user"),
+            "email" => $this->trimmedPostString("twocents_email"),
+            "message" => $this->trimmedPostString("twocents_message"),
+        ];
+    }
+
+    private function trimmedPostString(string $name): string
+    {
+        $post = $this->post();
+        return isset($post[$name]) && is_string($post[$name]) ? trim($post[$name]) : "";
     }
 
     /**
+     * @return array<string|array<string>>
      * @codeCoverageIgnore
-     * @return array<string,string>
      */
-    protected function server(): array
+    protected function post(): array
     {
-        return $_SERVER;
-    }
-
-    /** @return array{folder:array<string,string>,file:array<string,string>} */
-    protected function pth(): array
-    {
-        global $pth;
-        return $pth;
+        return $_POST;
     }
 }

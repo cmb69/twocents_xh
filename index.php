@@ -37,5 +37,5 @@ const TWOCENTS_VERSION = "1.0";
  */
 function twocents($topicname, $readonly = false)
 {
-    return Responder::respond(Dic::makeMainController()(new Request, $topicname, $readonly));
+    return Responder::respond(Dic::makeMainController()(Request::current(), $topicname, $readonly));
 }

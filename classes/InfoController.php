@@ -29,6 +29,9 @@ use Twocents\Value\Response;
 
 class InfoController
 {
+    /** @var string */
+    private $pluginFolder;
+
     /** @var SystemChecker */
     private $systemChecker;
 
@@ -38,32 +41,33 @@ class InfoController
     /** @var View */
     private $view;
 
-    public function __construct(SystemChecker $systemChecker, Db $db, View $view)
+    public function __construct(string $pluginFolder, SystemChecker $systemChecker, Db $db, View $view)
     {
+        $this->pluginFolder = $pluginFolder;
         $this->systemChecker = $systemChecker;
         $this->db = $db;
         $this->view = $view;
     }
 
-    public function __invoke(Request $request): Response
+    public function __invoke(): Response
     {
         return Response::create($this->view->render("info", [
             "version" => TWOCENTS_VERSION,
-            "checks" => $this->getChecks($request),
+            "checks" => $this->getChecks(),
         ]));
     }
 
     /** @return list<array{key:string,arg:string,class:string,state:string}> */
-    private function getChecks(Request $request)
+    private function getChecks()
     {
         return array(
             $this->checkPhpVersion('7.1.0'),
             $this->checkExtension('json'),
             $this->checkXhVersion('1.7.0'),
             $this->checkWritability($this->db->getFoldername()),
-            $this->checkWritability($request->pluginsFolder() . "twocents/config/"),
-            $this->checkWritability($request->pluginsFolder() . "twocents/css/"),
-            $this->checkWritability($request->pluginsFolder() . "twocents/languages/"),
+            $this->checkWritability($this->pluginFolder . "config/"),
+            $this->checkWritability($this->pluginFolder . "css/"),
+            $this->checkWritability($this->pluginFolder . "languages/"),
         );
     }
 

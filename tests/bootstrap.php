@@ -20,7 +20,7 @@
  */
 
 const CMSIMPLE_XH_VERSION = "CMSimple_XH 1.7.5";
-const CMSIMPLE_URL = "http://example.com";
+const CMSIMPLE_URL = "http://example.com/";
 const TWOCENTS_VERSION = "1.0";
 
 require_once "./vendor/autoload.php";

@@ -33,11 +33,12 @@ class Dic
 {
     public static function makeMainController(): MainController
     {
-        global $plugin_cf, $plugin_tx, $_XH_csrfProtection;
+        global $pth, $plugin_cf, $plugin_tx, $_XH_csrfProtection;
         static $instance = null;
 
         if ($instance === null) {
             $instance = new MainController(
+                $pth["folder"]["plugins"] . "twocents/",
                 $plugin_cf["twocents"],
                 $plugin_tx["twocents"],
                 isset($_XH_csrfProtection) ? new CsrfProtector : null,
@@ -53,7 +54,13 @@ class Dic
 
     public static function makeInfoController(): InfoController
     {
-        return new InfoController(new SystemChecker, self::makeDb(), self::makeView());
+        global $pth;
+        return new InfoController(
+            $pth["folder"]["plugins"] . "twocents/",
+            new SystemChecker,
+            self::makeDb(),
+            self::makeView()
+        );
     }
 
     public static function testMakeMainAdminController(): MainAdminController
