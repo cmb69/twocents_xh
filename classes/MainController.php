@@ -25,6 +25,7 @@ use Twocents\Infra\Captcha;
 use Twocents\Infra\CsrfProtector;
 use Twocents\Infra\Db;
 use Twocents\Infra\HtmlCleaner;
+use Twocents\Infra\Random;
 use Twocents\Infra\Request;
 use Twocents\Infra\View;
 use Twocents\Logic\Pagination;
@@ -56,6 +57,9 @@ class MainController
     /** @var HtmlCleaner */
     private $htmlCleaner;
 
+    /** @var Random */
+    private $random;
+
     /** @var Captcha */
     private $captcha;
 
@@ -79,6 +83,7 @@ class MainController
         ?CsrfProtector $csrfProtector,
         Db $db,
         HtmlCleaner $htmlCleaner,
+        Random $random,
         Captcha $captcha,
         Mailer $mailer,
         View $view
@@ -89,6 +94,7 @@ class MainController
         $this->csrfProtector = $csrfProtector;
         $this->db = $db;
         $this->htmlCleaner = $htmlCleaner;
+        $this->random = $random;
         $this->captcha = $captcha;
         $this->mailer = $mailer;
         $this->view = $view;
@@ -365,7 +371,8 @@ class MainController
                 || ($isSpam = !$request->admin() && $spamFilter->isSpam($message))) {
             $hideComment = true;
         }
-        $comment = new Comment("", $topic, $request->time(), $user, $email, $message, $hideComment);
+        $id = Util::encodeBase64url($this->random->bytes(15));
+        $comment = new Comment($id, $topic, $request->time(), $user, $email, $message, $hideComment);
         $marker = '<div id="twocents_scroll_marker" class="twocents_scroll_marker">'
             . '</div>';
         $messages = $this->validateComment($comment);

@@ -72,4 +72,10 @@ class Util
         $label = '[a-zA-Z0-9](?:[a-zA-Z0-9-]{0,61}[a-zA-Z0-9])?';
         return (bool) preg_match("/^$local@$label(?:\\.$label)*$/u", $email);
     }
+
+    public static function encodeBase64url(string $string): string
+    {
+        assert(strlen($string) % 3 === 0);
+        return str_replace(["+", "/"], ["-", "_"], base64_encode($string));
+    }
 }
