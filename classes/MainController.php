@@ -61,6 +61,9 @@ class MainController
     /** @var View */
     private $view;
 
+    /** @var bool */
+    private $jsWritten = false;
+
     /**
      * @param array<string,string> $conf
      * @param array<string,string> $lang
@@ -163,7 +166,13 @@ class MainController
             $html .= $pagination;
         }
         if (!$this->isXmlHttpRequest()) {
-            return Response::create("<div class=\"twocents_container\">$html</div>");
+            $response = Response::create("<div class=\"twocents_container\">$html</div>");
+            if (!$this->jsWritten) {
+                $response->setHjs($this->view->renderMeta("twocents", $this->jsConf()))
+                    ->setBjs($this->view->renderScript($request->pluginsFolder() . "twocents/twocents.min.js"));
+                $this->jsWritten = true;
+            }
+            return $response;
         } else {
             return Response::createContentType("text/html; charset=UTF-8")->setOutput($html);
         }
@@ -218,7 +227,6 @@ class MainController
         string $messages,
         ?Comment $current = null
     ): string {
-        $this->writeScriptsToBjs($request->pluginsFolder());
         $mayAddComment = (!isset($current) || $current->id() == null)
             && ($request->admin() || !$readonly);
         return $this->view->render('comments', [
@@ -247,17 +255,9 @@ class MainController
         return $records;
     }
 
-    /** @return void */
-    private function writeScriptsToBjs(string $pluginsFolder)
+    /** @return array<string,scalar> */
+    private function jsConf(): array
     {
-        global $bjs;
-        static $done = false;
-
-        if ($done) {
-            return;
-        } else {
-            $done = true;
-        }
         $config = array();
         foreach (array('comments_markup') as $property) {
             $config[$property] = $this->conf[$property];
@@ -274,14 +274,7 @@ class MainController
         foreach ($properties as $property) {
             $config[$property] = $this->lang[$property];
         }
-        $filename = "{$pluginsFolder}twocents/twocents.min.js";
-        if (!file_exists($filename)) {
-            $filename = "{$pluginsFolder}twocents/twocents.js";
-        }
-        $bjs .= $this->view->render('scripts', [
-            'json' => (string) json_encode($config),
-            'filename' => $filename
-        ]);
+        return $config;
     }
 
     private function renderCommentView(Request $request, Comment $comment, bool $isCurrentComment): string

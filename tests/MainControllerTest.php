@@ -79,6 +79,18 @@ class MainControllerTest extends TestCase
         Approvals::verifyHtml($response->output());
     }
 
+    public function testWritesToBjs(): void
+    {
+        $csrfProtector = new FakeCsrfProtector;
+        $db = new FakeDb;
+        $db->insertComment($this->comment());
+        $sut = $this->sut(["csrfProtector" => $csrfProtector, "db" => $db]);
+        $request = new FakeRequest(["pth" => ["folder" => ["plugins" => ""]]]);
+        $response = $sut($request, "test-topic", false);
+        $this->assertEquals("<script src=\"twocents/twocents.min.js\"></script>\n", $response->bjs());
+        Approvals::verifyHtml($response->hjs());
+    }
+
     public function testRendersEditForm(): void
     {
         $_GET = ["twocents_id" => $this->comment()->id()];

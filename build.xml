@@ -52,7 +52,7 @@
     <unzip file="export.zip" todir="export"/>
     <delete file="export.zip"/>
     <exec executable="uglifyjs" checkreturn="true">
-      <arg file="export/twocents.js"/>
+      <arg file="export/twocents.min.js"/>
       <arg value="--compress"/>
       <arg value="--mangle"/>
       <arg value="--output"/>
@@ -80,7 +80,6 @@
         <exclude name="phpstan.*"/>
         <exclude name="phpunit.xml"/>
         <exclude name="teplad.xml"/>
-        <exclude name="twocents.js"/>
       </fileset>
     </move>
     <delete dir="export"/>

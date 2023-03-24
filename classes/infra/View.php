@@ -64,6 +64,20 @@ class View
         return (string) ob_get_clean();
     }
 
+    /** @param mixed $value */
+    public function renderMeta(string $name, $value): string
+    {
+        $name = $this->esc($name);
+        $value = json_encode($value, JSON_HEX_APOS|JSON_UNESCAPED_SLASHES|JSON_UNESCAPED_UNICODE);
+        return "<meta name=\"$name\" content='$value'>\n";
+    }
+
+    public function renderScript(string $filename): string
+    {
+        $filename = $this->esc($filename);
+        return "<script src=\"$filename\"></script>\n";
+    }
+
     /** @param scalar $value */
     public function esc($value): string
     {

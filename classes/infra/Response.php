@@ -48,6 +48,12 @@ class Response
     private $output = "";
 
     /** @var string|null */
+    private $hjs = null;
+
+    /** @var string|null */
+    private $bjs = null;
+
+    /** @var string|null */
     private $contentType = null;
 
     /** @var string|null */
@@ -56,6 +62,18 @@ class Response
     public function setOutput(string $output): self
     {
         $this->output = $output;
+        return $this;
+    }
+
+    public function setHjs(string $hjs): self
+    {
+        $this->hjs = $hjs;
+        return $this;
+    }
+
+    public function setBjs(string $bjs): self
+    {
+        $this->bjs = $bjs;
         return $this;
     }
 
@@ -72,6 +90,16 @@ class Response
         return $this->output;
     }
 
+    public function hjs(): ?string
+    {
+        return $this->hjs;
+    }
+
+    public function bjs(): ?string
+    {
+        return $this->bjs;
+    }
+
     public function contentType(): ?string
     {
         return $this->contentType;
@@ -85,6 +113,8 @@ class Response
     /** @return string|never */
     public function fire()
     {
+        global $hjs, $bjs;
+
         if ($this->contentType !== null) {
             while (ob_get_level()) {
                 ob_end_clean();
@@ -100,6 +130,12 @@ class Response
             header("Location: {$this->location}", true, 303);
             echo $this->output;
             exit;
+        }
+        if ($this->hjs !== null) {
+            $hjs .= $this->hjs;
+        }
+        if ($this->bjs !== null) {
+            $bjs .= $this->bjs;
         }
         return $this->output;
     }
