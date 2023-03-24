@@ -95,7 +95,7 @@ class Db
         $comments = [];
         $filename = $this->getFoldername() . $topic . ".csv";
         if (is_readable($filename) && ($file = fopen($filename, 'r'))) {
-            while (($record = fgetcsv($file)) !== false) {
+            while (($record = fgetcsv($file, 0, ",", "\"", "\0")) !== false) {
                 $hidden = isset($record[5]) ? (bool) $record[5] : false;
                 if ($visibleOnly && $hidden) {
                     continue;
@@ -181,7 +181,7 @@ class Db
                 if ($comment->topicname() !== $topic) {
                     throw new Error("topic mismatch");
                 }
-                fputcsv($file, $comment->toRecord());
+                fputcsv($file, $comment->toRecord(), ",", "\"", "\0");
             }
             fclose($file);
         }
@@ -194,7 +194,7 @@ class Db
         $comment = null;
         $filename = $this->getFoldername() . $topic . ".csv";
         if (is_readable($filename) && ($file = fopen($filename, 'r'))) {
-            while (($record = fgetcsv($file)) !== false) {
+            while (($record = fgetcsv($file, 0, ",", "\"", "\0")) !== false) {
                 if ($record[0] === $id) {
                     $comment = new Comment(
                         $record[0],
@@ -221,7 +221,7 @@ class Db
         if ($file === false) {
             return false;
         }
-        if (fputcsv($file, $comment->toRecord()) === false) {
+        if (fputcsv($file, $comment->toRecord(), ",", "\"", "\0") === false) {
             return false;
         }
         fclose($file);
@@ -233,9 +233,9 @@ class Db
     {
         return $this->modify($comment, function ($stream, array $record) use ($comment) {
             if ($record[0] != $comment->id()) {
-                fputcsv($stream, $record);
+                fputcsv($stream, $record, ",", "\"", "\0");
             } else {
-                fputcsv($stream, $comment->toRecord());
+                fputcsv($stream, $comment->toRecord(), ",", "\"", "\0");
             }
         });
     }
@@ -244,7 +244,7 @@ class Db
     {
         return $this->modify($comment, function ($stream, array $record) use ($comment) {
             if ($record[0] != $comment->id()) {
-                fputcsv($stream, $record);
+                fputcsv($stream, $record, ",", "\"", "\0");
             }
         });
     }
@@ -261,7 +261,7 @@ class Db
         if ($temp === false) {
             return false;
         }
-        while (($record = fgetcsv($file)) !== false) {
+        while (($record = fgetcsv($file, 0, ",", "\"", "\0")) !== false) {
             $fun($temp, $record);
         }
         if (!ftruncate($file, 0)) {
