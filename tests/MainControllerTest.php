@@ -80,7 +80,7 @@ class MainControllerTest extends TestCase
         $request = new FakeRequest(["query" => "Twocents"]);
         $response = $sut($request, "test-topic", false);
         $this->assertEquals(
-            "<script src=\"./plugins/twocents/twocents/twocents.min.js\"></script>\n",
+            "<script src=\"./plugins/twocents/twocents.min.js\"></script>\n",
             $response->bjs()
         );
         Approvals::verifyHtml($response->hjs());

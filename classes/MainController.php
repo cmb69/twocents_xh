@@ -177,7 +177,7 @@ class MainController
             $response = Response::create("<div class=\"twocents_container\">$html</div>");
             if (!$this->jsWritten) {
                 $response = $response->withHjs($this->view->renderMeta("twocents", $this->jsConf()))
-                    ->withBjs($this->view->renderScript($this->pluginFolder . "twocents/twocents.min.js"));
+                    ->withBjs($this->view->renderScript($this->pluginFolder . "twocents.min.js"));
                 $this->jsWritten = true;
             }
             return $response;
