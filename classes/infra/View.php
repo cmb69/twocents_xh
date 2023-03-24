@@ -21,32 +21,34 @@
 
 namespace Twocents\Infra;
 
+use Twocents\Value\Html;
+
 class View
 {
     /** @var string */
-    private $viewFolder;
+    private $templateFolder;
 
     /** @var array<string,string> */
     private $text;
 
     /** @param array<string,string> $text */
-    public function __construct(string $viewFolder, array $text)
+    public function __construct(string $templateFolder, array $text)
     {
-        $this->viewFolder = $viewFolder;
+        $this->templateFolder = $templateFolder;
         $this->text = $text;
     }
 
     /** @param scalar $args */
     public function text(string $key, ...$args): string
     {
-        return $this->esc(sprintf($this->text[$key], ...$args));
+        return sprintf($this->esc($this->text[$key]), ...$args);
     }
 
     /** @param scalar $args */
     public function plural(string $key, int $count, ...$args): string
     {
         $suffix = $count == 0 ? "_0" : "_1";
-        return $this->esc(sprintf($this->text["{$key}{$suffix}"], $count, ...$args));
+        return sprintf($this->esc($this->text["{$key}{$suffix}"]), $count, ...$args);
     }
 
     /** @param scalar $args */
@@ -58,9 +60,17 @@ class View
     /** @param array<string,mixed> $_data */
     public function render(string $_template, array $_data): string
     {
+        array_walk_recursive($_data, function (&$value) {
+            assert(is_null($value) || is_scalar($value) || $value instanceof Html);
+            if (is_string($value)) {
+                $value = $this->esc($value);
+            } elseif ($value instanceof Html) {
+                $value = $value->toString();
+            }
+        });
         extract($_data);
         ob_start();
-        include "{$this->viewFolder}{$_template}.php";
+        include $this->templateFolder . $_template . ".php";
         return (string) ob_get_clean();
     }
 
@@ -78,14 +88,8 @@ class View
         return "<script src=\"$filename\"></script>\n";
     }
 
-    /** @param scalar $value */
-    public function esc($value): string
+    public function esc(string $string): string
     {
-        return XH_hsc((string) $value);
-    }
-
-    public function raw(string $string): string
-    {
-        return $string;
+        return XH_hsc($string);
     }
 }

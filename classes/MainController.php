@@ -32,6 +32,7 @@ use Twocents\Logic\Pagination;
 use Twocents\Logic\SpamFilter;
 use Twocents\Logic\Util;
 use Twocents\Value\Comment;
+use Twocents\Value\Html;
 use Twocents\Value\Response;
 use XH\Mail as Mailer;
 
@@ -233,8 +234,8 @@ class MainController
             'comments' => $this->commentRecords($request, $comments, $current),
             'has_comment_form_above' => $mayAddComment && $this->conf['comments_order'] === 'DESC',
             'has_comment_form_below' => $mayAddComment && $this->conf['comments_order'] === 'ASC',
-            'comment_form' => $mayAddComment ? $this->renderCommentForm($current) : null,
-            'messages' => $messages,
+            'comment_form' => $mayAddComment ? Html::of($this->renderCommentForm($current)) : null,
+            'messages' => Html::of($messages),
         ]);
     }
 
@@ -249,7 +250,7 @@ class MainController
             $isCurrentComment = $current !== null && $current->id() == $comment->id();
             $records[] = [
                 'isCurrent' => $isCurrentComment,
-                'view' => $this->renderCommentView($request, $comment, $isCurrentComment)
+                'view' => Html::of($this->renderCommentView($request, $comment, $isCurrentComment))
             ];
         }
         return $records;
@@ -284,14 +285,14 @@ class MainController
             'id' => 'twocents_comment_' . $comment->id(),
             'css_class' => !$comment->hidden() ? '' : ' twocents_hidden',
             'is_current_comment' => $isCurrentComment,
-            'form' => $isCurrentComment ? $this->renderCommentForm($comment) : null,
+            'form' => $isCurrentComment ? Html::of($this->renderCommentForm($comment)) : null,
             'is_admin' => !$isCurrentComment ? $request->admin() : null,
             'url' => !$isCurrentComment ? (string) $url : null,
             'edit_url' => !$isCurrentComment ? (string) $url->with('twocents_id', $comment->id()) : null,
             'comment_id' => !$isCurrentComment ? $comment->id() : null,
             'visibility' => !$isCurrentComment ? (!$comment->hidden() ? 'label_hide' : 'label_show') : null,
-            'attribution' => !$isCurrentComment ? $this->renderAttribution($comment) : null,
-            'message' => !$isCurrentComment ? $this->renderMessage($comment) : null,
+            'attribution' => !$isCurrentComment ? Html::of($this->renderAttribution($comment)) : null,
+            'message' => !$isCurrentComment ? Html::of($this->renderMessage($comment)) : null,
             'csrf_token' => $request->admin() ? $this->csrfProtector->token() : null,
         ]);
     }
@@ -313,7 +314,7 @@ class MainController
             "comment_user" => $comment->user(),
             "comment_email" => $comment->email(),
             "comment_message" => $comment->message(),
-            'captcha' => $this->captcha->render(),
+            'captcha' => Html::of($this->captcha->render()),
             "url" => (string) $url,
             "csrf_token" => $comment->id() ? $this->csrfProtector->token() : null,
         ]);
