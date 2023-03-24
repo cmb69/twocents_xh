@@ -25,6 +25,8 @@ use ApprovalTests\Approvals;
 use PHPUnit\Framework\TestCase;
 use Twocents\Infra\FakeCsrfProtector;
 use Twocents\Infra\FakeDb;
+use Twocents\Infra\FakeRequest;
+use Twocents\Infra\FlashMessage;
 use Twocents\Infra\HtmlCleaner;
 use Twocents\Infra\View;
 use Twocents\Value\Comment;
@@ -34,77 +36,121 @@ class MainAdminControllerTest extends TestCase
     public function testRendersOverview(): void
     {
         $sut = $this->sut();
-        $response = $sut();
+        $response = $sut(new FakeRequest());
         Approvals::verifyHtml($response->output());
     }
 
     public function testRendersOverviewForHtml(): void
     {
         $sut = $this->sut(["conf" => ["comments_markup" => "HTML"]]);
-        $response = $sut();
+        $response = $sut(new FakeRequest());
+        Approvals::verifyHtml($response->output());
+    }
+
+    public function testRendersConvertToHtmlConfirmation(): void
+    {
+        $sut = $this->sut();
+        $response = $sut(new FakeRequest([
+            "query" => "twocents&admin=plugin_main&twocents_action=convert_to_html",
+        ]));
         Approvals::verifyHtml($response->output());
     }
 
     public function testConvertsToHtml()
     {
-        $_POST = ["action" => "convert_to_html"];
         $csrfProtector = new FakeCsrfProtector;
         $db = new FakeDb;
         $db->insertComment($this->comment());
         $sut = $this->sut(["csrfProtector" => $csrfProtector, "db" => $db]);
-        $response = $sut();
+        $response = $sut(new FakeRequest([
+            "query" => "twocents&admin=plugin_main&twocents_action=convert_to_html",
+            "post" => ["twocents_do" => ""],
+        ]));
         $this->assertTrue($csrfProtector->hasChecked());
         $this->assertEquals($this->comment()->topicname(), $db->lastTopicStored);
+        $this->assertEquals("http://example.com/?twocents&admin=plugin_main", $response->location());
+    }
+
+    public function testRendersConvertToPlainTextConfirmation(): void
+    {
+        $sut = $this->sut();
+        $response = $sut(new FakeRequest([
+            "query" => "twocents&admin=plugin_main&twocents_action=convert_to_plain_text",
+        ]));
         Approvals::verifyHtml($response->output());
     }
 
     public function testConvertsToPlainText()
     {
-        $_POST = ["action" => "convert_to_plain_text"];
         $csrfProtector = new FakeCsrfProtector;
         $db = new FakeDb;
         $db->insertComment($this->comment());
         $sut = $this->sut(["csrfProtector" => $csrfProtector, "db" => $db]);
-        $response = $sut();
+        $response = $sut(new FakeRequest([
+            "query" => "twocents&admin=plugin_main&twocents_action=convert_to_plain_text",
+            "post" => ["twocents_do" => ""],
+        ]));
         $this->assertTrue($csrfProtector->hasChecked());
         $this->assertEquals($this->comment()->topicname(), $db->lastTopicStored);
+        $this->assertEquals("http://example.com/?twocents&admin=plugin_main", $response->location());
+    }
+
+    public function testRendersImportCommentsConfirmation(): void
+    {
+        $sut = $this->sut();
+        $response = $sut(new FakeRequest([
+            "query" => "twocents&admin=plugin_main&twocents_action=import_comments",
+        ]));
         Approvals::verifyHtml($response->output());
     }
 
     public function testImportsComments()
     {
-        $_POST = ["action" => "import_comments"];
         $csrfProtector = new FakeCsrfProtector;
         $db = new FakeDb;
         $db->insertComment($this->comment());
         $sut = $this->sut(["csrfProtector" => $csrfProtector, "db" => $db]);
-        $response = $sut();
+        $response = $sut(new FakeRequest([
+            "query" => "twocents&admin=plugin_main&twocents_action=import_comments",
+            "post" => ["twocents_do" => ""],
+        ]));
         $this->assertEquals($this->comment()->topicname(), $db->lastTopicStored);
         $this->assertTrue($csrfProtector->hasChecked());
+        $this->assertEquals("http://example.com/?twocents&admin=plugin_main", $response->location());
+    }
+
+    public function testRendersImportGbookConfirmation(): void
+    {
+        $sut = $this->sut();
+        $response = $sut(new FakeRequest([
+            "query" => "twocents&admin=plugin_main&twocents_action=import_gbook",
+        ]));
         Approvals::verifyHtml($response->output());
     }
 
     public function testImportsGbook()
     {
-        $_POST = ["action" => "import_gbook"];
         $csrfProtector = new FakeCsrfProtector;
         $db = new FakeDb;
         $db->insertComment($this->comment());
         $sut = $this->sut(["csrfProtector" => $csrfProtector, "db" => $db]);
-        $response = $sut();
+        $response = $sut(new FakeRequest([
+            "query" => "twocents&admin=plugin_main&twocents_action=import_gbook",
+            "post" => ["twocents_do" => ""],
+        ]));
         $this->assertTrue($csrfProtector->hasChecked());
         $this->assertEquals($this->comment()->topicname(), $db->lastTopicStored);
-        Approvals::verifyHtml($response->output());
+        $this->assertEquals("http://example.com/?twocents&admin=plugin_main", $response->location());
     }
 
     private function sut($options = [])
     {
         return new MainAdminController(
-            "/",
             $this->conf($options["conf"] ?? []),
             $options["csrfProtector"] ?? new FakeCsrfProtector,
             $options["db"] ?? new FakeDb,
             $this->htmlCleaner(),
+            $this->flashMessage(),
             $this->view()
         );
     }
@@ -112,6 +158,13 @@ class MainAdminControllerTest extends TestCase
     private function htmlCleaner()
     {
         return $this->createStub(HtmlCleaner::class);
+    }
+
+    private function flashMessage()
+    {
+        $flashMessage = $this->createStub(FlashMessage::class);
+        $flashMessage->method("pop")->willReturn("");
+        return $flashMessage;
     }
 
     private function view()

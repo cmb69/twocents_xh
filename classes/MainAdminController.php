@@ -23,16 +23,16 @@ namespace Twocents;
 
 use Twocents\Infra\CsrfProtector;
 use Twocents\Infra\Db;
+use Twocents\Infra\FlashMessage;
 use Twocents\Infra\HtmlCleaner;
+use Twocents\Infra\Request;
 use Twocents\Infra\View;
 use Twocents\Logic\Util;
+use Twocents\Value\Html;
 use Twocents\Value\Response;
 
 class MainAdminController
 {
-    /** @var string */
-    private $scriptName;
-
     /** @var array<string,string> */
     private $conf;
 
@@ -45,52 +45,62 @@ class MainAdminController
     /** @var HtmlCleaner */
     private $htmlCleaner;
 
+    /** @var FlashMessage */
+    private $flashMessage;
+
     /** @var View */
     private $view;
 
     /** @param array<string,string> $conf */
     public function __construct(
-        string $scriptName,
         array $conf,
         CsrfProtector $csrfProtector,
         Db $db,
         HtmlCleaner $htmlCleaner,
+        FlashMessage $flashMessage,
         View $view
     ) {
-        $this->scriptName = $scriptName;
         $this->conf = $conf;
         $this->csrfProtector = $csrfProtector;
         $this->db = $db;
         $this->htmlCleaner = $htmlCleaner;
+        $this->flashMessage = $flashMessage;
         $this->view = $view;
     }
 
-    public function __invoke(): Response
+    public function __invoke(Request $request): Response
     {
-        switch ($_POST["action"] ?? "") {
+        switch ($request->action()) {
             default:
-                return $this->defaultAction();
+                return $this->overview();
             case "convert_to_html":
                 return $this->convertTo("html");
+            case "do_convert_to_html":
+                return $this->doConvertTo($request, "html");
             case "convert_to_plain_text":
                 return $this->convertTo("plain");
+            case "do_convert_to_plain_text":
+                return $this->doConvertTo($request, "plain");
             case "import_comments":
-                return $this->importCommentsAction();
+                return $this->importComments();
+            case "do_import_comments":
+                return $this->doImportComments($request);
             case "import_gbook":
-                return $this->importGbookAction();
+                return $this->importGbook();
+            case "do_import_gbook":
+                return $this->doImportGbook($request);
         }
     }
 
-    private function defaultAction(): Response
+    private function overview(): Response
     {
-        if ($this->conf['comments_markup'] == 'HTML') {
+        if ($this->conf['comments_markup'] === 'HTML') {
             $button = 'convert_to_plain_text';
         } else {
             $button = 'convert_to_html';
         }
         return Response::create($this->view->render('admin', [
-            'action' => "{$this->scriptName}?&twocents",
-            'csrf_token' => $this->csrfProtector->token(),
+            "flash_message" => Html::of($this->flashMessage->pop()),
             "buttons" => [
                 ["value" => $button, "label" => "label_$button"],
                 ["value" => "import_comments", "label" => "label_import_comments"],
@@ -100,6 +110,16 @@ class MainAdminController
     }
 
     private function convertTo(string $to): Response
+    {
+        return Response::create($this->view->render("confirm", [
+            "csrf_token" => $this->csrfProtector->token(),
+            "message_key" => "message_topics_to_convert",
+            "count" => count($this->db->findTopics()),
+            "key" => $to === "html" ? "label_convert_to_html" : "label_convert_to_plain_text",
+        ]));
+    }
+
+    private function doConvertTo(Request $request, string $to): Response
     {
         $this->csrfProtector->check();
         $count = 0;
@@ -118,12 +138,21 @@ class MainAdminController
             }
             $this->db->storeTopic($topic, $newComments);
         }
-        return $this->defaultAction()->merge(Response::create(
-            $this->view->message('success', 'message_converted_' . $to, $count)
-        ));
+        $this->flashMessage->push($this->view->pmessage("success", "message_converted_$to", $count));
+        return Response::redirect($request->url()->without("twocents_action")->absolute());
     }
 
-    private function importCommentsAction(): Response
+    private function importComments(): Response
+    {
+        return Response::create($this->view->render("confirm", [
+            "csrf_token" => $this->csrfProtector->token(),
+            "message_key" => "message_topics_to_import",
+            "count" => count($this->db->findTopics("txt")),
+            "key" => "label_import_comments",
+        ]));
+    }
+
+    private function doImportComments(Request $request): Response
     {
         $this->csrfProtector->check();
         $count = 0;
@@ -143,12 +172,21 @@ class MainAdminController
             }
             $this->db->storeTopic($topic, $newComments);
         }
-        return $this->defaultAction()->merge(Response::create(
-            $this->view->message('success', 'message_imported_comments', $count)
-        ));
+        $this->flashMessage->push($this->view->pmessage("success", "message_imported_comments", $count));
+        return Response::redirect($request->url()->without("twocents_action")->absolute());
     }
 
-    private function importGbookAction(): Response
+    private function importGbook(): Response
+    {
+        return Response::create($this->view->render("confirm", [
+            "csrf_token" => $this->csrfProtector->token(),
+            "message_key" => "message_topics_to_import",
+            "count" => count($this->db->findTopics("txt")),
+            "key" => "label_import_gbook",
+        ]));
+    }
+
+    private function doImportGbook(Request $request): Response
     {
         $this->csrfProtector->check();
         $count = 0;
@@ -168,8 +206,7 @@ class MainAdminController
             }
             $this->db->storeTopic($topic, $newComments);
         }
-        return $this->defaultAction()->merge(Response::create(
-            $this->view->message('success', 'message_imported_gbook', $count)
-        ));
+        $this->flashMessage->push($this->view->pmessage("success", "message_imported_gbook", $count));
+        return Response::redirect($request->url()->without("twocents_action")->absolute());
     }
 }

@@ -1,7 +1,7 @@
 <?php
 
 /**
- * Copyright 2014-2023 Christoph M. Becker
+ * Copyright 2023 Christoph M. Becker
  *
  * This file is part of Twocents_XH.
  *
@@ -19,27 +19,24 @@
  * along with Twocents_XH.  If not, see <http://www.gnu.org/licenses/>.
  */
 
-use Twocents\Dic;
-use Twocents\Infra\Request;
-use Twocents\Infra\Responder;
+namespace Twocents\Infra;
 
-/**
- * @var string $admin
- * @var string $o
- */
+class FlashMessage
+{
+    /**
+     * @return void
+     * @codeCoverageIgnore
+     */
+    public function push(string $message)
+    {
+        $_SESSION["twocents_message"] = $message;
+    }
 
-XH_registerStandardPluginMenuItems(true);
-
-if (XH_wantsPluginAdministration('twocents')) {
-    $o .= print_plugin_admin('on');
-    switch ($admin) {
-        case '':
-            $o .= Responder::respond(Dic::makeInfoController()());
-            break;
-        case 'plugin_main':
-            $o .= Responder::respond(Dic::testMakeMainAdminController()(Request::current()));
-            break;
-        default:
-            $o .= plugin_admin_common();
+    /** @codeCoverageIgnore */
+    public function pop(): ?string
+    {
+        $message = $_SESSION["twocents_message"] ?? "";
+        unset($_SESSION["twocents_message"]);
+        return $message;
     }
 }

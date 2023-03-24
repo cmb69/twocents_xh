@@ -80,15 +80,6 @@ class Response
         return $that;
     }
 
-    public function merge(Response $other): self
-    {
-        assert($this->contentType === null);
-        assert($this->location === null);
-        $that = clone $this;
-        $that->output .= $other->output;
-        return $that;
-    }
-
     public function output(): string
     {
         return $this->output;

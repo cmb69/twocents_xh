@@ -58,6 +58,21 @@ class Request
         return (int) $_SERVER["REQUEST_TIME"];
     }
 
+    public function action(): string
+    {
+        $action = $this->url()->param("twocents_action");
+        if (!is_string($action)) {
+            return "";
+        }
+        if (!strncmp($action, "do_", strlen("do_"))) {
+            return "";
+        }
+        if (array_key_exists("twocents_do", $this->post())) {
+            return "do_$action";
+        }
+        return $action;
+    }
+
     /** @return array{user:string,email:string,message:string} */
     public function commentPost(): array
     {

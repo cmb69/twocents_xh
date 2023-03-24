@@ -47,14 +47,21 @@ class View
     /** @param scalar $args */
     public function plural(string $key, int $count, ...$args): string
     {
-        $suffix = $count == 0 ? "_0" : "_1";
-        return sprintf($this->esc($this->text["{$key}{$suffix}"]), $count, ...$args);
+        $suffix = $count === 0 ? "_0" : XH_numberSuffix($count);
+        return sprintf($this->esc($this->text[$key . $suffix]), $count, ...$args);
     }
 
     /** @param scalar $args */
     public function message(string $type, string $key, ...$args): string
     {
         return XH_message($type, $this->text[$key], ...$args);
+    }
+
+    /** @param scalar $args */
+    public function pmessage(string $type, string $key, int $count, ...$args): string
+    {
+        $suffix = $count === 0 ? "_0" : XH_numberSuffix($count);
+        return XH_message($type, $this->text[$key . $suffix], $count, ...$args);
     }
 
     /** @param array<string,mixed> $_data */
