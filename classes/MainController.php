@@ -25,6 +25,7 @@ use Twocents\Infra\Captcha;
 use Twocents\Infra\CsrfProtector;
 use Twocents\Infra\Db;
 use Twocents\Infra\HtmlCleaner;
+use Twocents\Infra\Mailer;
 use Twocents\Infra\Random;
 use Twocents\Infra\Request;
 use Twocents\Infra\View;
@@ -35,7 +36,6 @@ use Twocents\Value\Comment;
 use Twocents\Value\Html;
 use Twocents\Value\Response;
 use Twocents\Value\Url;
-use XH\Mail as Mailer;
 
 class MainController
 {
@@ -399,26 +399,18 @@ class MainController
     {
         $email = $this->conf['email_address'];
         if ($email !== '') {
+            $url = $url->absolute() . "#twocents_comment_" . $comment->id();
             $message = $comment->message();
             if ($this->conf['comments_markup'] === 'HTML') {
                 $message = strip_tags($message);
             }
-            $url = $url->absolute()
-                . "#twocents_comment_" . $comment->id();
-            $attribution = sprintf(
-                $this->lang['email_attribution'],
-                $url,
-                $comment->user(),
+            $this->mailer->sendNotification(
+                $email,
+                $this->view->plain("email_subject"),
+                $this->view->plain("email_attribution", $url, $comment->user(), $comment->email()),
+                $message,
                 $comment->email()
             );
-            $body = $attribution. "\n\n> " . str_replace("\n", "\n> ", $message);
-            $replyTo = str_replace(["\n", "\r"], '', $comment->email());
-            $this->mailer->setTo($email);
-            $this->mailer->setSubject($this->lang['email_subject']);
-            $this->mailer->setMessage($body);
-            $this->mailer->addHeader("From", $email);
-            $this->mailer->addHeader("Reply-To", $replyTo);
-            $this->mailer->send();
         }
     }
 

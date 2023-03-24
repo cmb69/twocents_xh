@@ -21,32 +21,30 @@
 
 namespace Twocents\Infra;
 
-class FakeRequest extends Request
+use XH\Mail as XhMail;
+
+class Mailer
 {
-    private $options;
-
-    public function __construct(array $options = [])
-    {
-        $this->options = $options;
+    public function sendNotification(
+        string $to,
+        string $subject,
+        string $attribution,
+        string $message,
+        string $replyTo
+    ): bool {
+        $body = $attribution . "\n\n> " . str_replace("\n", "\n> ", $message);
+        $xhMail = $this->xhMail();
+        $xhMail->setTo($to);
+        $xhMail->setSubject($subject);
+        $xhMail->setMessage($body);
+        $xhMail->addHeader("From", $to);
+        $xhMail->addHeader("Reply-To", $replyTo);
+        return $xhMail->send();
     }
 
-    public function admin(): bool
+    /** @codeCoverageIgnore */
+    protected function xhMail(): XhMail
     {
-        return $this->options["adm"] ?? false;
-    }
-
-    public function query(): string
-    {
-        return $this->options["query"] ?? "";
-    }
-
-    public function time(): int
-    {
-        return $this->options["time"] ?? 0;
-    }
-
-    protected function post(): array
-    {
-        return $this->options["post"] ?? [];
+        return new XhMail();
     }
 }

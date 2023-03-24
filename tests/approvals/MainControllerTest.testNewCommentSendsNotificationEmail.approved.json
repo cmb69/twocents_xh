@@ -1,0 +1,9 @@
+{
+    "header": {
+        "From": "admin@example.com",
+        "Reply-To": "cmb69@gmx.de"
+    },
+    "message": "In <http:\/\/example.com\/?Twocents#twocents_comment_gfcafKrX1PCEFRh74DT5>, cmb (<cmb69@gmx.de>) wrote:\n\n> I fixed that typo",
+    "subject": "A new comment has been posted",
+    "to": "admin@example.com"
+}

@@ -67,11 +67,10 @@ class Util
 
     public static function isValidEmailAddress(string $email): bool
     {
-        return (bool) preg_match(
-            '/^[a-zA-Z0-9.!#$%&\'*+\/=?^_`{|}~-]+@[a-zA-Z0-9](?:[a-zA-Z0-9-]{0,61}'
-            . '[a-zA-Z0-9])?(?:\.[a-zA-Z0-9](?:[a-zA-Z0-9-]{0,61}[a-zA-Z0-9])?)*$/',
-            $email
-        );
+        // <https://html.spec.whatwg.org/multipage/input.html#valid-e-mail-address>
+        $local = '[a-zA-Z0-9.!#$%&\'*+\/=?^_`{|}~-]+';
+        $label = '[a-zA-Z0-9](?:[a-zA-Z0-9-]{0,61}[a-zA-Z0-9])?';
+        return (bool) preg_match("/^$local@$label(?:\\.$label)*$/u", $email);
     }
 
     public static function encodeBase64url(string $string): string

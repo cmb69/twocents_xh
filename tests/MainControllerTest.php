@@ -26,12 +26,12 @@ use PHPUnit\Framework\TestCase;
 use Twocents\Infra\FakeCaptcha;
 use Twocents\Infra\FakeCsrfProtector;
 use Twocents\Infra\FakeDb;
+use Twocents\Infra\FakeMailer;
 use Twocents\Infra\FakeRequest;
 use Twocents\Infra\HtmlCleaner;
 use Twocents\Infra\Random;
 use Twocents\Infra\View;
 use Twocents\Value\Comment;
-use XH\Mail as Mailer;
 
 class MainControllerTest extends TestCase
 {
@@ -42,7 +42,7 @@ class MainControllerTest extends TestCase
         $db = new FakeDb;
         $db->insertComment($this->comment());
         $sut = $this->sut(["csrfProtector" => $csrfProtector, "db" => $db]);
-        $response = $sut(new FakeRequest(["query" => "Twocents"]), "test-topic", false);
+        $response = $sut(new FakeRequest(["query" => "Twocents", "adm" => true]), "test-topic", false);
         $comment = $db->findComment($this->comment()->topicname(), $this->comment()->id());
         $this->assertTrue($comment->hidden());
         $this->assertEquals("http://example.com/?Twocents", $response->location());
@@ -55,7 +55,7 @@ class MainControllerTest extends TestCase
         $db = new FakeDb;
         $db->insertComment($this->comment());
         $sut = $this->sut(["csrfProtector" => $csrfProtector, "db" => $db]);
-        $response = $sut(new FakeRequest(["query" => "Twocents"]), "test-topic", false);
+        $response = $sut(new FakeRequest(["query" => "Twocents", "adm" => true]), "test-topic", false);
         $this->assertTrue($csrfProtector->hasChecked());
         $this->assertNull($db->findComment($this->comment()->topicname(), $this->comment()->id()));
         $this->assertEquals("http://example.com/?Twocents", $response->location());
@@ -67,7 +67,7 @@ class MainControllerTest extends TestCase
         $db = new FakeDb;
         $db->insertComment($this->comment());
         $sut = $this->sut(["csrfProtector" => $csrfProtector, "db" => $db]);
-        $request = new FakeRequest(["query" => "Twocents"]);
+        $request = new FakeRequest(["query" => "Twocents", "adm" => true]);
         $response = $sut($request, "test-topic", false);
         Approvals::verifyHtml($response->output());
     }
@@ -108,6 +108,7 @@ class MainControllerTest extends TestCase
         $request = new FakeRequest([
             "query" => "Twocents",
             "time" => 1677493797,
+            "adm" => true,
             "post" => [
                 "twocents_user" => "cmb",
                 "twocents_email" => "cmb69@gmx.de",
@@ -116,6 +117,27 @@ class MainControllerTest extends TestCase
         ]);
         $response = $sut($request, "test-topic", false);
         Approvals::verifyHtml($response->output());
+    }
+
+    public function testNewCommentSendsNotificationEmail(): void
+    {
+        $_POST = [
+            "twocents_action" => "add_comment",
+        ];
+        $mailer = new FakeMailer;
+        $sut = $this->sut(["conf" => ["email_address" => "admin@example.com"], "mailer" => $mailer]);
+        $request = new FakeRequest([
+            "query" => "Twocents",
+            "time" => 1677493797,
+            "post" => [
+                "twocents_user" => "cmb",
+                "twocents_email" => "cmb69@gmx.de",
+                "twocents_message" => "I fixed that typo",
+            ],
+        ]);
+        $sut($request, "test-topic", false);
+        $this->assertTrue($mailer->sent);
+        Approvals::verifyAsJson($mailer->output);
     }
 
     public function testOnlyAdminCanAddCommentIfReadOnly(): void
@@ -131,7 +153,6 @@ class MainControllerTest extends TestCase
         $sut = $this->sut(["csrfProtector" => null, "db" => $db]);
         $request = new FakeRequest([
             "query" => "Twocents",
-            "adm" => false,
             "time" => 1677493797,
         ]);
         $response = $sut($request, "test-topic", true);
@@ -151,6 +172,7 @@ class MainControllerTest extends TestCase
         $sut = $this->sut(["csrfProtector" => $csrfProtector, "db" => $db]);
         $request = new FakeRequest([
             "query" => "Twocents",
+            "adm" => true,
             "post" => [
                 "twocents_user" => "cmb",
                 "twocents_email" => "cmb69@gmx.de",
@@ -165,14 +187,14 @@ class MainControllerTest extends TestCase
     {
         return new MainController(
             "./plugins/twocents/",
-            $this->conf(),
+            $this->conf($options["conf"] ?? []),
             $this->text(),
             $options["csrfProtector"] ?? new FakeCsrfProtector,
             $options["db"] ?? new FakeDb,
             $this->createStub(HtmlCleaner::class),
             $this->random(),
             new FakeCaptcha,
-            $this->createStub(Mailer::class),
+            $options["mailer"] ?? new FakeMailer,
             new View("./views/", $this->text())
         );
     }
@@ -184,9 +206,9 @@ class MainControllerTest extends TestCase
         return $random;
     }
 
-    private function conf()
+    private function conf(array $options)
     {
-        return XH_includeVar("./config/config.php", "plugin_cf")["twocents"];
+        return $options + XH_includeVar("./config/config.php", "plugin_cf")["twocents"];
     }
 
     private function text()

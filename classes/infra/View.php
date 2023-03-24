@@ -39,6 +39,12 @@ class View
     }
 
     /** @param scalar $args */
+    public function plain(string $key, ...$args): string
+    {
+        return sprintf($this->text[$key], ...$args);
+    }
+
+    /** @param scalar $args */
     public function text(string $key, ...$args): string
     {
         return sprintf($this->esc($this->text[$key]), ...$args);
