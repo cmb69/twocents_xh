@@ -24,6 +24,7 @@ namespace Twocents;
 use Twocents\Infra\CsrfProtector;
 use Twocents\Infra\Db;
 use Twocents\Infra\HtmlCleaner;
+use Twocents\Infra\Request;
 use Twocents\Infra\View;
 use Twocents\Logic\Util;
 use Twocents\Value\Response;
@@ -65,19 +66,27 @@ class MainAdminController
         $this->view = $view;
     }
 
-    public function __invoke(): Response
+    public function __invoke(Request $request): Response
     {
-        switch ($_POST["action"] ?? "") {
+        switch ($request->action()) {
             default:
                 return $this->defaultAction();
             case "convert_to_html":
                 return $this->convertTo("html");
+            case "do_convert_to_html":
+                return $this->doConvertTo("html");
             case "convert_to_plain_text":
                 return $this->convertTo("plain");
+            case "do_convert_to_html":
+                return $this->doConvertTo("plain");
             case "import_comments":
-                return $this->importCommentsAction();
+                return $this->importComments();
+            case "do_import_comments":
+                return $this->doImportComments();
             case "import_gbook":
-                return $this->importGbookAction();
+                return $this->importGbook();
+            case "do_import_gbook":
+                return $this->doImportGbook();
         }
     }
 
@@ -101,6 +110,11 @@ class MainAdminController
 
     private function convertTo(string $to): Response
     {
+        return Response::create("");
+    }
+
+    private function doConvertTo(string $to): Response
+    {
         $this->csrfProtector->check();
         $count = 0;
         $topics = $this->db->findTopics();
@@ -123,7 +137,12 @@ class MainAdminController
         ));
     }
 
-    private function importCommentsAction(): Response
+    private function importComments(): Response
+    {
+        return Response::create("");
+    }
+
+    private function doImportComments(): Response
     {
         $this->csrfProtector->check();
         $count = 0;
@@ -148,7 +167,12 @@ class MainAdminController
         ));
     }
 
-    private function importGbookAction(): Response
+    private function importGbook(): Response
+    {
+        return Response::create("");
+    }
+
+    private function doImportGbook(): Response
     {
         $this->csrfProtector->check();
         $count = 0;

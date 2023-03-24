@@ -20,6 +20,7 @@
  */
 
 use Twocents\Dic;
+use Twocents\Infra\Request;
 use Twocents\Infra\Responder;
 
 /**
@@ -36,7 +37,7 @@ if (XH_wantsPluginAdministration('twocents')) {
             $o .= Responder::respond(Dic::makeInfoController()());
             break;
         case 'plugin_main':
-            $o .= Responder::respond(Dic::testMakeMainAdminController()());
+            $o .= Responder::respond(Dic::testMakeMainAdminController()(Request::current()));
             break;
         default:
             $o .= plugin_admin_common();
