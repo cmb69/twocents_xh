@@ -106,7 +106,7 @@ class MainAdminController
                 ["value" => "import_comments", "label" => "label_import_comments"],
                 ["value" => "import_gbook", "label" => "label_import_gbook"],
             ],
-        ]));
+        ]))->withTitle("Twocents – " . $this->view->text("menu_main"));
     }
 
     private function convertTo(string $to): Response
@@ -116,7 +116,7 @@ class MainAdminController
             "message_key" => "message_topics_to_convert",
             "count" => count($this->db->findTopics()),
             "key" => $to === "html" ? "label_convert_to_html" : "label_convert_to_plain_text",
-        ]));
+        ]))->withTitle("Twocents – " . $this->view->text("menu_main"));
     }
 
     private function doConvertTo(Request $request, string $to): Response
@@ -149,7 +149,7 @@ class MainAdminController
             "message_key" => "message_topics_to_import",
             "count" => count($this->db->findTopics("txt")),
             "key" => "label_import_comments",
-        ]));
+        ]))->withTitle("Twocents – " . $this->view->text("menu_main"));
     }
 
     private function doImportComments(Request $request): Response
@@ -183,7 +183,7 @@ class MainAdminController
             "message_key" => "message_topics_to_import",
             "count" => count($this->db->findTopics("txt")),
             "key" => "label_import_gbook",
-        ]));
+        ]))->withTitle("Twocents – " . $this->view->text("menu_main"));
     }
 
     private function doImportGbook(Request $request): Response

@@ -39,6 +39,7 @@ class InfoControllerTest extends TestCase
             new View("./views/", XH_includeVar("./languages/en.php", "plugin_tx")["twocents"])
         );
         $response = $sut(new FakeRequest());
+        $this->assertEquals("Twocents 1.0", $response->title());
         Approvals::verifyHtml($response->output());
     }
 }

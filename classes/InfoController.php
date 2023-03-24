@@ -54,7 +54,7 @@ class InfoController
         return Response::create($this->view->render("info", [
             "version" => TWOCENTS_VERSION,
             "checks" => $this->getChecks(),
-        ]));
+        ]))->withTitle("Twocents " . TWOCENTS_VERSION);
     }
 
     /** @return list<array{key:string,arg:string,class:string,state:string}> */

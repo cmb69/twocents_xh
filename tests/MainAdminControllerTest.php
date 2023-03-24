@@ -37,6 +37,7 @@ class MainAdminControllerTest extends TestCase
     {
         $sut = $this->sut();
         $response = $sut(new FakeRequest());
+        $this->assertEquals("Twocents – Conversion", $response->title());
         Approvals::verifyHtml($response->output());
     }
 
@@ -44,6 +45,7 @@ class MainAdminControllerTest extends TestCase
     {
         $sut = $this->sut(["conf" => ["comments_markup" => "HTML"]]);
         $response = $sut(new FakeRequest());
+        $this->assertEquals("Twocents – Conversion", $response->title());
         Approvals::verifyHtml($response->output());
     }
 
@@ -53,6 +55,7 @@ class MainAdminControllerTest extends TestCase
         $response = $sut(new FakeRequest([
             "query" => "twocents&admin=plugin_main&twocents_action=convert_to_html",
         ]));
+        $this->assertEquals("Twocents – Conversion", $response->title());
         Approvals::verifyHtml($response->output());
     }
 
@@ -77,6 +80,7 @@ class MainAdminControllerTest extends TestCase
         $response = $sut(new FakeRequest([
             "query" => "twocents&admin=plugin_main&twocents_action=convert_to_plain_text",
         ]));
+        $this->assertEquals("Twocents – Conversion", $response->title());
         Approvals::verifyHtml($response->output());
     }
 
@@ -101,6 +105,7 @@ class MainAdminControllerTest extends TestCase
         $response = $sut(new FakeRequest([
             "query" => "twocents&admin=plugin_main&twocents_action=import_comments",
         ]));
+        $this->assertEquals("Twocents – Conversion", $response->title());
         Approvals::verifyHtml($response->output());
     }
 
@@ -125,6 +130,7 @@ class MainAdminControllerTest extends TestCase
         $response = $sut(new FakeRequest([
             "query" => "twocents&admin=plugin_main&twocents_action=import_gbook",
         ]));
+        $this->assertEquals("Twocents – Conversion", $response->title());
         Approvals::verifyHtml($response->output());
     }
 

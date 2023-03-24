@@ -28,7 +28,7 @@ class Responder
     /** @return string|never */
     public static function respond(Response $response)
     {
-        global $hjs, $bjs;
+        global $title, $hjs, $bjs;
 
         if ($response->contentType() !== null) {
             self::purgeOutputBuffers();
@@ -41,6 +41,9 @@ class Responder
             header("Location: " . $response->location(), true, 303);
             echo $response->output();
             exit;
+        }
+        if ($response->title() !== null) {
+            $title = $response->title();
         }
         if ($response->hjs() !== null) {
             $hjs .= $response->hjs();

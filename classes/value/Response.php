@@ -41,6 +41,9 @@ class Response
     private $output = "";
 
     /** @var string|null */
+    private $title = null;
+
+    /** @var string|null */
     private $hjs = null;
 
     /** @var string|null */
@@ -52,10 +55,10 @@ class Response
     /** @var string|null */
     private $location = null;
 
-    public function withOutput(string $output): self
+    public function withTitle(string $title): self
     {
         $that = clone $this;
-        $that->output = $output;
+        $that->title = $title;
         return $that;
     }
 
@@ -83,6 +86,11 @@ class Response
     public function output(): string
     {
         return $this->output;
+    }
+
+    public function title(): ?string
+    {
+        return $this->title;
     }
 
     public function hjs(): ?string
