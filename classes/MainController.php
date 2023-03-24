@@ -26,13 +26,13 @@ use Twocents\Infra\CsrfProtector;
 use Twocents\Infra\Db;
 use Twocents\Infra\HtmlCleaner;
 use Twocents\Infra\Request;
-use Twocents\Infra\Response;
 use Twocents\Infra\Url;
 use Twocents\Infra\View;
 use Twocents\Logic\Pagination;
 use Twocents\Logic\SpamFilter;
 use Twocents\Logic\Util;
 use Twocents\Value\Comment;
+use Twocents\Value\Response;
 use XH\Mail as Mailer;
 
 class MainController
@@ -121,7 +121,7 @@ class MainController
         }
         $this->db->updateComment($comment);
         $url = Url::getCurrent()->without('twocents_action')->getAbsolute();
-        return Response::createRedirect($url);
+        return Response::redirect($url);
     }
 
     private function removeCommentAction(Request $request, string $topic): Response
@@ -133,7 +133,7 @@ class MainController
         $comment = $this->db->findComment($topic, $_POST["twocents_id"]);
         $this->db->deleteComment($comment);
         $url = Url::getCurrent()->without('twocents_action')->getAbsolute();
-        return Response::createRedirect($url);
+        return Response::redirect($url);
     }
 
     private function defaultAction(
@@ -168,13 +168,13 @@ class MainController
         if (!$this->isXmlHttpRequest()) {
             $response = Response::create("<div class=\"twocents_container\">$html</div>");
             if (!$this->jsWritten) {
-                $response->setHjs($this->view->renderMeta("twocents", $this->jsConf()))
-                    ->setBjs($this->view->renderScript($request->pluginsFolder() . "twocents/twocents.min.js"));
+                $response = $response->withHjs($this->view->renderMeta("twocents", $this->jsConf()))
+                    ->withBjs($this->view->renderScript($request->pluginsFolder() . "twocents/twocents.min.js"));
                 $this->jsWritten = true;
             }
             return $response;
         } else {
-            return Response::createContentType("text/html; charset=UTF-8")->setOutput($html);
+            return Response::create($html)->withContentType("text/html; charset=UTF-8");
         }
     }
 

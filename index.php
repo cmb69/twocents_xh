@@ -21,6 +21,7 @@
 
 use Twocents\Dic;
 use Twocents\Infra\Request;
+use Twocents\Infra\Responder;
 
 if (!defined('CMSIMPLE_XH_VERSION')) {
     header("HTTP/1.1 403 Forbidden");
@@ -36,5 +37,5 @@ const TWOCENTS_VERSION = "1.0";
  */
 function twocents($topicname, $readonly = false)
 {
-    return Dic::makeMainController()(new Request, $topicname, $readonly)->fire();
+    return Responder::respond(Dic::makeMainController()(new Request, $topicname, $readonly));
 }

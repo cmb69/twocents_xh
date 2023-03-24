@@ -24,6 +24,7 @@ namespace Twocents;
 use Realblog\CommentsBridge;
 use Twocents\Infra\Db;
 use Twocents\Infra\Request;
+use Twocents\Infra\Responder;
 
 class RealblogBridge implements CommentsBridge
 {
@@ -46,7 +47,7 @@ class RealblogBridge implements CommentsBridge
     {
         global $plugin_cf, $plugin_tx;
 
-        $comments = Dic::makeMainController()(new Request, $topic, false)->fire();
+        $comments = Responder::respond(Dic::makeMainController()(new Request, $topic, false));
         return '<div class="twocents_realblog_comments">'
             . '<' . $plugin_cf['twocents']['realblog_heading'] . '>'
             .  $plugin_tx['twocents']['realblog_heading']

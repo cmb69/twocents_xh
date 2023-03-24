@@ -24,9 +24,9 @@ namespace Twocents;
 use Twocents\Infra\CsrfProtector;
 use Twocents\Infra\Db;
 use Twocents\Infra\HtmlCleaner;
-use Twocents\Infra\Response;
 use Twocents\Infra\View;
 use Twocents\Logic\Util;
+use Twocents\Value\Response;
 
 class MainAdminController
 {

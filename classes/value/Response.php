@@ -19,27 +19,20 @@
  * along with Twocents_XH.  If not, see <http://www.gnu.org/licenses/>.
  */
 
-namespace Twocents\Infra;
+namespace Twocents\Value;
 
 class Response
 {
     public static function create(string $output): self
     {
-        $that = new Response;
+        $that = new self;
         $that->output = $output;
         return $that;
     }
 
-    public static function createContentType(string $contentType): self
+    public static function redirect(string $location): self
     {
-        $that = new Response;
-        $that->contentType = $contentType;
-        return $that;
-    }
-
-    public static function createRedirect(string $location): self
-    {
-        $that = new Response;
+        $that = new self;
         $that->location = $location;
         return $that;
     }
@@ -59,30 +52,41 @@ class Response
     /** @var string|null */
     private $location = null;
 
-    public function setOutput(string $output): self
+    public function withOutput(string $output): self
     {
-        $this->output = $output;
-        return $this;
+        $that = clone $this;
+        $that->output = $output;
+        return $that;
     }
 
-    public function setHjs(string $hjs): self
+    public function withHjs(string $hjs): self
     {
-        $this->hjs = $hjs;
-        return $this;
+        $that = clone $this;
+        $that->hjs = $hjs;
+        return $that;
     }
 
-    public function setBjs(string $bjs): self
+    public function withBjs(string $bjs): self
     {
-        $this->bjs = $bjs;
-        return $this;
+        $that = clone $this;
+        $that->bjs = $bjs;
+        return $that;
+    }
+
+    public function withContentType(string $contentType): self
+    {
+        $that = clone $this;
+        $that->contentType = $contentType;
+        return $that;
     }
 
     public function merge(Response $other): self
     {
         assert($this->contentType === null);
         assert($this->location === null);
-        $this->output .= $other->output;
-        return $this;
+        $that = clone $this;
+        $that->output .= $other->output;
+        return $that;
     }
 
     public function output(): string
@@ -108,35 +112,5 @@ class Response
     public function location(): ?string
     {
         return $this->location;
-    }
-
-    /** @return string|never */
-    public function fire()
-    {
-        global $hjs, $bjs;
-
-        if ($this->contentType !== null) {
-            while (ob_get_level()) {
-                ob_end_clean();
-            }
-            header("Content-Type: {$this->contentType}");
-            echo $this->output;
-            exit;
-        }
-        if ($this->location !== null) {
-            while (ob_get_level()) {
-                ob_end_clean();
-            }
-            header("Location: {$this->location}", true, 303);
-            echo $this->output;
-            exit;
-        }
-        if ($this->hjs !== null) {
-            $hjs .= $this->hjs;
-        }
-        if ($this->bjs !== null) {
-            $bjs .= $this->bjs;
-        }
-        return $this->output;
     }
 }
