@@ -47,20 +47,26 @@ class Db
         return $this->foldername;
     }
 
-    /** @return resource */
-    public function lock(bool $exclusive)
+    /** @return resource|null */
+    protected function lock(bool $exclusive)
     {
         $lock = fopen($this->getLockFilename(), 'r');
+        if ($lock === false) {
+            return null;
+        }
         flock($lock, $exclusive ? LOCK_EX : LOCK_SH);
         return $lock;
     }
 
     /**
-     * @param resource $lock
+     * @param resource|null $lock
      * @return void
      */
-    public function unlock($lock)
+    protected function unlock($lock)
     {
+        if ($lock === null) {
+            return;
+        }
         flock($lock, LOCK_UN);
         fclose($lock);
     }
@@ -122,7 +128,7 @@ class Db
                 $comments[] = new Comment(
                     uniqid(),
                     $topic,
-                    $record[8] ?? strtotime("{$record[4]} {$record[3]}"),
+                    (int) ($record[8] ?? strtotime("{$record[4]} {$record[3]}")),
                     $record[0],
                     $record[1],
                     "<p><strong>{$record[5]}</strong></p><p>{$record[6]}</p>",

@@ -161,7 +161,7 @@ class MainController
         $itemsPerPage = (int) $this->conf['pagination_max'];
         $pageCount = (int) ceil($count / $itemsPerPage);
         $currentPage = is_string($request->url()->param("twocents_page"))
-            ? max(1, min($pageCount, $request->url()->param("twocents_page")))
+            ? max(1, min($pageCount, (int) $request->url()->param("twocents_page")))
             : 1;
         $comments = array_splice($comments, ($currentPage - 1) * $itemsPerPage, $itemsPerPage);
         $pagination = $this->renderPaginationView($request->url(), $count, $currentPage, $pageCount);
@@ -201,7 +201,7 @@ class MainController
 
     /**
      * @param list<int|null> $pages
-     * @return list<array{index:?int,url:?Url,is_current:?bool,is_ellipsis:bool}>
+     * @return list<array{index:?int,url:?string,is_current:?bool,is_ellipsis:bool}>
      */
     private function pageRecords(array $pages, Url $url, int $currentPage): array
     {
@@ -218,8 +218,8 @@ class MainController
                 $records[] = [
                     'index' => null,
                     "url" => null,
-                    "isCurrent" => null,
-                    'isEllipsis' => true
+                    "is_current" => null,
+                    'is_ellipsis' => true
                 ];
             }
         }

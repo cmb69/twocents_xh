@@ -42,9 +42,9 @@ class FakeDb extends Db
         return $this->foldername;
     }
 
-    public function lock(bool $exclusive) {}
+    protected function lock(bool $exclusive) {}
 
-    public function unlock($lock) {}
+    protected function unlock($lock) {}
 
     public function findTopics(string $extension = "csv"): array
     {

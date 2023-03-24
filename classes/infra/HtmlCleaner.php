@@ -60,6 +60,7 @@ class HtmlCleaner
     public function clean(string $message): string
     {
         $this->init();
+        assert($this->purifier !== null);
         $message = str_replace(array('&nbsp;', "\C2\A0"), ' ', $message);
         return $this->purifier->purify($message);
     }

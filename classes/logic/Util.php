@@ -27,7 +27,7 @@ class Util
 {
     public static function htmlify(string $text): string
     {
-        return preg_replace(
+        return (string) preg_replace(
             array('/(?:\r\n|\r)/', '/\n{2,}/', '/\n/'),
             array("\n", '</p><p>', "<br>"),
             '<p>' . $text . '</p>'
@@ -67,7 +67,7 @@ class Util
 
     public static function isValidEmailAddress(string $email): bool
     {
-        return preg_match(
+        return (bool) preg_match(
             '/^[a-zA-Z0-9.!#$%&\'*+\/=?^_`{|}~-]+@[a-zA-Z0-9](?:[a-zA-Z0-9-]{0,61}'
             . '[a-zA-Z0-9])?(?:\.[a-zA-Z0-9](?:[a-zA-Z0-9-]{0,61}[a-zA-Z0-9])?)*$/',
             $email
