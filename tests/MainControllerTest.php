@@ -28,6 +28,7 @@ use Twocents\Infra\FakeCsrfProtector;
 use Twocents\Infra\FakeDb;
 use Twocents\Infra\FakeRequest;
 use Twocents\Infra\HtmlCleaner;
+use Twocents\Infra\Random;
 use Twocents\Infra\View;
 use Twocents\Value\Comment;
 use XH\Mail as Mailer;
@@ -169,10 +170,18 @@ class MainControllerTest extends TestCase
             $options["csrfProtector"] ?? new FakeCsrfProtector,
             $options["db"] ?? new FakeDb,
             $this->createStub(HtmlCleaner::class),
+            $this->random(),
             new FakeCaptcha,
             $this->createStub(Mailer::class),
             new View("./views/", $this->text())
         );
+    }
+
+    private function random()
+    {
+        $random = $this->createStub(Random::class);
+        $random->method("bytes")->willReturn(hex2bin("81f71a7caad7d4f08415187be034f9"));
+        return $random;
     }
 
     private function conf()

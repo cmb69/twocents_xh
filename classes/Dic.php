@@ -26,6 +26,7 @@ use Twocents\Infra\CsrfProtector;
 use Twocents\Infra\Db;
 use Twocents\Infra\FlashMessage;
 use Twocents\Infra\HtmlCleaner;
+use Twocents\Infra\Random;
 use Twocents\Infra\SystemChecker;
 use Twocents\Infra\View;
 use XH\Mail as Mailer;
@@ -45,6 +46,7 @@ class Dic
                 isset($_XH_csrfProtection) ? new CsrfProtector : null,
                 self::makeDb(),
                 self::makeHtmlCleaner(),
+                new Random,
                 self::makeCaptcha(),
                 new Mailer,
                 self::makeView()
