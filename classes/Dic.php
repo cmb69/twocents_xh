@@ -24,6 +24,7 @@ namespace Twocents;
 use Twocents\Infra\Captcha;
 use Twocents\Infra\CsrfProtector;
 use Twocents\Infra\Db;
+use Twocents\Infra\FlashMessage;
 use Twocents\Infra\HtmlCleaner;
 use Twocents\Infra\SystemChecker;
 use Twocents\Infra\View;
@@ -65,14 +66,14 @@ class Dic
 
     public static function testMakeMainAdminController(): MainAdminController
     {
-        global $sn, $plugin_cf;
+        global $plugin_cf;
 
         return new MainAdminController(
-            $sn,
             $plugin_cf["twocents"],
             new CsrfProtector,
             self::makeDb(),
             self::makeHtmlCleaner(),
+            new FlashMessage,
             self::makeView()
         );
     }

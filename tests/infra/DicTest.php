@@ -27,13 +27,12 @@ class DicTest extends TestCase
 {
     public function setUp(): void
     {
-        global $pth, $cf, $plugin_cf, $plugin_tx, $sn;
+        global $pth, $cf, $plugin_cf, $plugin_tx;
 
         $pth = ["folder" => ["base" => "", "content" => "", "plugins" => ""]];
         $cf = ["mailform" => ["lf_only" => ""]];
         $plugin_cf = ["twocents" => ["captcha_plugin" => ""]];
         $plugin_tx = ["twocents" => []];
-        $sn = "/";
     }
 
     public function testMakesMainController(): void

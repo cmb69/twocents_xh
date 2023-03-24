@@ -60,10 +60,17 @@ class Request
 
     public function action(): string
     {
-        if (!is_string($this->url()->param("twocents_action"))) {
+        $action = $this->url()->param("twocents_action");
+        if (!is_string($action)) {
             return "";
         }
-        return $this->url()->param("twocents_action");
+        if (!strncmp($action, "do_", strlen("do_"))) {
+            return "";
+        }
+        if (array_key_exists("twocents_do", $this->post())) {
+            return "do_$action";
+        }
+        return $action;
     }
 
     /** @return array{user:string,email:string,message:string} */
