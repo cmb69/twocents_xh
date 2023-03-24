@@ -93,26 +93,29 @@ class FakeDb extends Db
         return null;
     }
 
-    public function insertComment(Comment $comment)
+    public function insertComment(Comment $comment): bool
     {
         $this->data[$comment->topicname()][] = $comment;
+        return true;
     }
 
-    public function updateComment(Comment $comment)
+    public function updateComment(Comment $comment): bool
     {
         foreach ($this->data[$comment->topicname()] as &$aComment) {
             if ($aComment->id() === $comment->id()) {
                 $aComment = $comment;
             }
         }
+        return true;
     }
 
-    public function deleteComment(Comment $comment)
+    public function deleteComment(Comment $comment): bool
     {
         foreach ($this->data[$comment->topicname()] as $i => $aComment) {
             if ($aComment->id() === $comment->id()) {
                 unset($this->data[$comment->topicname()][$i]);
             }
         }
+        return true;
     }
 }

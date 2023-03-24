@@ -50,7 +50,7 @@ class Db
     /** @return resource */
     public function lock(bool $exclusive)
     {
-        $lock = fopen(self::getLockFilename(), 'r');
+        $lock = fopen($this->getLockFilename(), 'r');
         flock($lock, $exclusive ? LOCK_EX : LOCK_SH);
         return $lock;
     }
@@ -69,8 +69,8 @@ class Db
     public function findTopics(string $extension = "csv"): array
     {
         $topics = array();
-        $lock = Db::lock(false);
-        if ($dir = opendir(Db::getFoldername())) {
+        $lock = $this->lock(false);
+        if ($dir = opendir($this->getFoldername())) {
             while (($entry = readdir($dir)) !== false) {
                 if (pathinfo($entry, PATHINFO_EXTENSION) === $extension) {
                     $topics[] = basename($entry, ".$extension");
@@ -78,16 +78,16 @@ class Db
             }
             closedir($dir);
         }
-        Db::unlock($lock);
+        $this->unlock($lock);
         return $topics;
     }
 
     /** @return list<Comment> */
     public function findCommentsOfTopic(string $topic, bool $visibleOnly = false): array
     {
-        $lock = Db::lock(false);
+        $lock = $this->lock(false);
         $comments = [];
-        $filename = Db::getFoldername() . $topic . ".csv";
+        $filename = $this->getFoldername() . $topic . ".csv";
         if (is_readable($filename) && ($file = fopen($filename, 'r'))) {
             while (($record = fgetcsv($file)) !== false) {
                 $hidden = isset($record[5]) ? (bool) $record[5] : false;
@@ -106,16 +106,16 @@ class Db
             }
             fclose($file);
         }
-        Db::unlock($lock);
+        $this->unlock($lock);
         return $comments;
     }
 
     /** @return list<Comment> */
     public function findCommentsOfGbookTopic(string $topic): array
     {
-        $lock = Db::lock(false);
+        $lock = $this->lock(false);
         $comments = [];
-        $filename = Db::getFoldername() . $topic . ".txt";
+        $filename = $this->getFoldername() . $topic . ".txt";
         if (($file = fopen($filename, 'r'))) {
             while (($line = fgets($file)) !== false) {
                 $record = explode(';', trim($line));
@@ -131,16 +131,16 @@ class Db
             }
             fclose($file);
         }
-        Db::unlock($lock);
+        $this->unlock($lock);
         return $comments;
     }
 
     /** @return list<Comment> */
     public function findCommentsOfCommentsTopic(string $topic): array
     {
-        $lock = Db::lock(false);
+        $lock = $this->lock(false);
         $comments = [];
-        $filename = Db::getFoldername() . $topic . ".txt";
+        $filename = $this->getFoldername() . $topic . ".txt";
         if (($file = fopen($filename, 'r'))) {
             if (fgets($file) !== false) {
                 while (($line = fgets($file)) !== false) {
@@ -158,7 +158,7 @@ class Db
             }
             fclose($file);
         }
-        Db::unlock($lock);
+        $this->unlock($lock);
         return $comments;
     }
 
@@ -168,8 +168,8 @@ class Db
      */
     public function storeTopic(string $topic, array $comments)
     {
-        $lock = Db::lock(true);
-        $filename = Db::getFoldername() . $topic . ".csv";
+        $lock = $this->lock(true);
+        $filename = $this->getFoldername() . $topic . ".csv";
         if (($file = fopen($filename, "w"))) {
             foreach ($comments as $comment) {
                 if ($comment->topicname() !== $topic) {
@@ -179,14 +179,14 @@ class Db
             }
             fclose($file);
         }
-        Db::unlock($lock);
+        $this->unlock($lock);
     }
 
     public function findComment(string $topic, string $id): ?Comment
     {
-        $lock = Db::lock(false);
+        $lock = $this->lock(false);
         $comment = null;
-        $filename = Db::getFoldername() . $topic . ".csv";
+        $filename = $this->getFoldername() . $topic . ".csv";
         if (is_readable($filename) && ($file = fopen($filename, 'r'))) {
             while (($record = fgetcsv($file)) !== false) {
                 if ($record[0] === $id) {
@@ -204,64 +204,80 @@ class Db
             }
             fclose($file);
         }
-        Db::unlock($lock);
+        $this->unlock($lock);
         return $comment;
     }
 
-    /** @return void */
-    public function insertComment(Comment $comment)
+    public function insertComment(Comment $comment): bool
     {
-        $lock = Db::lock(true);
-        $file = fopen(Db::getFoldername() . $comment->topicname() . ".csv", "a");
-        fputcsv($file, $comment->toRecord());
+        $lock = $this->lock(true);
+        $file = fopen($this->getFoldername() . $comment->topicname() . ".csv", "a");
+        if ($file === false) {
+            return false;
+        }
+        if (fputcsv($file, $comment->toRecord()) === false) {
+            return false;
+        }
         fclose($file);
-        Db::unlock($lock);
+        $this->unlock($lock);
+        return true;
     }
 
-    /** @return void */
-    public function updateComment(Comment $comment)
+    public function updateComment(Comment $comment): bool
     {
-        $lock = Db::lock(true);
-        $file = fopen($this->getFoldername() . $comment->topicname() . ".csv", "r+");
-        $temp = fopen('php://temp', "w+");
-        while (($record = fgetcsv($file)) !== false) {
+        return $this->modify($comment, function ($stream, array $record) use ($comment) {
             if ($record[0] != $comment->id()) {
-                fputcsv($temp, $record);
+                fputcsv($stream, $record);
             } else {
-                fputcsv($temp, $comment->toRecord());
+                fputcsv($stream, $comment->toRecord());
             }
-        }
-        ftruncate($file, 0);
-        rewind($file);
-        rewind($temp);
-        stream_copy_to_stream($temp, $file);
-        fclose($file);
-        fclose($temp);
-        Db::unlock($lock);
+        });
     }
 
-    /** @return void */
-    public function deleteComment(Comment $comment)
+    public function deleteComment(Comment $comment): bool
     {
-        $lock = Db::lock(true);
-        $file = fopen(Db::getFoldername() . $comment->topicname() . ".csv", "r+");
-        $temp = fopen('php://temp', "w+");
-        while (($record = fgetcsv($file)) !== false) {
+        return $this->modify($comment, function ($stream, array $record) use ($comment) {
             if ($record[0] != $comment->id()) {
-                fputcsv($temp, $record);
+                fputcsv($stream, $record);
             }
+        });
+    }
+
+    /** @param callable(resource,array<string>):void $fun */
+    private function modify(Comment $comment, callable $fun): bool
+    {
+        $lock = $this->lock(true);
+        $file = fopen($this->getFoldername() . $comment->topicname() . ".csv", "r+");
+        if ($file === false) {
+            return false;
         }
-        ftruncate($file, 0);
-        rewind($file);
-        rewind($temp);
-        stream_copy_to_stream($temp, $file);
-        fclose($file);
+        $temp = fopen('php://temp', "w+");
+        if ($temp === false) {
+            return false;
+        }
+        while (($record = fgetcsv($file)) !== false) {
+            $fun($temp, $record);
+        }
+        if (!ftruncate($file, 0)) {
+            return false;
+        }
+        if (!rewind($file)) {
+            return false;
+        }
+        if (!rewind($temp)) {
+            return false;
+        }
+        if (stream_copy_to_stream($temp, $file) === false) {
+            return false;
+        }
         fclose($temp);
-        Db::unlock($lock);
+        fclose($file);
+        $this->unlock($lock);
+        return true;
     }
 
     protected function getLockFilename(): string
     {
-        return self::getFoldername() . '.lock';
+        return $this->getFoldername() . '.lock';
     }
 }
