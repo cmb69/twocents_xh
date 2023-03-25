@@ -35,24 +35,18 @@ class Dic
 {
     public static function makeMainController(): MainController
     {
-        global $pth, $plugin_cf, $plugin_tx, $_XH_csrfProtection;
-        static $instance = null;
-
-        if ($instance === null) {
-            $instance = new MainController(
-                $pth["folder"]["plugins"] . "twocents/",
-                $plugin_cf["twocents"],
-                $plugin_tx["twocents"],
-                isset($_XH_csrfProtection) ? new CsrfProtector : null,
-                self::makeDb(),
-                self::makeHtmlCleaner(),
-                new Random,
-                self::makeCaptcha(),
-                new Mailer,
-                self::makeView()
-            );
-        }
-        return $instance;
+        global $pth, $plugin_cf, $_XH_csrfProtection;
+        return new MainController(
+            $pth["folder"]["plugins"] . "twocents/",
+            $plugin_cf["twocents"],
+            isset($_XH_csrfProtection) ? new CsrfProtector : null,
+            self::makeDb(),
+            self::makeHtmlCleaner(),
+            new Random,
+            self::makeCaptcha(),
+            new Mailer,
+            self::makeView()
+        );
     }
 
     public static function makeInfoController(): InfoController

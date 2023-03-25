@@ -45,9 +45,6 @@ class MainController
     /** @var array<string,string> */
     private $conf;
 
-    /** @var array<string,string> */
-    private $lang;
-
     /** @var CsrfProtector|null */
     private $csrfProtector;
 
@@ -69,17 +66,10 @@ class MainController
     /** @var View */
     private $view;
 
-    /** @var bool */
-    private $jsWritten = false;
-
-    /**
-     * @param array<string,string> $conf
-     * @param array<string,string> $lang
-     */
+    /** @param array<string,string> $conf */
     public function __construct(
         string $pluginFolder,
         array $conf,
-        array $lang,
         ?CsrfProtector $csrfProtector,
         Db $db,
         HtmlCleaner $htmlCleaner,
@@ -90,7 +80,6 @@ class MainController
     ) {
         $this->pluginFolder = $pluginFolder;
         $this->conf = $conf;
-        $this->lang = $lang;
         $this->csrfProtector = $csrfProtector;
         $this->db = $db;
         $this->htmlCleaner = $htmlCleaner;
@@ -106,17 +95,247 @@ class MainController
             return Response::create($this->view->message("fail", "error_topicname"));
         }
         switch ($request->action()) {
+            default:
+                return $this->defaultAction($request, $topic, $readonly);
+            case "create":
+                return $this->createComment($request);
             case "do_create":
                 return $this->addCommentAction($request, $topic, $readonly);
+            case "edit":
+                return $this->editCommentAction($request, $topic);
             case "do_edit":
-                return $this->updateCommentAction($request, $topic, $readonly);
+                return $this->updateCommentAction($request, $topic);
             case "do_toggle_visibility":
                 return $this->toggleVisibilityAction($request, $topic);
             case "do_delete":
                 return $this->removeCommentAction($request, $topic);
-            default:
-                return $this->defaultAction($request, $topic, $readonly);
         }
+    }
+
+    private function defaultAction(Request $request, string $topic, bool $readonly): Response
+    {
+        [$comments, $count, $page, $pageCount] = Util::limitComments(
+            $this->db->findCommentsOfTopic($topic, !$request->admin()),
+            (int) $this->conf['pagination_max'],
+            is_string($request->url()->param("twocents_page")) ? (int) $request->url()->param("twocents_page") : 0,
+            $this->conf['comments_order'] === 'ASC' ? 1 : -1
+        );
+        $pagination = $this->renderPaginationView($request->url(), $count, $page, $pageCount);
+        $html = $pagination . $this->renderCommentsView($request, $comments, $readonly) . $pagination;
+        return $this->respondWith($html);
+    }
+
+    private function renderPaginationView(Url $url, int $commentCount, int $page, int $pageCount): string
+    {
+        if ($pageCount <= 1) {
+            return "";
+        }
+        $pagination = new Pagination($page, $pageCount, (int) $this->conf["pagination_radius"]);
+        return $this->view->render('pagination', [
+            'item_count' => $commentCount,
+            'pages' => $this->pageRecords($pagination->gatherPages(), $url, $page),
+        ]);
+    }
+
+    /**
+     * @param list<int|null> $pages
+     * @return list<array{index:?int,url:?string,is_current:?bool,is_ellipsis:bool}>
+     */
+    private function pageRecords(array $pages, Url $url, int $currentPage): array
+    {
+        $url = $url->without("twocents_id");
+        return array_map(function ($page) use ($url, $currentPage) {
+            return [
+                "index" => $page ?? null,
+                "url" => $page !== null ? $url->with("twocents_page", (string) $page)->relative() : null,
+                "is_current" => $page === $currentPage,
+                "is_ellipsis" => $page === null,
+            ];
+        }, $pages);
+    }
+
+    /** @param list<Comment> $comments */
+    private function renderCommentsView(Request $request, array $comments, bool $readonly): string
+    {
+        $mayAddComment = $request->admin() || !$readonly;
+        return $this->view->render('comments', [
+            "module" => $this->pluginFolder . "twocents.min.js",
+            'comments' => $this->commentRecords($request, $comments),
+            'has_comment_form_above' => $mayAddComment && $this->conf['comments_order'] === 'DESC',
+            'has_comment_form_below' => $mayAddComment && $this->conf['comments_order'] === 'ASC',
+            "new_url" => $request->url()->with("twocents_action", "create")->relative(),
+            "action_url" => $request->url()->without('twocents_id')->relative(),
+            'is_admin' => $request->admin(),
+            'csrf_token' => $request->admin() ? $this->csrfProtector->token() : null,
+        ]);
+    }
+
+    /**
+     * @param list<Comment> $comments
+     * @return list<array{id:string,css_class:string,edit_url:string,visibility_action:string,delete_action:string,visibility:string,attribution:string,message:Html}>
+     */
+    private function commentRecords(Request $request, array $comments): array
+    {
+        $url = $request->url();
+        return array_map(function (Comment $comment) use ($url) {
+            $url = $url->with('twocents_id', $comment->id());
+            return [
+                'id' => 'twocents_comment_' . $comment->id(),
+                'css_class' => !$comment->hidden() ? '' : ' twocents_hidden',
+                'edit_url' => $url->with("twocents_action", "edit")->relative(),
+                "visibility_action" => $url->with("twocents_action", "toggle_visibility")->relative(),
+                "delete_action" => $url->with("twocents_action", "delete")->relative(),
+                'visibility' => !$comment->hidden() ? 'label_hide' : 'label_show',
+                'attribution' => $this->renderAttribution($comment),
+                'message' => Html::of($this->renderMessage($comment)),
+            ];
+        }, $comments);
+    }
+
+    private function renderAttribution(Comment $comment): string
+    {
+        return strtr($this->view->plain("format_heading"), [
+            '{DATE}' => date($this->view->plain("format_date"), $comment->time()),
+            '{TIME}' => date($this->view->plain("format_time"), $comment->time()),
+            '{USER}' => $comment->user()
+        ]);
+    }
+
+    private function renderMessage(Comment $comment): string
+    {
+        if ($this->conf['comments_markup'] == 'HTML') {
+            return $comment->message();
+        } else {
+            return preg_replace('/(?:\r\n|\r|\n)/', "<br>", $this->view->esc($comment->message()));
+        }
+    }
+
+    private function createComment(Request $request): Response
+    {
+        $comment = new Comment("", "", 0, "", "", "", true);
+        $html = $this->renderCommentForm($request, $comment);
+        return $this->respondWith($html);
+    }
+
+    private function editCommentAction(Request $request, string $topic): Response
+    {
+        $id = $request->url()->param("twocents_id");
+        assert(is_string($id)); // TODO invalid assertion
+        $comment = $this->db->findComment($topic, $id);
+        assert($comment !== null); // TODO invalid assertion
+        $html = $this->renderCommentForm($request, $comment);
+        return $this->respondWith($html);
+    }
+
+    /** @param list<string> $errors */
+    private function renderCommentForm(Request $request, Comment $comment, array $errors = []): string
+    {
+        $url = $request->url();
+        $action = $comment->id() ? "edit" : "create";
+        return $this->view->render('comment-form', [
+            'action' => $comment->id() ? 'update' : 'add',
+            "label" => $comment->id() ? 'label_update' : 'label_add',
+            "comment_id" => $comment->id(),
+            "comment_user" => $comment->user(),
+            "comment_email" => $comment->email(),
+            "comment_message" => $comment->message(),
+            'captcha' => Html::of($this->captcha->render()),
+            "admin" => $request->admin(),
+            "module" => $this->pluginFolder . "twocents.min.js",
+            "url" => $url->with("twocents_action", $action)->relative(),
+            "cancel_url" => $url->without("twocents_id")->without("twocents_action")->relative(),
+            "csrf_token" => $request->admin() ? $this->csrfProtector->token() : null,
+            "errors" => $errors,
+            "conf" => $this->jsConf(),
+        ]);
+    }
+
+    private function addCommentAction(Request $request, string $topic, bool $readonly): Response
+    {
+        if (!$request->admin() && $readonly) {
+            return $this->defaultAction($request, $topic, $readonly);
+        }
+        ["user" => $user, "email" => $email, "message" => $message] = $request->commentPost();
+        if (!$request->admin() && $this->conf['comments_markup'] == 'HTML') {
+            $message = $this->htmlCleaner->clean($message);
+        }
+        $spamFilter = new SpamFilter($this->view->plain("spam_words"));
+        $hideComment = !$request->admin() && ($this->conf['comments_moderated'] || $spamFilter->isSpam($message));
+        $comment = new Comment("", $topic, $request->time(), $user, $email, $message, $hideComment);
+        $errors = array_merge(Util::validateComment($comment), $this->captcha->check() ? [] : ["error_captcha"]);
+        if (empty($errors)) {
+            $id = Util::encodeBase64url($this->random->bytes(15));
+            $comment = $comment->withId($id);
+            $this->db->insertComment($comment);
+            if (!$request->admin() && $this->conf['email_address']) {
+                $this->sendNotificationEmail($request->url(), $comment);
+            }
+            $url = $request->url()->without("twocents_action")->absolute();
+            return Response::redirect($url);
+        }
+        return $this->respondWith($this->renderCommentForm($request, $comment, $errors));
+    }
+
+    /** @return void */
+    private function sendNotificationEmail(Url $url, Comment $comment)
+    {
+        $url = $url->without("twocents_action")->absolute() . "#twocents_comment_" . $comment->id();
+        $message = $comment->message();
+        if ($this->conf['comments_markup'] === 'HTML') {
+            $message = Util::plainify($message);
+        }
+        $this->mailer->sendNotification(
+            $this->conf['email_address'],
+            $this->view->plain("email_subject"),
+            $this->view->plain("email_attribution", $url, $comment->user(), $comment->email()),
+            $message,
+            $comment->email()
+        );
+    }
+
+    private function updateCommentAction(Request $request, string $topic): Response
+    {
+        if (!$request->admin()) {
+            return Response::create("");
+        }
+        $this->csrfProtector->check();
+        $id = $request->url()->param("twocents_id");
+        assert(is_string($id)); // TODO invalid assertion
+        $comment = $this->db->findComment($topic, $id);
+        assert(isset($comment)); // TODO: invalid assertion, but the code already was broken
+        ["user" => $user, "email" => $email, "message" => $message] = $request->commentPost();
+        $comment = $comment->withUser($user)->withEmail($email)->withMessage($message);
+        $errors = array_merge(Util::validateComment($comment), $this->captcha->check() ? [] : ["error_captcha"]);
+        if (empty($errors)) {
+            $this->db->updateComment($comment);
+            $url = $request->url()->without("twocents_id")->without("twocents_action")->absolute();
+            return Response::redirect($url);
+        }
+        return $this->respondWith($this->renderCommentForm($request, $comment, $errors));
+    }
+
+    private function respondWith(string $html): Response
+    {
+        if ($this->isXmlHttpRequest()) {
+            return Response::create($html)->withContentType("text/html; charset=UTF-8");
+        }
+        return Response::create("<div class=\"twocents_container\">$html</div>");
+    }
+
+    private function isXmlHttpRequest(): bool
+    {
+        return isset($_SERVER['HTTP_X_REQUESTED_WITH'])
+            && $_SERVER['HTTP_X_REQUESTED_WITH'] === 'XMLHttpRequest';
+    }
+
+    /** @return array<string,scalar> */
+    private function jsConf(): array
+    {
+        $config = ["comments_markup" => $this->conf["comments_markup"]];
+        foreach (["label_bold", "label_italic", "label_link", "label_unlink", "message_link"] as $property) {
+            $config[$property] = $this->view->plain($property);
+        }
+        return $config;
     }
 
     private function toggleVisibilityAction(Request $request, string $topic): Response
@@ -150,319 +369,5 @@ class MainController
         $this->db->deleteComment($comment);
         $url = $request->url()->without("twocents_id")->without('twocents_action')->absolute();
         return Response::redirect($url);
-    }
-
-    private function defaultAction(
-        Request $request,
-        string $topic,
-        bool $readonly,
-        string $messages = "",
-        ?Comment $current = null
-    ): Response {
-        if (!$current && is_string($request->url()->param("twocents_id"))) {
-            $current = $this->db->findComment($topic, $request->url()->param("twocents_id"));
-        }
-        $comments = $this->db->findCommentsOfTopic($topic, !$request->admin());
-        $order = $this->conf['comments_order'] === 'ASC' ? 1 : -1;
-        usort($comments, function ($a, $b) use ($order) {
-            return ($a->time() - $b->time()) * $order;
-        });
-        $count = count($comments);
-        $itemsPerPage = (int) $this->conf['pagination_max'];
-        $pageCount = (int) ceil($count / $itemsPerPage);
-        $currentPage = is_string($request->url()->param("twocents_page"))
-            ? max(1, min($pageCount, (int) $request->url()->param("twocents_page")))
-            : 1;
-        $comments = array_splice($comments, ($currentPage - 1) * $itemsPerPage, $itemsPerPage);
-        $pagination = $this->renderPaginationView($request->url(), $count, $currentPage, $pageCount);
-        $html = "";
-        if (isset($pagination)) {
-            $html .= $pagination;
-        }
-        $html .= $this->renderCommentsView($request, $comments, $readonly, $messages, $current);
-        if (isset($pagination)) {
-            $html .= $pagination;
-        }
-        if (!$this->isXmlHttpRequest()) {
-            $response = Response::create("<div class=\"twocents_container\">$html</div>");
-            if (!$this->jsWritten) {
-                $response = $response->withHjs($this->view->renderMeta("twocents", $this->jsConf()))
-                    ->withBjs($this->view->renderScript($this->pluginFolder . "twocents.min.js"));
-                $this->jsWritten = true;
-            }
-            return $response;
-        } else {
-            return Response::create($html)->withContentType("text/html; charset=UTF-8");
-        }
-    }
-
-    /** @return string|null */
-    private function renderPaginationView(Url $url, int $commentCount, int $page, int $pageCount)
-    {
-        if ($pageCount <= 1) {
-            return null;
-        }
-        $pagination = new Pagination($page, $pageCount, (int) $this->conf["pagination_radius"]);
-        return $this->view->render('pagination', [
-            'item_count' => $commentCount,
-            'pages' => $this->pageRecords($pagination->gatherPages(), $url, $page),
-        ]);
-    }
-
-    /**
-     * @param list<int|null> $pages
-     * @return list<array{index:?int,url:?string,is_current:?bool,is_ellipsis:bool}>
-     */
-    private function pageRecords(array $pages, Url $url, int $currentPage): array
-    {
-        $records = [];
-        foreach ($pages as $page) {
-            if ($page !== null) {
-                $records[] = [
-                    'index' => $page,
-                    'url' => $url->without('twocents_id')->with('twocents_page', (string) $page)->relative(),
-                    'is_current' => $page === $currentPage,
-                    'is_ellipsis' => false
-                ];
-            } else {
-                $records[] = [
-                    'index' => null,
-                    "url" => null,
-                    "is_current" => null,
-                    'is_ellipsis' => true
-                ];
-            }
-        }
-        return $records;
-    }
-
-    /** @param list<Comment> $comments */
-    private function renderCommentsView(
-        Request $request,
-        array $comments,
-        bool $readonly,
-        string $messages,
-        ?Comment $current = null
-    ): string {
-        $mayAddComment = (!isset($current) || $current->id() == null)
-            && ($request->admin() || !$readonly);
-        return $this->view->render('comments', [
-            'comments' => $this->commentRecords($request, $comments, $current),
-            'has_comment_form_above' => $mayAddComment && $this->conf['comments_order'] === 'DESC',
-            'has_comment_form_below' => $mayAddComment && $this->conf['comments_order'] === 'ASC',
-            'comment_form' => $mayAddComment ? Html::of($this->renderCommentForm($request, $current)) : null,
-            'messages' => Html::of($messages),
-        ]);
-    }
-
-    /**
-     * @param list<Comment> $comments
-     * @return list<array{isCurrent:bool,view:html}>
-     */
-    private function commentRecords(Request $request, array $comments, ?Comment $current):array
-    {
-        $records = [];
-        foreach ($comments as $comment) {
-            $isCurrentComment = $current !== null && $current->id() == $comment->id();
-            $records[] = [
-                'isCurrent' => $isCurrentComment,
-                'view' => Html::of($this->renderCommentView($request, $isCurrentComment ? $current : $comment, $isCurrentComment))
-            ];
-        }
-        return $records;
-    }
-
-    /** @return array<string,scalar> */
-    private function jsConf(): array
-    {
-        $config = array();
-        foreach (array('comments_markup') as $property) {
-            $config[$property] = $this->conf[$property];
-        }
-        $properties = array(
-            'label_new',
-            'label_bold',
-            'label_italic',
-            'label_link',
-            'label_unlink',
-            'message_delete',
-            'message_link'
-        );
-        foreach ($properties as $property) {
-            $config[$property] = $this->lang[$property];
-        }
-        return $config;
-    }
-
-    private function renderCommentView(Request $request, Comment $comment, bool $isCurrentComment): string
-    {
-        $url = $request->url()->without('twocents_id');
-        return $this->view->render('comment', [
-            'id' => 'twocents_comment_' . $comment->id(),
-            'css_class' => !$comment->hidden() ? '' : ' twocents_hidden',
-            'is_current_comment' => $isCurrentComment,
-            'form' => $isCurrentComment ? Html::of($this->renderCommentForm($request, $comment)) : null,
-            'is_admin' => !$isCurrentComment ? $request->admin() : null,
-            'url' => !$isCurrentComment ? $url->relative() : null,
-            'edit_url' => !$isCurrentComment ? $url->with('twocents_id', $comment->id())->with("twocents_action", "edit")->relative() : null,
-            "visibility_action" => !$isCurrentComment ? $url->with("twocents_id", $comment->id())
-                ->with("twocents_action", "toggle_visibility")->relative() : null,
-            "delete_action" => !$isCurrentComment ? $url->with("twocents_id", $comment->id())
-                ->with("twocents_action", "delete")->relative() : null,
-            'visibility' => !$isCurrentComment ? (!$comment->hidden() ? 'label_hide' : 'label_show') : null,
-            'attribution' => !$isCurrentComment ? Html::of($this->renderAttribution($comment)) : null,
-            'message' => !$isCurrentComment ? Html::of($this->renderMessage($comment)) : null,
-            'csrf_token' => $request->admin() ? $this->csrfProtector->token() : null,
-        ]);
-    }
-
-    private function renderCommentForm(Request $request, ?Comment $comment = null): string
-    {
-        if (!isset($comment)) {
-            $comment = new Comment("", "", 0, "", "", "", true);
-        }
-        $url = $request->url();
-        if (!$comment->id()) {
-            $page = $this->conf['comments_order'] === 'ASC' ? '2147483647' : '0';
-            $url = $url->with('twocents_page', $page);
-        }
-        return $this->view->render('comment-form', [
-            'action' => $comment->id() ? 'update' : 'add',
-            "label" => $comment->id() ? 'label_update' : 'label_add',
-            "comment_id" => $comment->id(),
-            "comment_user" => $comment->user(),
-            "comment_email" => $comment->email(),
-            "comment_message" => $comment->message(),
-            'captcha' => Html::of($this->captcha->render()),
-            "admin" => $request->admin(),
-            "url" => $comment->id() ? $url->with("twocents_action", "edit")->relative() : $url->with("twocents_action", "create")->relative(),
-            "cancel_url" => $url->without("twocents_id")->without("twocents_action")->relative(),
-            "csrf_token" => $comment->id() ? $this->csrfProtector->token() : null,
-        ]);
-    }
-
-    private function renderAttribution(Comment $comment): string
-    {
-        $date = date($this->lang['format_date'], $comment->time());
-        $time = date($this->lang['format_time'], $comment->time());
-        return strtr(
-            $this->lang['format_heading'],
-            array(
-                '{DATE}' => $date,
-                '{TIME}' => $time,
-                '{USER}' => $this->view->esc($comment->user())
-            )
-        );
-    }
-
-    private function renderMessage(Comment $comment): string
-    {
-        if ($this->conf['comments_markup'] == 'HTML') {
-            return $comment->message();
-        } else {
-            return preg_replace('/(?:\r\n|\r|\n)/', "<br>", $this->view->esc($comment->message()));
-        }
-    }
-
-    private function addCommentAction(Request $request, string $topic, bool $readonly): Response
-    {
-        if (!$request->admin() && $readonly) {
-            return $this->defaultAction($request, $topic, $readonly);
-        }
-        ["user" => $user, "email" => $email, "message" => $message] = $request->commentPost();
-        if (!$request->admin() && $this->conf['comments_markup'] == 'HTML') {
-            $message = $this->htmlCleaner->clean($message);
-        }
-        $hideComment = false;
-        $isSpam = false;
-        $spamFilter = new SpamFilter($this->lang['spam_words']);
-        if (($this->conf['comments_moderated'] && !$request->admin())
-                || ($isSpam = !$request->admin() && $spamFilter->isSpam($message))) {
-            $hideComment = true;
-        }
-        $comment = new Comment("", $topic, $request->time(), $user, $email, $message, $hideComment);
-        $marker = '<div id="twocents_scroll_marker" class="twocents_scroll_marker">'
-            . '</div>';
-        $messages = $this->validateComment($comment);
-        if (empty($messages)) {
-            $id = Util::encodeBase64url($this->random->bytes(15));
-            $comment = $comment->withId($id);
-            $this->db->insertComment($comment);
-            if (!$request->admin()) {
-                $this->sendNotificationEmail($request->url(), $comment);
-            }
-            $comment = null;
-            $url = $request->url()->without("twocents_action")->absolute();
-            return Response::redirect($url);
-        } else {
-            $messages = $marker . $messages;
-        }
-        return $this->defaultAction($request, $topic, $readonly, $messages, $comment);
-    }
-
-    /** @return void */
-    private function sendNotificationEmail(Url $url, Comment $comment)
-    {
-        $email = $this->conf['email_address'];
-        if ($email !== '') {
-            $url = $url->without("twocents_action")->absolute() . "#twocents_comment_" . $comment->id();
-            $message = $comment->message();
-            if ($this->conf['comments_markup'] === 'HTML') {
-                $message = strip_tags($message);
-            }
-            $this->mailer->sendNotification(
-                $email,
-                $this->view->plain("email_subject"),
-                $this->view->plain("email_attribution", $url, $comment->user(), $comment->email()),
-                $message,
-                $comment->email()
-            );
-        }
-    }
-
-    private function updateCommentAction(Request $request, string $topic, bool $readonly): Response
-    {
-        if (!$request->admin()) {
-            return Response::create("");
-        }
-        $this->csrfProtector->check();
-        $id = $request->url()->param("twocents_id");
-        assert(is_string($id)); // TODO invalid assertion
-        $comment = $this->db->findComment($topic, $id);
-        assert(isset($comment)); // TODO: invalid assertion, but the code already was broken
-        ["user" => $user, "email" => $email, "message" => $message] = $request->commentPost();
-        $comment = $comment->withUser($user)->withEmail($email)->withMessage($message);
-        $messages = $this->validateComment($comment);
-        if (empty($messages)) {
-            $this->db->updateComment($comment);
-            $comment = null;
-            $url = $request->url()->without("twocents_id")->without("twocents_action")->absolute();
-            return Response::redirect($url);
-        }
-        return $this->defaultAction($request, $topic, $readonly, $messages, $comment);
-    }
-
-    private function validateComment(Comment $comment): string
-    {
-        $messages = "";
-        $errors = Util::validateComment($comment);
-        foreach ($errors as $error) {
-            $messages .= $this->view->message("fail", $error);
-        }
-        return $messages . $this->validateCaptcha();
-    }
-
-    private function validateCaptcha(): string
-    {
-        if ($this->captcha->check()) {
-            return "";
-        }
-        return $this->view->message('fail', 'error_captcha');
-    }
-
-    private function isXmlHttpRequest(): bool
-    {
-        return isset($_SERVER['HTTP_X_REQUESTED_WITH'])
-            && $_SERVER['HTTP_X_REQUESTED_WITH'] === 'XMLHttpRequest';
     }
 }

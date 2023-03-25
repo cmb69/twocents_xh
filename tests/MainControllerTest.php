@@ -93,21 +93,6 @@ class MainControllerTest extends TestCase
         Approvals::verifyHtml($response->output());
     }
 
-    public function testWritesToBjs(): void
-    {
-        $csrfProtector = new FakeCsrfProtector;
-        $db = new FakeDb;
-        $db->insertComment($this->comment());
-        $sut = $this->sut(["csrfProtector" => $csrfProtector, "db" => $db]);
-        $request = new FakeRequest(["query" => "Twocents"]);
-        $response = $sut($request, "test-topic", false);
-        $this->assertEquals(
-            "<script src=\"./plugins/twocents/twocents.min.js\"></script>\n",
-            $response->bjs()
-        );
-        Approvals::verifyHtml($response->hjs());
-    }
-
     public function testRendersEditForm(): void
     {
         $csrfProtector = new FakeCsrfProtector;
@@ -202,7 +187,6 @@ class MainControllerTest extends TestCase
         return new MainController(
             "./plugins/twocents/",
             $this->conf($options["conf"] ?? []),
-            $this->text(),
             $options["csrfProtector"] ?? new FakeCsrfProtector,
             $options["db"] ?? new FakeDb,
             $this->createStub(HtmlCleaner::class),

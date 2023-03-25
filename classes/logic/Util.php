@@ -78,4 +78,20 @@ class Util
         assert(strlen($string) % 3 === 0);
         return str_replace(["+", "/"], ["-", "_"], base64_encode($string));
     }
+
+    /**
+     * @param list<Comment> $comments
+     * @return array{list<Comment>,int,int,int}
+     */
+    public static function limitComments(array $comments, int $limit, int $page, int $order)
+    {
+        usort($comments, function ($a, $b) use ($order) {
+            return ($a->time() <=> $b->time()) * $order;
+        });
+        $count = count($comments);
+        $pageCount = (int) ceil($count / $limit);
+        $page = max(1, min($pageCount, $page));
+        $comments = array_splice($comments, ($page - 1) * $limit, $limit);
+        return [$comments, $count, $page, $pageCount];
+    }
 }

@@ -44,12 +44,6 @@ class Response
     private $title = null;
 
     /** @var string|null */
-    private $hjs = null;
-
-    /** @var string|null */
-    private $bjs = null;
-
-    /** @var string|null */
     private $contentType = null;
 
     /** @var string|null */
@@ -59,20 +53,6 @@ class Response
     {
         $that = clone $this;
         $that->title = $title;
-        return $that;
-    }
-
-    public function withHjs(string $hjs): self
-    {
-        $that = clone $this;
-        $that->hjs = $hjs;
-        return $that;
-    }
-
-    public function withBjs(string $bjs): self
-    {
-        $that = clone $this;
-        $that->bjs = $bjs;
         return $that;
     }
 
@@ -91,16 +71,6 @@ class Response
     public function title(): ?string
     {
         return $this->title;
-    }
-
-    public function hjs(): ?string
-    {
-        return $this->hjs;
-    }
-
-    public function bjs(): ?string
-    {
-        return $this->bjs;
     }
 
     public function contentType(): ?string
