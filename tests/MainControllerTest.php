@@ -84,10 +84,8 @@ class MainControllerTest extends TestCase
     {
         $csrfProtector = new FakeCsrfProtector;
         $db = new FakeDb;
-        $id = "63fba86870945";
-        for ($i = 0; $i < 20; $i++) {
-            $id++;
-            $db->insertComment($this->comment($id));
+        for ($i = 1677437048; $i < 1677437068; $i++) {
+            $db->insertComment($this->comment((string) $i, $i));
         }
         $sut = $this->sut(["conf" => ["pagination_max" => "3"], "csrfProtector" => $csrfProtector, "db" => $db]);
         $request = new FakeRequest(["query" => "Twocents"]);
@@ -232,12 +230,12 @@ class MainControllerTest extends TestCase
         return XH_includeVar("./languages/en.php", "plugin_tx")["twocents"];
     }
 
-    private function comment(string $id = "63fba86870945")
+    private function comment(string $id = "63fba86870945", int $time = 1677437048)
     {
         return new Comment(
             $id,
             "test-topic",
-            1677437048,
+            $time,
             "cmb",
             "cmb@example.com",
             "A nice comment",
