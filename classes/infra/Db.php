@@ -96,6 +96,12 @@ class Db
         $filename = $this->getFoldername() . $topic . ".csv";
         if (is_readable($filename) && ($file = fopen($filename, 'r'))) {
             while (($record = fgetcsv($file, 0, ",", "\"", "\0")) !== false) {
+                assert($record !== null);
+                if ($record[0] === null || count($record) < 5) {
+                    continue;
+                }
+                assert(is_string($record[1]) && is_string($record[2])
+                    && is_string($record[3]) && is_string($record[4]));
                 $hidden = isset($record[5]) ? (bool) $record[5] : false;
                 if ($visibleOnly && $hidden) {
                     continue;
@@ -195,6 +201,12 @@ class Db
         $filename = $this->getFoldername() . $topic . ".csv";
         if (is_readable($filename) && ($file = fopen($filename, 'r'))) {
             while (($record = fgetcsv($file, 0, ",", "\"", "\0")) !== false) {
+                assert($record !== null);
+                if ($record[0] === null || count($record) < 5) {
+                    continue;
+                }
+                assert(is_string($record[1]) && is_string($record[2])
+                    && is_string($record[3]) && is_string($record[4]));
                 if ($record[0] === $id) {
                     $comment = new Comment(
                         $record[0],
@@ -262,6 +274,14 @@ class Db
             return false;
         }
         while (($record = fgetcsv($file, 0, ",", "\"", "\0")) !== false) {
+            assert($record !== null);
+            if ($record[0] === null || count($record) < 5) {
+                continue;
+            }
+            $record[5] = $record[5] ?? "0";
+            assert(is_string($record[1]) && is_string($record[2])
+                && is_string($record[3]) && is_string($record[4]));
+            $record = [$record[0], $record[1], $record[2], $record[3], $record[4], $record[5]];
             $fun($temp, $record);
         }
         if (!ftruncate($file, 0)) {

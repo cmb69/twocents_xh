@@ -33,7 +33,7 @@ class FlashMessage
     }
 
     /** @codeCoverageIgnore */
-    public function pop(): ?string
+    public function pop(): string
     {
         $message = $_SESSION["twocents_message"] ?? "";
         unset($_SESSION["twocents_message"]);

@@ -45,7 +45,7 @@ class Comment
     private $hidden;
 
     public function __construct(
-        ?string $id,
+        string $id,
         string $topicname,
         int $time,
         string $user,

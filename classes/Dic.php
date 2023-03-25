@@ -39,7 +39,7 @@ class Dic
         return new MainController(
             $pth["folder"]["plugins"] . "twocents/",
             $plugin_cf["twocents"],
-            isset($_XH_csrfProtection) ? new CsrfProtector : null,
+            new CsrfProtector,
             self::makeDb(),
             self::makeHtmlCleaner(),
             new Random,

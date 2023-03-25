@@ -45,7 +45,7 @@ class MainController
     /** @var array<string,string> */
     private $conf;
 
-    /** @var CsrfProtector|null */
+    /** @var CsrfProtector */
     private $csrfProtector;
 
     /** @var Db */
@@ -70,7 +70,7 @@ class MainController
     public function __construct(
         string $pluginFolder,
         array $conf,
-        ?CsrfProtector $csrfProtector,
+        CsrfProtector $csrfProtector,
         Db $db,
         HtmlCleaner $htmlCleaner,
         Random $random,
@@ -206,7 +206,7 @@ class MainController
         if ($this->conf['comments_markup'] == 'HTML') {
             return $comment->message();
         } else {
-            return preg_replace('/(?:\r\n|\r|\n)/', "<br>", $this->view->esc($comment->message()));
+            return (string) preg_replace('/(?:\r\n|\r|\n)/', "<br>", $this->view->esc($comment->message()));
         }
     }
 
@@ -347,6 +347,7 @@ class MainController
         $id = $request->url()->param("twocents_id");
         assert(is_string($id)); // TODO: invalid assertion
         $comment = $this->db->findComment($topic, $id);
+        assert($comment !== null); // TODO: invalid assertion
         if ($comment->hidden()) {
             $comment = $comment->show();
         } else {
@@ -366,6 +367,7 @@ class MainController
         $id = $request->url()->param("twocents_id");
         assert(is_string($id)); // TODO invalid assertion
         $comment = $this->db->findComment($topic, $id);
+        assert($comment !== null); // TODO: invalid assertion
         $this->db->deleteComment($comment);
         $url = $request->url()->without("twocents_id")->without('twocents_action')->absolute();
         return Response::redirect($url);
