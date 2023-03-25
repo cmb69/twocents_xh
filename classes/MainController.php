@@ -321,9 +321,10 @@ class MainController
         if (!isset($comment)) {
             $comment = new Comment("", "", 0, "", "", "", true);
         }
+        $url = $request->url();
         if (!$comment->id()) {
             $page = $this->conf['comments_order'] === 'ASC' ? '2147483647' : '0';
-            $url = $request->url()->with('twocents_page', $page);
+            $url = $url->with('twocents_page', $page);
         }
         return $this->view->render('comment-form', [
             'action' => $comment->id() ? 'update' : 'add',
