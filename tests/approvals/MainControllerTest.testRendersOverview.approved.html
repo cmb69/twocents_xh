@@ -3,20 +3,18 @@
   <!-- twocents comment -->
 <div id="twocents_comment_63fba86870945" class="twocents_comment ">
   <div class="twocents_admin_tools">
-    <a href="/?Twocents&amp;twocents_id=63fba86870945">Edit</a>
+    <a href="/?Twocents&amp;twocents_id=63fba86870945&amp;twocents_action=edit">Edit</a>
     <form method="post" action="/?Twocents">
       <input type="hidden" name="xh_csrf_token" value="e3c1b42a6098b48a39f9f54ddb3388f7">
-      <input type="hidden" name="twocents_id" value="63fba86870945">
-      <button type="submit" name="twocents_action" value="toggle_visibility">Hide</button>
-      <button type="submit" name="twocents_action" value="remove_comment">Delete</button>
+      <button type="submit" formaction="/?Twocents&amp;twocents_id=63fba86870945&amp;twocents_action=toggle_visibility" name="twocents_do">Hide</button>
+      <button type="submit" formaction="/?Twocents&amp;twocents_id=63fba86870945&amp;twocents_action=delete" name="twocents_do">Delete</button>
     </form>
   </div>
   <div class="twocents_attribution">On 2/26/2023 at 6:44pm cmb wrote:</div>
   <div class="twocents_message">A nice comment</div>
 </div>
     <!-- twocents comment form -->
-<form class="twocents_form" method="post" action="/?Twocents&amp;twocents_page=2147483647">
-  <input type="hidden" name="twocents_id" value="">
+<form class="twocents_form" method="post" action="/?Twocents&amp;twocents_page=2147483647&amp;twocents_action=create">
   <div>
     <label>
       <span>Name</span>
@@ -37,7 +35,7 @@
   </div>
   
 <p>This is not a real CAPTCHA</p>  <div class="twocents_form_buttons">
-    <button type="submit" name="twocents_action" value="add_comment">Add Comment</button>
+    <button name="twocents_do">Add Comment</button>
     <button type="reset">Reset</button>
   </div>
 </form>

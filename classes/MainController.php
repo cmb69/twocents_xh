@@ -105,17 +105,17 @@ class MainController
         if (!preg_match('/^[a-z0-9-]+$/i', $topic)) {
             return Response::create($this->view->message("fail", "error_topicname"));
         }
-        switch ($_POST["twocents_action"] ?? "") {
+        switch ($request->action()) {
+            case "do_create":
+                return $this->addCommentAction($request, $topic, $readonly);
+            case "do_edit":
+                return $this->updateCommentAction($request, $topic, $readonly);
+            case "do_toggle_visibility":
+                return $this->toggleVisibilityAction($request, $topic);
+            case "do_delete":
+                return $this->removeCommentAction($request, $topic);
             default:
                 return $this->defaultAction($request, $topic, $readonly);
-            case "toggle_visibility":
-                return $this->toggleVisibilityAction($request, $topic);
-            case "remove_comment":
-                return $this->removeCommentAction($request, $topic);
-            case "add_comment":
-                return $this->addCommentAction($request, $topic, $readonly);
-            case "update_comment":
-                return $this->updateCommentAction($request, $topic, $readonly);
         }
     }
 
@@ -125,14 +125,16 @@ class MainController
             return Response::create("");
         }
         $this->csrfProtector->check();
-        $comment = $this->db->findComment($topic, $_POST["twocents_id"]);
+        $id = $request->url()->param("twocents_id");
+        assert(is_string($id)); // TODO: invalid assertion
+        $comment = $this->db->findComment($topic, $id);
         if ($comment->hidden()) {
             $comment = $comment->show();
         } else {
             $comment = $comment->hide();
         }
         $this->db->updateComment($comment);
-        $url = $request->url()->without('twocents_action')->absolute();
+        $url = $request->url()->without("twocents_id")->without('twocents_action')->absolute();
         return Response::redirect($url);
     }
 
@@ -142,9 +144,11 @@ class MainController
             return Response::create("");
         }
         $this->csrfProtector->check();
-        $comment = $this->db->findComment($topic, $_POST["twocents_id"]);
+        $id = $request->url()->param("twocents_id");
+        assert(is_string($id)); // TODO invalid assertion
+        $comment = $this->db->findComment($topic, $id);
         $this->db->deleteComment($comment);
-        $url = $request->url()->without('twocents_action')->absolute();
+        $url = $request->url()->without("twocents_id")->without('twocents_action')->absolute();
         return Response::redirect($url);
     }
 
@@ -155,7 +159,7 @@ class MainController
         string $messages = "",
         ?Comment $current = null
     ): Response {
-        if (is_string($request->url()->param("twocents_id"))) {
+        if (!$current && is_string($request->url()->param("twocents_id"))) {
             $current = $this->db->findComment($topic, $request->url()->param("twocents_id"));
         }
         $comments = $this->db->findCommentsOfTopic($topic, !$request->admin());
@@ -246,7 +250,7 @@ class MainController
             'comments' => $this->commentRecords($request, $comments, $current),
             'has_comment_form_above' => $mayAddComment && $this->conf['comments_order'] === 'DESC',
             'has_comment_form_below' => $mayAddComment && $this->conf['comments_order'] === 'ASC',
-            'comment_form' => $mayAddComment ? Html::of($this->renderCommentForm($request->url(), $current)) : null,
+            'comment_form' => $mayAddComment ? Html::of($this->renderCommentForm($request, $current)) : null,
             'messages' => Html::of($messages),
         ]);
     }
@@ -262,7 +266,7 @@ class MainController
             $isCurrentComment = $current !== null && $current->id() == $comment->id();
             $records[] = [
                 'isCurrent' => $isCurrentComment,
-                'view' => Html::of($this->renderCommentView($request, $comment, $isCurrentComment))
+                'view' => Html::of($this->renderCommentView($request, $isCurrentComment ? $current : $comment, $isCurrentComment))
             ];
         }
         return $records;
@@ -297,11 +301,14 @@ class MainController
             'id' => 'twocents_comment_' . $comment->id(),
             'css_class' => !$comment->hidden() ? '' : ' twocents_hidden',
             'is_current_comment' => $isCurrentComment,
-            'form' => $isCurrentComment ? Html::of($this->renderCommentForm($request->url(), $comment)) : null,
+            'form' => $isCurrentComment ? Html::of($this->renderCommentForm($request, $comment)) : null,
             'is_admin' => !$isCurrentComment ? $request->admin() : null,
             'url' => !$isCurrentComment ? $url->relative() : null,
-            'edit_url' => !$isCurrentComment ? $url->with('twocents_id', $comment->id())->relative() : null,
-            'comment_id' => !$isCurrentComment ? $comment->id() : null,
+            'edit_url' => !$isCurrentComment ? $url->with('twocents_id', $comment->id())->with("twocents_action", "edit")->relative() : null,
+            "visibility_action" => !$isCurrentComment ? $url->with("twocents_id", $comment->id())
+                ->with("twocents_action", "toggle_visibility")->relative() : null,
+            "delete_action" => !$isCurrentComment ? $url->with("twocents_id", $comment->id())
+                ->with("twocents_action", "delete")->relative() : null,
             'visibility' => !$isCurrentComment ? (!$comment->hidden() ? 'label_hide' : 'label_show') : null,
             'attribution' => !$isCurrentComment ? Html::of($this->renderAttribution($comment)) : null,
             'message' => !$isCurrentComment ? Html::of($this->renderMessage($comment)) : null,
@@ -309,15 +316,14 @@ class MainController
         ]);
     }
 
-    private function renderCommentForm(Url $url, ?Comment $comment = null): string
+    private function renderCommentForm(Request $request, ?Comment $comment = null): string
     {
         if (!isset($comment)) {
             $comment = new Comment("", "", 0, "", "", "", true);
         }
-        $url = $url->without('twocents_id');
         if (!$comment->id()) {
             $page = $this->conf['comments_order'] === 'ASC' ? '2147483647' : '0';
-            $url = $url->with('twocents_page', $page);
+            $url = $request->url()->with('twocents_page', $page);
         }
         return $this->view->render('comment-form', [
             'action' => $comment->id() ? 'update' : 'add',
@@ -327,7 +333,9 @@ class MainController
             "comment_email" => $comment->email(),
             "comment_message" => $comment->message(),
             'captcha' => Html::of($this->captcha->render()),
-            "url" => $url->relative(),
+            "admin" => $request->admin(),
+            "url" => $comment->id() ? $url->with("twocents_action", "edit")->relative() : $url->with("twocents_action", "create")->relative(),
+            "cancel_url" => $url->without("twocents_id")->without("twocents_action")->relative(),
             "csrf_token" => $comment->id() ? $this->csrfProtector->token() : null,
         ]);
     }
@@ -371,23 +379,20 @@ class MainController
                 || ($isSpam = !$request->admin() && $spamFilter->isSpam($message))) {
             $hideComment = true;
         }
-        $id = Util::encodeBase64url($this->random->bytes(15));
-        $comment = new Comment($id, $topic, $request->time(), $user, $email, $message, $hideComment);
+        $comment = new Comment("", $topic, $request->time(), $user, $email, $message, $hideComment);
         $marker = '<div id="twocents_scroll_marker" class="twocents_scroll_marker">'
             . '</div>';
         $messages = $this->validateComment($comment);
         if (empty($messages)) {
+            $id = Util::encodeBase64url($this->random->bytes(15));
+            $comment = $comment->withId($id);
             $this->db->insertComment($comment);
             if (!$request->admin()) {
                 $this->sendNotificationEmail($request->url(), $comment);
             }
             $comment = null;
-            if (($this->conf['comments_moderated'] && !$request->admin()) || $isSpam) {
-                $messages .= $this->view->message('info', 'message_moderated');
-            } else {
-                $messages .= $this->view->message('success', 'message_added');
-            }
-            $messages .= $marker;
+            $url = $request->url()->without("twocents_action")->absolute();
+            return Response::redirect($url);
         } else {
             $messages = $marker . $messages;
         }
@@ -399,7 +404,7 @@ class MainController
     {
         $email = $this->conf['email_address'];
         if ($email !== '') {
-            $url = $url->absolute() . "#twocents_comment_" . $comment->id();
+            $url = $url->without("twocents_action")->absolute() . "#twocents_comment_" . $comment->id();
             $message = $comment->message();
             if ($this->conf['comments_markup'] === 'HTML') {
                 $message = strip_tags($message);
@@ -420,7 +425,9 @@ class MainController
             return Response::create("");
         }
         $this->csrfProtector->check();
-        $comment = $this->db->findComment($topic, $_POST["twocents_id"]);
+        $id = $request->url()->param("twocents_id");
+        assert(is_string($id)); // TODO invalid assertion
+        $comment = $this->db->findComment($topic, $id);
         assert(isset($comment)); // TODO: invalid assertion, but the code already was broken
         ["user" => $user, "email" => $email, "message" => $message] = $request->commentPost();
         $comment = $comment->withUser($user)->withEmail($email)->withMessage($message);
@@ -428,6 +435,8 @@ class MainController
         if (empty($messages)) {
             $this->db->updateComment($comment);
             $comment = null;
+            $url = $request->url()->without("twocents_id")->without("twocents_action")->absolute();
+            return Response::redirect($url);
         }
         return $this->defaultAction($request, $topic, $readonly, $messages, $comment);
     }

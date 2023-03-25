@@ -11,7 +11,8 @@ use Twocents\Infra\View;
  * @var ?bool $is_admin
  * @var ?string $url
  * @var ?string $edit_url
- * @var ?string $comment_id
+ * @var ?string $visibility_action
+ * @var ?string $delete_action
  * @var ?string $visibility
  * @var ?string $attribution
  * @var ?string $message
@@ -28,9 +29,8 @@ use Twocents\Infra\View;
     <a href="<?=$edit_url?>"><?=$this->text('label_edit')?></a>
     <form method="post" action="<?=$url?>">
       <input type="hidden" name="xh_csrf_token" value="<?=$csrf_token?>">
-      <input type="hidden" name="twocents_id" value="<?=$comment_id?>">
-      <button type="submit" name="twocents_action" value="toggle_visibility"><?=$this->text($visibility)?></button>
-      <button type="submit" name="twocents_action" value="remove_comment"><?=$this->text('label_delete')?></button>
+      <button type="submit" formaction="<?=$visibility_action?>" name="twocents_do"><?=$this->text($visibility)?></button>
+      <button data-action="delete" formaction="<?=$delete_action?>" name="twocents_do"><?=$this->text('label_delete')?></button>
     </form>
   </div>
 <?  endif?>

@@ -11,16 +11,20 @@ use Twocents\Infra\View;
  * @var string $comment_email
  * @var string $comment_message
  * @var string $captcha
+ * @var bool $admin
  * @var string $url
+ * @var string $cancel_url
  * @var ?string $csrf_token
  */
 ?>
 <!-- twocents comment form -->
 <form class="twocents_form" method="post" action="<?=$url?>">
+<?if (!$admin):?>
+  <p class="xh_info"><?=$this->text('message_moderation')?></p>
+<?endif?>
 <?if (isset($csrf_token)):?>
   <input type="hidden" name="xh_csrf_token" value="<?=$csrf_token?>">
 <?endif?>
-  <input type="hidden" name="twocents_id" value="<?=$comment_id?>">
   <div>
     <label>
       <span><?=$this->text('label_user')?></span>
@@ -41,9 +45,9 @@ use Twocents\Infra\View;
   </div>
   <?=$captcha?>
   <div class="twocents_form_buttons">
-    <button type="submit" name="twocents_action" value="<?=$action?>_comment"><?=$this->text($label)?></button>
+    <button name="twocents_do"><?=$this->text($label)?></button>
 <?if ($comment_id):?>
-    <a href="<?=$url?>"><?=$this->text('label_cancel')?></a>
+    <a href="<?=$cancel_url?>"><?=$this->text('label_cancel')?></a>
 <?endif?>
     <button type="reset"><?=$this->text('label_reset')?></button>
   </div>

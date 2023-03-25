@@ -97,6 +97,13 @@ class Comment
         return $this->hidden;
     }
 
+    public function withId(string $id): self
+    {
+        $that = clone $this;
+        $that->id = $id;
+        return $that;
+    }
+
     public function withUser(string $user): self
     {
         $that = clone $this;

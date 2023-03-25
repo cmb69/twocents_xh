@@ -37,12 +37,16 @@ class MainControllerTest extends TestCase
 {
     public function testTogglesVisibility(): void
     {
-        $_POST = ["twocents_action" => "toggle_visibility", "twocents_id" => $this->comment()->id()];
         $csrfProtector = new FakeCsrfProtector;
         $db = new FakeDb;
         $db->insertComment($this->comment());
         $sut = $this->sut(["csrfProtector" => $csrfProtector, "db" => $db]);
-        $response = $sut(new FakeRequest(["query" => "Twocents", "adm" => true]), "test-topic", false);
+        $request = new FakeRequest([
+            "query" => "Twocents&twocents_id=63fba86870945&twocents_action=toggle_visibility",
+            "adm" => true,
+            "post" => ["twocents_do" => ""],
+        ]);
+        $response = $sut($request, "test-topic", false);
         $comment = $db->findComment($this->comment()->topicname(), $this->comment()->id());
         $this->assertTrue($comment->hidden());
         $this->assertEquals("http://example.com/?Twocents", $response->location());
@@ -50,12 +54,16 @@ class MainControllerTest extends TestCase
 
     public function testRemovesComment(): void
     {
-        $_POST = ["twocents_action" => "remove_comment", "twocents_id" => $this->comment()->id()];
         $csrfProtector = new FakeCsrfProtector;
         $db = new FakeDb;
         $db->insertComment($this->comment());
         $sut = $this->sut(["csrfProtector" => $csrfProtector, "db" => $db]);
-        $response = $sut(new FakeRequest(["query" => "Twocents", "adm" => true]), "test-topic", false);
+        $request = new FakeRequest([
+            "query" => "Twocents&twocents_id=63fba86870945&twocents_action=delete",
+            "adm" => true,
+            "post" => ["twocents_do" => ""],
+        ]);
+        $response = $sut($request, "test-topic", false);
         $this->assertTrue($csrfProtector->hasChecked());
         $this->assertNull($db->findComment($this->comment()->topicname(), $this->comment()->id()));
         $this->assertEquals("http://example.com/?Twocents", $response->location());
@@ -93,46 +101,42 @@ class MainControllerTest extends TestCase
         $db = new FakeDb;
         $db->insertComment($this->comment());
         $sut = $this->sut(["csrfProtector" => $csrfProtector, "db" => $db]);
-        $request = new FakeRequest(["query" => "Twocents&twocents_id=63fba86870945"]);
+        $request = new FakeRequest(["query" => "Twocents&twocents_id=63fba86870945&twocents_action=edit"]);
         $response = $sut($request, "test-topic", false);
         Approvals::verifyHtml($response->output());
     }
 
     public function testAddsComment(): void
     {
-        $_POST = [
-            "twocents_action" => "add_comment",
-        ];
         $csrfProtector = new FakeCsrfProtector;
         $sut = $this->sut(["csrfProtector" => $csrfProtector]);
         $request = new FakeRequest([
-            "query" => "Twocents",
+            "query" => "Twocents&twocents_action=create",
             "time" => 1677493797,
             "adm" => true,
             "post" => [
                 "twocents_user" => "cmb",
                 "twocents_email" => "cmb69@gmx.de",
                 "twocents_message" => "I fixed that typo",
+                "twocents_do" => "",
             ],
         ]);
         $response = $sut($request, "test-topic", false);
-        Approvals::verifyHtml($response->output());
+        $this->assertEquals("http://example.com/?Twocents", $response->location());
     }
 
     public function testNewCommentSendsNotificationEmail(): void
     {
-        $_POST = [
-            "twocents_action" => "add_comment",
-        ];
         $mailer = new FakeMailer;
         $sut = $this->sut(["conf" => ["email_address" => "admin@example.com"], "mailer" => $mailer]);
         $request = new FakeRequest([
-            "query" => "Twocents",
+            "query" => "Twocents&twocents_action=create",
             "time" => 1677493797,
             "post" => [
                 "twocents_user" => "cmb",
                 "twocents_email" => "cmb69@gmx.de",
                 "twocents_message" => "I fixed that typo",
+                "twocents_do" => "",
             ],
         ]);
         $sut($request, "test-topic", false);
@@ -142,18 +146,18 @@ class MainControllerTest extends TestCase
 
     public function testOnlyAdminCanAddCommentIfReadOnly(): void
     {
-        $_POST = [
-            "twocents_action" => "add_comment",
-            "twocents_user" => "cmb",
-            "twocents_email" => "cmb69@gmx.de",
-            "twocents_message" => "I fixed that typo",
-        ];
         $db = new FakeDb;
         $db->insertComment($this->comment());
         $sut = $this->sut(["csrfProtector" => null, "db" => $db]);
         $request = new FakeRequest([
-            "query" => "Twocents",
+            "query" => "Twocents&twocents_action=create",
             "time" => 1677493797,
+            "post" => [
+                "twocents_user" => "cmb",
+                "twocents_email" => "cmb69@gmx.de",
+                "twocents_message" => "I fixed that typo",
+                "twocents_do" => "",
+            ],
         ]);
         $response = $sut($request, "test-topic", true);
         Approvals::verifyHtml($response->output());
@@ -162,25 +166,22 @@ class MainControllerTest extends TestCase
     public function testUpdatesComment(): void
     {
         $comment = $this->comment();
-        $_POST = [
-            "twocents_action" => "update_comment",
-            "twocents_id" => $comment->id(),
-        ];
         $csrfProtector = new FakeCsrfProtector;
         $db = new FakeDb;
         $db->insertComment($comment);
         $sut = $this->sut(["csrfProtector" => $csrfProtector, "db" => $db]);
         $request = new FakeRequest([
-            "query" => "Twocents",
+            "query" => "Twocents&twocents_id=63fba86870945&twocents_action=edit",
             "adm" => true,
             "post" => [
                 "twocents_user" => "cmb",
                 "twocents_email" => "cmb69@gmx.de",
                 "twocents_message" => "I fixed that typo",
+                "twocents_do" => "",
             ],
         ]);
         $response = $sut($request, "test-topic", false);
-        Approvals::verifyHtml($response->output());
+        $this->assertEquals("http://example.com/?Twocents", $response->location());
     }
 
     private function sut($options = [])
