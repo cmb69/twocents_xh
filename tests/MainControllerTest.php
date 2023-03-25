@@ -80,6 +80,21 @@ class MainControllerTest extends TestCase
         Approvals::verifyHtml($response->output());
     }
 
+    public function testRendersOverviewWithPagination(): void
+    {
+        $csrfProtector = new FakeCsrfProtector;
+        $db = new FakeDb;
+        $id = "63fba86870945";
+        for ($i = 0; $i < 20; $i++) {
+            $id++;
+            $db->insertComment($this->comment($id));
+        }
+        $sut = $this->sut(["conf" => ["pagination_max" => "3"], "csrfProtector" => $csrfProtector, "db" => $db]);
+        $request = new FakeRequest(["query" => "Twocents"]);
+        $response = $sut($request, "test-topic", false);
+        Approvals::verifyHtml($response->output());
+    }
+
     public function testWritesToBjs(): void
     {
         $csrfProtector = new FakeCsrfProtector;
@@ -217,10 +232,10 @@ class MainControllerTest extends TestCase
         return XH_includeVar("./languages/en.php", "plugin_tx")["twocents"];
     }
 
-    private function comment()
+    private function comment(string $id = "63fba86870945")
     {
         return new Comment(
-            "63fba86870945",
+            $id,
             "test-topic",
             1677437048,
             "cmb",
