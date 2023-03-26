@@ -29,13 +29,18 @@ class FakeDb extends Db
     /** @var string */
     private $foldername = "db_folder";
 
+    private $options;
+
     /** @var array<string,array<Comment> */
     private $data = [];
 
     /** @var string|null */
     public $lastTopicStored = null;
 
-    public function __construct() {}
+    public function __construct(array $options = [])
+    {
+        $this->options = $options;
+    }
 
     public function getFoldername(): string
     {
@@ -85,6 +90,9 @@ class FakeDb extends Db
 
     public function findComment(string $topic, string $id): ?Comment
     {
+        if (!isset($this->data[$topic])) {
+            return null;
+        }
         foreach ($this->data[$topic] as $comment) {
             if ($comment->id() === $id) {
                 return $comment;
@@ -95,12 +103,18 @@ class FakeDb extends Db
 
     public function insertComment(Comment $comment): bool
     {
+        if (($this->options["insert"] ?? null) === false) {
+            return false;
+        }
         $this->data[$comment->topicname()][] = $comment;
         return true;
     }
 
     public function updateComment(Comment $comment): bool
     {
+        if (($this->options["update"] ?? null) === false) {
+            return false;
+        }
         foreach ($this->data[$comment->topicname()] as &$aComment) {
             if ($aComment->id() === $comment->id()) {
                 $aComment = $comment;
@@ -111,6 +125,9 @@ class FakeDb extends Db
 
     public function deleteComment(Comment $comment): bool
     {
+        if (($this->options["delete"] ?? null) === false) {
+            return false;
+        }
         foreach ($this->data[$comment->topicname()] as $i => $aComment) {
             if ($aComment->id() === $comment->id()) {
                 unset($this->data[$comment->topicname()][$i]);

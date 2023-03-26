@@ -1,0 +1,31 @@
+<div class="twocents_container">
+<!-- twocents comment form -->
+<script type="module" src="./plugins/twocents/twocents.min.js"></script>
+<form class="twocents_form" method="post" action="/?Twocents&amp;twocents_action=create" data-config='{"comments_markup":"","label_bold":"Bold","label_italic":"Italic","label_link":"Link","label_unlink":"Unlink","message_link":"Enter the URL to link to:"}'>
+  <input type="hidden" name="xh_csrf_token" value="e3c1b42a6098b48a39f9f54ddb3388f7">
+  <div>
+    <label>
+      <span>Name</span>
+      <input type="text" name="twocents_user" value="" size="20" required="required">
+    </label>
+  </div>
+  <div>
+    <label>
+      <span>Email</span>
+      <input type="email" name="twocents_email" value="" size="20" required="required">
+    </label>
+  </div>
+  <div>
+    <label>
+      <span>Comment</span>
+      <textarea name="twocents_message" cols="50" rows="8" required="required"></textarea>
+    </label>
+  </div>
+  
+<p>This is not a real CAPTCHA</p>  <div class="twocents_form_buttons">
+    <button name="twocents_do">Add Comment</button>
+    <a href="/?Twocents">Cancel</a>
+    <button type="reset">Reset</button>
+  </div>
+</form>
+</div>

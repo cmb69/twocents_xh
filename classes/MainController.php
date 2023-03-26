@@ -92,13 +92,13 @@ class MainController
     public function __invoke(Request $request, string $topic, bool $readonly): Response
     {
         if (!preg_match('/^[a-z0-9-]+$/i', $topic)) {
-            return Response::create($this->view->message("fail", "error_topicname"));
+            return Response::create($this->view->error("error_topicname"));
         }
         switch ($request->action()) {
             default:
                 return $this->defaultAction($request, $topic, $readonly);
             case "create":
-                return $this->createComment($request);
+                return $this->createComment($request, $readonly);
             case "do_create":
                 return $this->addCommentAction($request, $topic, $readonly);
             case "edit":
@@ -209,8 +209,11 @@ class MainController
         }
     }
 
-    private function createComment(Request $request): Response
+    private function createComment(Request $request, bool $readonly): Response
     {
+        if ($readonly && !$request->admin()) {
+            return $this->respondWith($this->view->error("error_unauthorized"));
+        }
         $comment = new Comment(null, "", 0, "", "", "", true);
         $html = $this->renderCommentForm($request, $comment);
         return $this->respondWith($html);
@@ -218,10 +221,13 @@ class MainController
 
     private function editCommentAction(Request $request, string $topic): Response
     {
-        $id = $request->url()->param("twocents_id");
-        assert(is_string($id)); // TODO invalid assertion
-        $comment = $this->db->findComment($topic, $id);
-        assert($comment !== null); // TODO invalid assertion
+        if (!$request->admin()) {
+            return $this->respondWith($this->view->error("error_unauthorized"));
+        }
+        $comment = $this->db->findComment($topic, $request->commentId());
+        if ($comment === null) {
+            return $this->respondWith($this->view->error("error_no_comment"));
+        }
         $html = $this->renderCommentForm($request, $comment);
         return $this->respondWith($html);
     }
@@ -251,8 +257,8 @@ class MainController
 
     private function addCommentAction(Request $request, string $topic, bool $readonly): Response
     {
-        if (!$request->admin() && $readonly) {
-            return $this->defaultAction($request, $topic, $readonly);
+        if ($readonly && !$request->admin()) {
+            return $this->respondWith($this->view->error("error_unauthorized"));
         }
         ["user" => $user, "email" => $email, "message" => $message] = $request->commentPost();
         if (!$request->admin() && $this->conf['comments_markup'] == 'HTML') {
@@ -262,17 +268,19 @@ class MainController
         $hideComment = !$request->admin() && ($this->conf['comments_moderated'] || $spamFilter->isSpam($message));
         $comment = new Comment(null, $topic, $request->time(), $user, $email, $message, $hideComment);
         $errors = array_merge(Util::validateComment($comment), $this->captcha->check() ? [] : ["error_captcha"]);
-        if (empty($errors)) {
-            $id = Util::encodeBase64url($this->random->bytes(15));
-            $comment = $comment->withId($id);
-            $this->db->insertComment($comment);
-            if (!$request->admin() && $this->conf['email_address']) {
-                $this->sendNotificationEmail($request->url(), $comment);
-            }
-            $url = $request->url()->without("twocents_action")->absolute();
-            return Response::redirect($url);
+        if (!empty($errors)) {
+            return $this->respondWith($this->renderCommentForm($request, $comment, $errors));
         }
-        return $this->respondWith($this->renderCommentForm($request, $comment, $errors));
+        $id = Util::encodeBase64url($this->random->bytes(15));
+        $comment = $comment->withId($id);
+        if (!$this->db->insertComment($comment)) {
+            return $this->respondWith($this->renderCommentForm($request, $comment, ["error_store"]));
+        }
+        if (!$request->admin() && $this->conf['email_address']) {
+            $this->sendNotificationEmail($request->url(), $comment);
+        }
+        $url = $request->url()->without("twocents_action")->absolute();
+        return Response::redirect($url);
     }
 
     /** @return void */
@@ -295,22 +303,24 @@ class MainController
     private function updateCommentAction(Request $request, string $topic): Response
     {
         if (!$request->admin()) {
-            return Response::create("");
+            return $this->respondWith($this->view->error("error_unauthorized"));
         }
         $this->csrfProtector->check();
-        $id = $request->url()->param("twocents_id");
-        assert(is_string($id)); // TODO invalid assertion
-        $comment = $this->db->findComment($topic, $id);
-        assert(isset($comment)); // TODO: invalid assertion, but the code already was broken
+        $comment = $this->db->findComment($topic, $request->commentId());
+        if ($comment === null) {
+            return $this->respondWith($this->view->error("error_no_comment"));
+        }
         ["user" => $user, "email" => $email, "message" => $message] = $request->commentPost();
         $comment = $comment->with($user, $email, $message);
         $errors = array_merge(Util::validateComment($comment), $this->captcha->check() ? [] : ["error_captcha"]);
-        if (empty($errors)) {
-            $this->db->updateComment($comment);
-            $url = $request->url()->without("twocents_id")->without("twocents_action")->absolute();
-            return Response::redirect($url);
+        if ($errors) {
+            return $this->respondWith($this->renderCommentForm($request, $comment, $errors));
         }
-        return $this->respondWith($this->renderCommentForm($request, $comment, $errors));
+        if (!$this->db->updateComment($comment)) {
+            return $this->respondWith($this->renderCommentForm($request, $comment, ["error_store"]));
+        }
+        $url = $request->url()->without("twocents_id")->without("twocents_action")->absolute();
+        return Response::redirect($url);
     }
 
     private function respondWith(string $html): Response
@@ -318,7 +328,7 @@ class MainController
         if ($this->isXmlHttpRequest()) {
             return Response::create($html)->withContentType("text/html; charset=UTF-8");
         }
-        return Response::create("<div class=\"twocents_container\">$html</div>");
+        return Response::create("<div class=\"twocents_container\">\n$html</div>\n");
     }
 
     private function isXmlHttpRequest(): bool
@@ -340,15 +350,17 @@ class MainController
     private function toggleVisibilityAction(Request $request, string $topic): Response
     {
         if (!$request->admin()) {
-            return Response::create("");
+            return $this->respondWith($this->view->error("error_unauthorized"));
         }
         $this->csrfProtector->check();
-        $id = $request->url()->param("twocents_id");
-        assert(is_string($id)); // TODO: invalid assertion
-        $comment = $this->db->findComment($topic, $id);
-        assert($comment !== null); // TODO: invalid assertion
+        $comment = $this->db->findComment($topic, $request->commentId());
+        if ($comment === null) {
+            return $this->respondWith($this->view->error("error_no_comment"));
+        }
         $comment = $comment->withToggledVisibility();
-        $this->db->updateComment($comment);
+        if (!$this->db->updateComment($comment)) {
+            return $this->respondWith($this->renderCommentForm($request, $comment, ["error_store"]));
+        }
         $url = $request->url()->without("twocents_id")->without('twocents_action')->absolute();
         return Response::redirect($url);
     }
@@ -356,14 +368,16 @@ class MainController
     private function removeCommentAction(Request $request, string $topic): Response
     {
         if (!$request->admin()) {
-            return Response::create("");
+            return $this->respondWith($this->view->error("error_unauthorized"));
         }
         $this->csrfProtector->check();
-        $id = $request->url()->param("twocents_id");
-        assert(is_string($id)); // TODO invalid assertion
-        $comment = $this->db->findComment($topic, $id);
-        assert($comment !== null); // TODO: invalid assertion
-        $this->db->deleteComment($comment);
+        $comment = $this->db->findComment($topic, $request->commentId());
+        if ($comment === null) {
+            return $this->respondWith($this->view->error("error_no_comment"));
+        }
+        if (!$this->db->deleteComment($comment)) {
+            return $this->respondWith($this->renderCommentForm($request, $comment, ["error_store"]));
+        }
         $url = $request->url()->without("twocents_id")->without('twocents_action')->absolute();
         return Response::redirect($url);
     }

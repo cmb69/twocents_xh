@@ -73,6 +73,15 @@ class Request
         return $action;
     }
 
+    public function commentId(): string
+    {
+        $id = $this->url()->param("twocents_id");
+        if (!is_string($id)) {
+            return "";
+        }
+        return $id;
+    }
+
     /** @return array{user:string,email:string,message:string} */
     public function commentPost(): array
     {

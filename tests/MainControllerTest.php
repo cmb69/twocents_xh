@@ -35,6 +35,13 @@ use Twocents\Value\Comment;
 
 class MainControllerTest extends TestCase
 {
+    public function testReportsInvalidTopicName(): void
+    {
+        $sut = $this->sut();
+        $response = $sut(new FakeRequest(), "invalid!topicname", false);
+        Approvals::verifyHtml($response->output());
+    }
+
     public function testTogglesVisibility(): void
     {
         $csrfProtector = new FakeCsrfProtector;
@@ -93,13 +100,54 @@ class MainControllerTest extends TestCase
         Approvals::verifyHtml($response->output());
     }
 
+    public function testRendersCreateForm(): void
+    {
+        $csrfProtector = new FakeCsrfProtector;
+        $db = new FakeDb;
+        $db->insertComment($this->comment());
+        $sut = $this->sut(["csrfProtector" => $csrfProtector, "db" => $db]);
+        $request = new FakeRequest([
+            "query" => "Twocents&twocents_action=create",
+            "adm" => true,
+        ]);
+        $response = $sut($request, "test-topic", false);
+        Approvals::verifyHtml($response->output());
+    }
+
+    public function testReportsAuthorizationFailureToCreateComment(): void
+    {
+        $sut = $this->sut();
+        $request = new FakeRequest(["query" => "Twocents&twocents_action=create"]);
+        $response = $sut($request, "test-topic", true);
+        Approvals::verifyHtml($response->output());
+    }
+
     public function testRendersEditForm(): void
     {
         $csrfProtector = new FakeCsrfProtector;
         $db = new FakeDb;
         $db->insertComment($this->comment());
         $sut = $this->sut(["csrfProtector" => $csrfProtector, "db" => $db]);
-        $request = new FakeRequest(["query" => "Twocents&twocents_id=63fba86870945&twocents_action=edit"]);
+        $request = new FakeRequest([
+            "query" => "Twocents&twocents_id=63fba86870945&twocents_action=edit",
+            "adm" => true,
+        ]);
+        $response = $sut($request, "test-topic", false);
+        Approvals::verifyHtml($response->output());
+    }
+
+    public function testReportsAuthorizationFailureToUpdateComment(): void
+    {
+        $sut = $this->sut();
+        $request = new FakeRequest(["query" => "Twocents&twocents_action=edit"]);
+        $response = $sut($request, "test-topic", false);
+        Approvals::verifyHtml($response->output());
+    }
+
+    public function testReportsMissingCommentForUpdate(): void
+    {
+        $sut = $this->sut();
+        $request = new FakeRequest(["query" => "Twocents&twocents_action=edit", "adm" => true]);
         $response = $sut($request, "test-topic", false);
         Approvals::verifyHtml($response->output());
     }
@@ -161,6 +209,45 @@ class MainControllerTest extends TestCase
         Approvals::verifyHtml($response->output());
     }
 
+    public function testReporsValidationErrorsWhenCreatingComment(): void
+    {
+        $csrfProtector = new FakeCsrfProtector;
+        $sut = $this->sut(["csrfProtector" => $csrfProtector]);
+        $request = new FakeRequest([
+            "query" => "Twocents&twocents_action=create",
+            "time" => 1677493797,
+            "adm" => true,
+            "post" => [
+                "twocents_user" => "",
+                "twocents_email" => "",
+                "twocents_message" => "",
+                "twocents_do" => "",
+            ],
+        ]);
+        $response = $sut($request, "test-topic", false);
+        Approvals::verifyHtml($response->output());
+    }
+
+    public function testReporsFailureToStoreWhenCreatingComment(): void
+    {
+        $csrfProtector = new FakeCsrfProtector;
+        $db = new FakeDb(["insert" => false]);
+        $sut = $this->sut(["csrfProtector" => $csrfProtector, "db" => $db]);
+        $request = new FakeRequest([
+            "query" => "Twocents&twocents_action=create",
+            "time" => 1677493797,
+            "adm" => true,
+            "post" => [
+                "twocents_user" => "cmb",
+                "twocents_email" => "cmb69@gmx.de",
+                "twocents_message" => "I fixed that typo",
+                "twocents_do" => "",
+            ],
+        ]);
+        $response = $sut($request, "test-topic", false);
+        Approvals::verifyHtml($response->output());
+    }
+
     public function testUpdatesComment(): void
     {
         $comment = $this->comment();
@@ -180,6 +267,157 @@ class MainControllerTest extends TestCase
         ]);
         $response = $sut($request, "test-topic", false);
         $this->assertEquals("http://example.com/?Twocents", $response->location());
+    }
+
+    public function testReportsAuthorizationFailureWhenUpdatingComment(): void
+    {
+        $sut = $this->sut();
+        $request = new FakeRequest([
+            "query" => "Twocents&twocents_id=63fba86870945&twocents_action=edit",
+            "post" => ["twocents_do" => ""],
+        ]);
+        $response = $sut($request, "test-topic", false);
+        Approvals::verifyHtml($response->output());
+    }
+
+    public function testReportsFailureToFindCommentWhenUpdating(): void
+    {
+        $db = new FakeDb(["insert" => false]);
+        $sut = $this->sut(["db" => $db]);
+        $request = new FakeRequest([
+            "query" => "Twocents&twocents_id=63fba86870945&twocents_action=edit",
+            "adm" => true,
+            "post" => ["twocents_do" => ""],
+        ]);
+        $response = $sut($request, "test-topic", false);
+        Approvals::verifyHtml($response->output());
+    }
+
+    public function testReporsValidationErrorsWhenUpdatingComment(): void
+    {
+        $csrfProtector = new FakeCsrfProtector;
+        $db = new FakeDb;
+        $db->insertComment($this->comment());
+        $sut = $this->sut(["csrfProtector" => $csrfProtector, "db" => $db]);
+        $request = new FakeRequest([
+            "query" => "Twocents&twocents_id=63fba86870945&twocents_action=edit",
+            "adm" => true,
+            "post" => [
+                "twocents_user" => "",
+                "twocents_email" => "",
+                "twocents_message" => "",
+                "twocents_do" => "",
+            ],
+        ]);
+        $response = $sut($request, "test-topic", false);
+        Approvals::verifyHtml($response->output());
+    }
+
+    public function testReportsFailureToStoreWhenUpdatingComment(): void
+    {
+        $comment = $this->comment();
+        $csrfProtector = new FakeCsrfProtector;
+        $db = new FakeDb(["update" => false]);
+        $db->insertComment($comment);
+        $sut = $this->sut(["csrfProtector" => $csrfProtector, "db" => $db]);
+        $request = new FakeRequest([
+            "query" => "Twocents&twocents_id=63fba86870945&twocents_action=edit",
+            "adm" => true,
+            "post" => [
+                "twocents_user" => "cmb",
+                "twocents_email" => "cmb69@gmx.de",
+                "twocents_message" => "I fixed that typo",
+                "twocents_do" => "",
+            ],
+        ]);
+        $response = $sut($request, "test-topic", false);
+        Approvals::verifyHtml($response->output());
+    }
+
+    public function testReportsMissingAuthorizationToToggleVisibility(): void
+    {
+        $sut = $this->sut();
+        $request = new FakeRequest([
+            "query" => "Twocents&twocents_id=63fba86870945&twocents_action=toggle_visibility",
+            "post" => [
+                "twocents_do" => "",
+            ],
+        ]);
+        $response = $sut($request, "test-topic", false);
+        Approvals::verifyHtml($response->output());
+    }
+
+    public function testReportsFailureToFindCommentWhenTogglingVisibility(): void
+    {
+        $sut = $this->sut();
+        $request = new FakeRequest([
+            "query" => "Twocents&twocents_id=63fba86870945&twocents_action=toggle_visibility",
+            "adm" => true,
+            "post" => [
+                "twocents_do" => "",
+            ],
+        ]);
+        $response = $sut($request, "test-topic", false);
+        Approvals::verifyHtml($response->output());
+    }
+
+    public function testReportsFailureToStoreWhenTogglingVisibility(): void
+    {
+        $db = new FakeDb(["update" => false]);
+        $db->insertComment($this->comment());
+        $sut = $this->sut(["db" => $db]);
+        $request = new FakeRequest([
+            "query" => "Twocents&twocents_id=63fba86870945&twocents_action=toggle_visibility",
+            "adm" => true,
+            "post" => [
+                "twocents_do" => "",
+            ],
+        ]);
+        $response = $sut($request, "test-topic", false);
+        Approvals::verifyHtml($response->output());
+    }
+
+    public function testReportsMissingAuthorizationToDelete(): void
+    {
+        $sut = $this->sut();
+        $request = new FakeRequest([
+            "query" => "Twocents&twocents_id=63fba86870945&twocents_action=delete",
+            "post" => [
+                "twocents_do" => "",
+            ],
+        ]);
+        $response = $sut($request, "test-topic", false);
+        Approvals::verifyHtml($response->output());
+    }
+
+    public function testReportsFailureToFindCommentWhenDeleting(): void
+    {
+        $sut = $this->sut();
+        $request = new FakeRequest([
+            "query" => "Twocents&twocents_id=63fba86870945&twocents_action=delete",
+            "adm" => true,
+            "post" => [
+                "twocents_do" => "",
+            ],
+        ]);
+        $response = $sut($request, "test-topic", false);
+        Approvals::verifyHtml($response->output());
+    }
+
+    public function testReportsFailureToStoreWhenDeleting(): void
+    {
+        $db = new FakeDb(["delete" => false]);
+        $db->insertComment($this->comment());
+        $sut = $this->sut(["db" => $db]);
+        $request = new FakeRequest([
+            "query" => "Twocents&twocents_id=63fba86870945&twocents_action=delete",
+            "adm" => true,
+            "post" => [
+                "twocents_do" => "",
+            ],
+        ]);
+        $response = $sut($request, "test-topic", false);
+        Approvals::verifyHtml($response->output());
     }
 
     private function sut($options = [])

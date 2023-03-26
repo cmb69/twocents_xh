@@ -2,23 +2,26 @@
 <!-- twocents comment form -->
 <script type="module" src="./plugins/twocents/twocents.min.js"></script>
 <form class="twocents_form" method="post" action="/?Twocents&amp;twocents_id=63fba86870945&amp;twocents_action=edit" data-config='{"comments_markup":"","label_bold":"Bold","label_italic":"Italic","label_link":"Link","label_unlink":"Unlink","message_link":"Enter the URL to link to:"}'>
+  <p class="xh_fail">Invalid name!</p>
+  <p class="xh_fail">Invalid email address!</p>
+  <p class="xh_fail">Invalid comment!</p>
   <input type="hidden" name="xh_csrf_token" value="e3c1b42a6098b48a39f9f54ddb3388f7">
   <div>
     <label>
       <span>Name</span>
-      <input type="text" name="twocents_user" value="cmb" size="20" required="required">
+      <input type="text" name="twocents_user" value="" size="20" required="required">
     </label>
   </div>
   <div>
     <label>
       <span>Email</span>
-      <input type="email" name="twocents_email" value="cmb@example.com" size="20" required="required">
+      <input type="email" name="twocents_email" value="" size="20" required="required">
     </label>
   </div>
   <div>
     <label>
       <span>Comment</span>
-      <textarea name="twocents_message" cols="50" rows="8" required="required">A nice comment</textarea>
+      <textarea name="twocents_message" cols="50" rows="8" required="required"></textarea>
     </label>
   </div>
   
