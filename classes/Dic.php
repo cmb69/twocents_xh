@@ -87,8 +87,7 @@ class Dic
 
         return new Captcha(
             $pth["folder"]["plugins"],
-            $plugin_cf["twocents"]["captcha_plugin"],
-            defined("XH_ADM") && XH_ADM
+            $plugin_cf["twocents"]["captcha_plugin"]
         );
     }
 

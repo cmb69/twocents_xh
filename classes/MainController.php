@@ -244,7 +244,7 @@ class MainController
             "comment_user" => $comment->user(),
             "comment_email" => $comment->email(),
             "comment_message" => $comment->message(),
-            'captcha' => Html::of($this->captcha->render()),
+            'captcha' => Html::of($this->captcha->render($request->admin())),
             "admin" => $request->admin(),
             "module" => $this->pluginFolder . "twocents.min.js",
             "url" => $url->with("twocents_action", $action)->relative(),
@@ -267,7 +267,10 @@ class MainController
         $spamFilter = new SpamFilter($this->view->plain("spam_words"));
         $hideComment = !$request->admin() && ($this->conf['comments_moderated'] || $spamFilter->isSpam($message));
         $comment = new Comment(null, $topic, $request->time(), $user, $email, $message, $hideComment);
-        $errors = array_merge(Util::validateComment($comment), $this->captcha->check() ? [] : ["error_captcha"]);
+        $errors = array_merge(
+            Util::validateComment($comment),
+            $this->captcha->check($request->admin()) ? [] : ["error_captcha"]
+        );
         if (!empty($errors)) {
             return $this->respondWith($this->renderCommentForm($request, $comment, $errors));
         }
@@ -312,7 +315,10 @@ class MainController
         }
         ["user" => $user, "email" => $email, "message" => $message] = $request->commentPost();
         $comment = $comment->with($user, $email, $message);
-        $errors = array_merge(Util::validateComment($comment), $this->captcha->check() ? [] : ["error_captcha"]);
+        $errors = array_merge(
+            Util::validateComment($comment),
+            $this->captcha->check($request->admin()) ? [] : ["error_captcha"]
+        );
         if ($errors) {
             return $this->respondWith($this->renderCommentForm($request, $comment, $errors));
         }

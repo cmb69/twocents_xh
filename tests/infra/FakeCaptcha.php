@@ -25,12 +25,12 @@ class FakeCaptcha extends Captcha
 {
     public function __construct() {}
 
-    public function render(): string
+    public function render(bool $admin): string
     {
-        return "\n<p>This is not a real CAPTCHA</p>";
+        return "<p>This is not a real CAPTCHA</p>\n";
     }
 
-    public function check(): bool
+    public function check(bool $admin): bool
     {
         return true;
     }

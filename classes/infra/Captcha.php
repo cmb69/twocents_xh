@@ -29,20 +29,16 @@ class Captcha
     /** @var string */
     private $captchaPlugin;
 
-    /** @var bool */
-    private $admin;
-
-    public function __construct(string $pluginsFolder, string $captchaPlugin, bool $admin)
+    public function __construct(string $pluginsFolder, string $captchaPlugin)
     {
         $this->pluginsFolder = $pluginsFolder;
         $this->captchaPlugin = $captchaPlugin;
-        $this->admin = $admin;
     }
 
-    public function render(): string
+    public function render(bool $admin): string
     {
-        $filename = "{$this->pluginsFolder}{$this->captchaPlugin}/captcha.php";
-        if (!$this->admin && $this->captchaPlugin && is_readable($filename)) {
+        $filename = $this->pluginsFolder . $this->captchaPlugin . "/captcha.php";
+        if (!$admin && $this->captchaPlugin && is_readable($filename)) {
             include_once $filename;
             $func = $this->captchaPlugin . "_captcha_display";
             if (is_callable($func)) {
@@ -52,16 +48,14 @@ class Captcha
         return "";
     }
 
-    public function check(): bool
+    public function check(bool $admin): bool
     {
-        $filename = "{$this->pluginsFolder}{$this->captchaPlugin}/captcha.php";
-        if (!$this->admin && $this->captchaPlugin && is_readable($filename)) {
+        $filename = $this->pluginsFolder . $this->captchaPlugin . "/captcha.php";
+        if (!$admin && $this->captchaPlugin && is_readable($filename)) {
             include_once $filename;
-            $func = $this->captchaPlugin . '_captcha_check';
-            if (is_callable($func)) {
-                if (!$func()) {
-                    return false;
-                }
+            $func = $this->captchaPlugin . "_captcha_check";
+            if (is_callable($func) && !$func()) {
+                return false;
             }
         }
         return true;
