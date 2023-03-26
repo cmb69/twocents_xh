@@ -23,7 +23,7 @@ namespace Twocents\Value;
 
 class Comment
 {
-    /** @var string */
+    /** @var string|null */
     private $id;
 
     /** @var string */
@@ -45,7 +45,7 @@ class Comment
     private $hidden;
 
     public function __construct(
-        string $id,
+        ?string $id,
         string $topicname,
         int $time,
         string $user,
@@ -62,7 +62,7 @@ class Comment
         $this->hidden = $hidden;
     }
 
-    public function id(): string
+    public function id(): ?string
     {
         return $this->id;
     }
@@ -99,22 +99,18 @@ class Comment
 
     public function withId(string $id): self
     {
+        assert($this->id === null);
         $that = clone $this;
         $that->id = $id;
         return $that;
     }
 
-    public function withUser(string $user): self
+    public function with(string $user, string $email, string $message): self
     {
         $that = clone $this;
         $that->user = $user;
-        return $that;
-    }
-
-    public function withEmail(string $email): self
-    {
-        $that = clone $this;
         $that->email = $email;
+        $that->message = $message;
         return $that;
     }
 
@@ -125,23 +121,17 @@ class Comment
         return $that;
     }
 
-    public function hide(): self
+    public function withToggledVisibility(): self
     {
         $that = clone $this;
-        $that->hidden = true;
-        return $that;
-    }
-
-    public function show(): self
-    {
-        $that = clone $this;
-        $that->hidden = false;
+        $that->hidden = !$that->hidden;
         return $that;
     }
 
     /** @return array{string,int,string,string,string,int} */
     public function toRecord()
     {
+        assert($this->id !== null);
         return array(
             $this->id, $this->time, $this->user, $this->email,
             $this->message, (int) $this->hidden

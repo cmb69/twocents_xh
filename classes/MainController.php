@@ -176,6 +176,7 @@ class MainController
     {
         $url = $request->url();
         return array_map(function (Comment $comment) use ($url) {
+            assert($comment->id() !== null);
             $url = $url->with('twocents_id', $comment->id());
             return [
                 'id' => 'twocents_comment_' . $comment->id(),
@@ -210,7 +211,7 @@ class MainController
 
     private function createComment(Request $request): Response
     {
-        $comment = new Comment("", "", 0, "", "", "", true);
+        $comment = new Comment(null, "", 0, "", "", "", true);
         $html = $this->renderCommentForm($request, $comment);
         return $this->respondWith($html);
     }
@@ -259,7 +260,7 @@ class MainController
         }
         $spamFilter = new SpamFilter($this->view->plain("spam_words"));
         $hideComment = !$request->admin() && ($this->conf['comments_moderated'] || $spamFilter->isSpam($message));
-        $comment = new Comment("", $topic, $request->time(), $user, $email, $message, $hideComment);
+        $comment = new Comment(null, $topic, $request->time(), $user, $email, $message, $hideComment);
         $errors = array_merge(Util::validateComment($comment), $this->captcha->check() ? [] : ["error_captcha"]);
         if (empty($errors)) {
             $id = Util::encodeBase64url($this->random->bytes(15));
@@ -302,7 +303,7 @@ class MainController
         $comment = $this->db->findComment($topic, $id);
         assert(isset($comment)); // TODO: invalid assertion, but the code already was broken
         ["user" => $user, "email" => $email, "message" => $message] = $request->commentPost();
-        $comment = $comment->withUser($user)->withEmail($email)->withMessage($message);
+        $comment = $comment->with($user, $email, $message);
         $errors = array_merge(Util::validateComment($comment), $this->captcha->check() ? [] : ["error_captcha"]);
         if (empty($errors)) {
             $this->db->updateComment($comment);
@@ -346,11 +347,7 @@ class MainController
         assert(is_string($id)); // TODO: invalid assertion
         $comment = $this->db->findComment($topic, $id);
         assert($comment !== null); // TODO: invalid assertion
-        if ($comment->hidden()) {
-            $comment = $comment->show();
-        } else {
-            $comment = $comment->hide();
-        }
+        $comment = $comment->withToggledVisibility();
         $this->db->updateComment($comment);
         $url = $request->url()->without("twocents_id")->without('twocents_action')->absolute();
         return Response::redirect($url);
