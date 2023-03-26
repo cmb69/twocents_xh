@@ -133,24 +133,22 @@ class MainController
         $pagination = new Pagination($page, $pageCount, (int) $this->conf["pagination_radius"]);
         return $this->view->render('pagination', [
             'item_count' => $commentCount,
-            'pages' => $this->pageRecords($pagination->gatherPages(), $url, $page),
+            'pages' => $this->paginationTuples($pagination->gatherPages(), $url, $page),
         ]);
     }
 
     /**
      * @param list<int|null> $pages
-     * @return list<array{index:?int,url:?string,is_current:?bool,is_ellipsis:bool}>
+     * @return list<array{int|null,string|null}>
      */
-    private function pageRecords(array $pages, Url $url, int $currentPage): array
+    private function paginationTuples(array $pages, Url $url, int $currentPage): array
     {
         $url = $url->without("twocents_id");
         return array_map(function ($page) use ($url, $currentPage) {
-            return [
-                "index" => $page ?? null,
-                "url" => $page !== null ? $url->with("twocents_page", (string) $page)->relative() : null,
-                "is_current" => $page === $currentPage,
-                "is_ellipsis" => $page === null,
-            ];
+            if ($page === null) {
+                return [null, null];
+            }
+            return [$page, $page !== $currentPage ? $url->with("twocents_page", (string) $page)->relative() : null];
         }, $pages);
     }
 

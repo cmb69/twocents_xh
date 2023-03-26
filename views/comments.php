@@ -24,7 +24,7 @@ use Twocents\Infra\View;
 <?endif?>
 <?foreach ($comments as $comment):?>
   <div id="<?=$comment['id']?>" class="twocents_comment <?=$comment['css_class']?>">
-<?if ($is_admin):?>
+<?  if ($is_admin):?>
     <div class="twocents_admin_tools">
       <a href="<?=$comment['edit_url']?>"><?=$this->text('label_edit')?></a>
       <form method="post" action="<?=$action_url?>">
@@ -33,7 +33,7 @@ use Twocents\Infra\View;
         <button data-confirm='<?=$this->json($this->text('message_delete'))?>' formaction="<?=$comment['delete_action']?>" name="twocents_do"><?=$this->text('label_delete')?></button>
       </form>
     </div>
-<?endif?>
+<?  endif?>
     <div class="twocents_attribution"><?=$comment['attribution']?></div>
     <div class="twocents_message"><?=$comment['message']?></div>
   </div>
