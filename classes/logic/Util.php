@@ -53,24 +53,69 @@ class Util
     public static function validateComment(Comment $comment): array
     {
         $result = [];
-        if (utf8_strlen($comment->user()) < 2) {
+        if (!self::validateUser($comment->user())) {
             $result[] = "error_user";
         }
-        if (!Util::isValidEmailAddress($comment->email())) {
+        if (!self::validateEmail($comment->email())) {
             $result[] = "error_email";
         }
-        if (utf8_strlen($comment->message()) < 2) {
+        if (!self::validateMessage($comment->message())) {
             $result[] = "error_message";
         }
         return $result;
     }
 
-    public static function isValidEmailAddress(string $email): bool
+    private static function validateUser(string $user): bool
+    {
+        if (!utf8_is_valid($user)) {
+            return false;
+        }
+        $len = utf8_strlen($user);
+        if ($len < 2 || $len > 100) {
+            return false;
+        }
+        if (!preg_match('/^[[:print:]]+$/u', $user)) {
+            return false;
+        }
+        return true;
+    }
+
+    private static function validateEmail(string $email): bool
+    {
+        if (!utf8_is_valid($email)) {
+            return false;
+        }
+        $len = utf8_strlen($email);
+        if ($len < 2 || $len > 100) {
+            return false;
+        }
+        if (!self::isValidEmailAddress($email)) {
+            return false;
+        }
+        return true;
+    }
+
+    private static function isValidEmailAddress(string $email): bool
     {
         // <https://html.spec.whatwg.org/multipage/input.html#valid-e-mail-address>
         $local = '[a-zA-Z0-9.!#$%&\'*+\/=?^_`{|}~-]+';
         $label = '[a-zA-Z0-9](?:[a-zA-Z0-9-]{0,61}[a-zA-Z0-9])?';
         return (bool) preg_match("/^$local@$label(?:\\.$label)*$/u", $email);
+    }
+
+    private static function validateMessage(string $message): bool
+    {
+        if (!utf8_is_valid($message)) {
+            return false;
+        }
+        $len = utf8_strlen($message);
+        if ($len < 2 || $len > 2000) {
+            return false;
+        }
+        if (!preg_match('/^[[:print:]\x0a\x0d]+$/u', $message)) {
+            return false;
+        }
+        return true;
     }
 
     public static function encodeBase64url(string $string): string

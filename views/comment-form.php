@@ -35,19 +35,19 @@ use Twocents\Infra\View;
   <div>
     <label>
       <span><?=$this->text('label_user')?></span>
-      <input type="text" name="twocents_user" value="<?=$comment_user?>" size="20" required="required">
+      <input type="text" name="twocents_user" value="<?=$comment_user?>" size="20" required minlength="2" maxlength="100">
     </label>
   </div>
   <div>
     <label>
       <span><?=$this->text('label_email')?></span>
-      <input type="email" name="twocents_email" value="<?=$comment_email?>" size="20" required="required">
+      <input type="email" name="twocents_email" value="<?=$comment_email?>" size="20" required minlength="2" maxlength="100">
     </label>
   </div>
   <div>
     <label>
       <span><?=$this->text('label_message')?></span>
-      <textarea name="twocents_message" cols="50" rows="8" required="required"><?=$comment_message?></textarea>
+      <textarea name="twocents_message" cols="50" rows="8" required minlength="2" maxlength="2000"><?=$comment_message?></textarea>
     </label>
   </div>
   <?=$captcha?>
