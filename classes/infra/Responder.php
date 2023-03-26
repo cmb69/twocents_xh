@@ -23,6 +23,7 @@ namespace Twocents\Infra;
 
 use Twocents\Value\Response;
 
+/** @codeCoverageIgnore */
 class Responder
 {
     /** @return string|never */

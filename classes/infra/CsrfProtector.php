@@ -32,7 +32,9 @@ class CsrfProtector
         if (preg_match('/value="([0-9a-f]+)"/', $html, $matches)) {
             return $matches[1];
         }
-        throw new Exception("CSRFProtection won't work");
+        // @codeCoverageIgnoreStart
+        throw new Exception("CSRF protection is broken");
+        // @codeCoverageIgnoreEnd
     }
 
     /** @return void */
