@@ -1,7 +1,7 @@
 <?php
 
 /**
- * Copyright (c) Christoph M. Becker
+ * Copyright 2023 Christoph M. Becker
  *
  * This file is part of Twocents_XH.
  *
@@ -30,30 +30,33 @@ class HtmlCleaner
     private $pluginFolder;
 
     /** @var HTMLPurifier|null */
-    private $purifier = null;
+    protected $purifier = null;
 
     public function __construct(string $pluginFolder)
     {
         $this->pluginFolder = $pluginFolder;
     }
 
-    /** @return void */
-    private function init()
+    /**
+     * @return void
+     * @codeCoverageIgnore
+     */
+    protected function init()
     {
         if ($this->purifier !== null) {
             return;
         }
-        include_once "{$this->pluginFolder}htmlpurifier/HTMLPurifier.standalone.php";
+        include_once $this->pluginFolder . "htmlpurifier/HTMLPurifier.standalone.php";
         $config = HTMLPurifier_Config::createDefault();
-        $config->set('HTML.Doctype', 'HTML 4.01 Transitional');
-        $config->set('HTML.Allowed', 'p,blockquote,br,b,strong,i,em,a[href]');
-        $config->set('AutoFormat.AutoParagraph', true);
-        $config->set('AutoFormat.RemoveEmpty', true);
-        $config->set('AutoFormat.RemoveEmpty.RemoveNbsp', true);
-        $config->set('Cache.SerializerPath', "{$this->pluginFolder}cache");
-        $config->set('HTML.Nofollow', true);
-        $config->set('Output.TidyFormat', true);
-        $config->set('Output.Newline', "\n");
+        $config->set("HTML.Doctype", "HTML 4.01 Transitional");
+        $config->set("HTML.Allowed", "p,blockquote,br,b,strong,i,em,a[href]");
+        $config->set("AutoFormat.AutoParagraph", true);
+        $config->set("AutoFormat.RemoveEmpty", true);
+        $config->set("AutoFormat.RemoveEmpty.RemoveNbsp", true);
+        $config->set("Cache.SerializerPath", $this->pluginFolder . "cache");
+        $config->set("HTML.Nofollow", true);
+        $config->set("Output.TidyFormat", true);
+        $config->set("Output.Newline", "\n");
         $this->purifier = new HTMLPurifier($config);
     }
 
@@ -61,7 +64,7 @@ class HtmlCleaner
     {
         $this->init();
         assert($this->purifier !== null);
-        $message = str_replace(array('&nbsp;', "\C2\A0"), ' ', $message);
+        $message = str_replace(["&nbsp;", "\C2\A0"], " ", $message);
         return $this->purifier->purify($message);
     }
 }

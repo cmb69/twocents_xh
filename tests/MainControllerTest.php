@@ -26,6 +26,7 @@ use PHPUnit\Framework\TestCase;
 use Twocents\Infra\FakeCaptcha;
 use Twocents\Infra\FakeCsrfProtector;
 use Twocents\Infra\FakeDb;
+use Twocents\Infra\FakeHtmlCleaner;
 use Twocents\Infra\FakeMailer;
 use Twocents\Infra\FakeRequest;
 use Twocents\Infra\HtmlCleaner;
@@ -188,6 +189,26 @@ class MainControllerTest extends TestCase
         $sut($request, "test-topic", false);
         $this->assertTrue($mailer->sent);
         Approvals::verifyAsJson($mailer->output);
+    }
+
+    public function testCleansHtmlComment(): void
+    {
+        $csrfProtector = new FakeCsrfProtector;
+        $db = new FakeDb();
+        $sut = $this->sut(["conf" => ["comments_markup" => "HTML"], "csrfProtector" => $csrfProtector, "db" => $db]);
+        $request = new FakeRequest([
+            "query" => "Twocents&twocents_action=create",
+            "time" => 1677493797,
+            "post" => [
+                "twocents_user" => "cmb",
+                "twocents_email" => "cmb69@gmx.de",
+                "twocents_message" => "<p>This is an image:&nbsp;<img src=\"irrelevant\">.</p>",
+                "twocents_do" => "",
+            ],
+        ]);
+        $sut($request, "test-topic", false);
+        $comment = $db->findComment("test-topic", "gfcafKrX1PCEFRh74DT5");
+        $this->assertEquals("<p>This is an image: .</p>", $comment->message());
     }
 
     public function testOnlyAdminCanAddCommentIfReadOnly(): void
@@ -427,7 +448,7 @@ class MainControllerTest extends TestCase
             $this->conf($options["conf"] ?? []),
             $options["csrfProtector"] ?? new FakeCsrfProtector,
             $options["db"] ?? new FakeDb,
-            $this->createStub(HtmlCleaner::class),
+            new FakeHtmlCleaner("./plugins/twocents/"),
             $this->random(),
             new FakeCaptcha,
             $options["mailer"] ?? new FakeMailer,
