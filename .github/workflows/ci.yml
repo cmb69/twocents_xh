@@ -23,12 +23,12 @@ jobs:
           curl -fsSL -o Realblog_XH-3.0beta9.zip https://github.com/cmb69/realblog_xh/releases/download/3.0beta9/Realblog_XH-3.0beta9.zip
           unzip -q Realblog_XH-3.0beta9.zip
       - name: Checkout Twocents_XH
-        uses: actions/checkout@v3
+        uses: actions/checkout@v4
         with:
-          path: 'cmsimplexh/plugins/twocents'
+          path: cmsimplexh/plugins/twocents
       - name: Cache tools
         id: cache-tools
-        uses: actions/cache@v3
+        uses: actions/cache@v4
         with:
           path: cmsimplexh/plugins/twocents/tools
           key: tools-${{hashFiles('cmsimplexh/plugins/twocents/.phive')}}
