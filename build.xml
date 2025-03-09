@@ -34,7 +34,7 @@
     </exec>
   </target>
 
-  <target name="sat" description="runs all checks" depends="sniff,stan,test"/>
+  <target name="check" description="runs all checks" depends="sniff,stan,test"/>
 
   <target name="gen-help" description="builds help.htm from README.md">
     <exec executable="pandoc" passthru="true" checkreturn="true">
