@@ -31,7 +31,7 @@ jobs:
         uses: actions/cache@v3
         with:
           path: cmsimplexh/plugins/twocents/tools
-          key: tools-${{matrix.php}}-${{hashFiles('cmsimplexh/plugins/twocents/.phive')}}
+          key: tools-${{hashFiles('cmsimplexh/plugins/twocents/.phive')}}
       - if: ${{steps.cache-tools.outputs.cache-hit != 'true'}}
         name: phive install
         run: cd cmsimplexh/plugins/twocents && phive --no-progress install --copy --force-accept-unsigned --trust-gpg-keys 0x31C7E470E2138192,0x4AA394086372C20A,0xA4E55EA12C7C085C,0xCF1A108D0E7AE720,0xD5F0CB76E2DD74F8
