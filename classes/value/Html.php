@@ -25,7 +25,7 @@ class Html
 {
     public static function of(string $string): self
     {
-        $that = new self;
+        $that = new self();
         $that->string = $string;
         return $that;
     }

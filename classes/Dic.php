@@ -39,12 +39,12 @@ class Dic
         return new MainController(
             $pth["folder"]["plugins"] . "twocents/",
             $plugin_cf["twocents"],
-            new CsrfProtector,
+            new CsrfProtector(),
             self::makeDb(),
             self::makeHtmlCleaner(),
-            new Random,
+            new Random(),
             self::makeCaptcha(),
-            new Mailer,
+            new Mailer(),
             self::makeView()
         );
     }
@@ -54,7 +54,7 @@ class Dic
         global $pth;
         return new InfoController(
             $pth["folder"]["plugins"] . "twocents/",
-            new SystemChecker,
+            new SystemChecker(),
             self::makeDb(),
             self::makeView()
         );
@@ -66,10 +66,10 @@ class Dic
 
         return new MainAdminController(
             $plugin_cf["twocents"],
-            new CsrfProtector,
+            new CsrfProtector(),
             self::makeDb(),
             self::makeHtmlCleaner(),
-            new FlashMessage,
+            new FlashMessage(),
             self::makeView()
         );
     }

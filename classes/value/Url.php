@@ -25,7 +25,7 @@ class Url
 {
     public static function from(string $url): self
     {
-        $that = new self;
+        $that = new self();
         $parts = parse_url($url);
         assert(isset($parts["scheme"], $parts["host"], $parts["path"]));
         $that->base = $parts["scheme"] . "://" . $parts["host"];
