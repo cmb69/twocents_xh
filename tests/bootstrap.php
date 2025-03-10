@@ -32,10 +32,11 @@ require_once '../../cmsimple/classes/CSRFProtection.php';
 require_once "../../cmsimple/classes/Mail.php";
 require_once "../plib/classes/Codec.php";
 require_once "../plib/classes/Request.php";
-require_once "../plib/classes/FakeRequest.php";
 require_once "../plib/classes/SystemChecker.php";
-require_once "../plib/classes/FakeSystemChecker.php";
 require_once "../plib/classes/Url.php";
+require_once "../plib/classes/View.php";
+require_once "../plib/classes/FakeRequest.php";
+require_once "../plib/classes/FakeSystemChecker.php";
 
 spl_autoload_register(function (string $className) {
     $parts = explode("\\", $className);

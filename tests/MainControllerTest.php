@@ -24,13 +24,13 @@ namespace Twocents;
 use ApprovalTests\Approvals;
 use PHPUnit\Framework\TestCase;
 use Plib\FakeRequest;
+use Plib\View;
 use Twocents\Infra\FakeCaptcha;
 use Twocents\Infra\FakeCsrfProtector;
 use Twocents\Infra\FakeDb;
 use Twocents\Infra\FakeHtmlCleaner;
 use Twocents\Infra\FakeMailer;
 use Twocents\Infra\Random;
-use Twocents\Infra\View;
 use Twocents\Value\Comment;
 
 class MainControllerTest extends TestCase

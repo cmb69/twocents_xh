@@ -1,6 +1,6 @@
 <?php
 
-use Twocents\Infra\View;
+use Plib\View;
 
 /**
  * @var View $this
@@ -11,12 +11,12 @@ use Twocents\Infra\View;
 <!-- twocents administration -->
 <h1>Twocents – <?=$this->text('menu_main')?></h1>
 <?if ($flash_message):?>
-<div><?=$flash_message?></div>
+<div><?=$this->raw($flash_message)?></div>
 <?endif?>
 <form method="get">
   <input type="hidden" name="selected" value="twocents">
   <input type="hidden" name="admin" value="plugin_main">
 <?foreach ($buttons as $button):?>
-  <p><button name="twocents_action" value="<?=$button['value']?>"><?=$this->text($button['label'])?></button></p>
+  <p><button name="twocents_action" value="<?=$this->esc($button['value'])?>"><?=$this->text($button['label'])?></button></p>
 <?endforeach?>
 </form>

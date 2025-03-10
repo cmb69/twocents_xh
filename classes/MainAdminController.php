@@ -22,13 +22,12 @@
 namespace Twocents;
 
 use Plib\Request;
+use Plib\View;
 use Twocents\Infra\CsrfProtector;
 use Twocents\Infra\Db;
 use Twocents\Infra\FlashMessage;
 use Twocents\Infra\HtmlCleaner;
-use Twocents\Infra\View;
 use Twocents\Logic\Util;
-use Twocents\Value\Html;
 use Twocents\Value\Response;
 
 class MainAdminController
@@ -115,7 +114,7 @@ class MainAdminController
             $button = 'convert_to_html';
         }
         return Response::create($this->view->render('admin', [
-            "flash_message" => Html::of($this->flashMessage->pop()),
+            "flash_message" => $this->flashMessage->pop(),
             "buttons" => [
                 ["value" => $button, "label" => "label_$button"],
                 ["value" => "import_comments", "label" => "label_import_comments"],

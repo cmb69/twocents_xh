@@ -24,11 +24,11 @@ namespace Twocents;
 use ApprovalTests\Approvals;
 use PHPUnit\Framework\TestCase;
 use Plib\FakeRequest;
+use Plib\View;
 use Twocents\Infra\FakeCsrfProtector;
 use Twocents\Infra\FakeDb;
 use Twocents\Infra\FlashMessage;
 use Twocents\Infra\HtmlCleaner;
-use Twocents\Infra\View;
 use Twocents\Value\Comment;
 
 class MainAdminControllerTest extends TestCase

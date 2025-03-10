@@ -22,8 +22,8 @@
 namespace Twocents;
 
 use Plib\SystemChecker;
+use Plib\View;
 use Twocents\Infra\Db;
-use Twocents\Infra\View;
 use Twocents\Value\Response;
 
 class InfoController
@@ -61,7 +61,6 @@ class InfoController
     {
         return array(
             $this->checkPhpVersion('7.1.0'),
-            $this->checkExtension('json'),
             $this->checkXhVersion('1.7.0'),
             $this->checkWritability($this->db->getFoldername()),
             $this->checkWritability($this->pluginFolder . "config/"),
@@ -77,18 +76,6 @@ class InfoController
         return [
             "key" => "syscheck_phpversion",
             "arg" => $version,
-            "class" => "xh_$state",
-            "state" => "syscheck_$state",
-        ];
-    }
-
-    /** @return array{key:string,arg:string,class:string,state:string} */
-    private function checkExtension(string $extension)
-    {
-        $state = $this->systemChecker->checkExtension($extension) ? 'success' : 'fail';
-        return [
-            "key" => "syscheck_extension",
-            "arg" => $extension,
             "class" => "xh_$state",
             "state" => "syscheck_$state",
         ];

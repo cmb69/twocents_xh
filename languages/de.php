@@ -68,7 +68,6 @@ $plugin_tx['twocents']['message_link']="Geben Sie die zu verlinkende URL ein:";
 $plugin_tx['twocents']['realblog_heading']="Kommentare";
 $plugin_tx['twocents']['alt_icon']="leere Sprechblase";
 $plugin_tx['twocents']['menu_main']="Konvertierung";
-$plugin_tx['twocents']['syscheck_extension']="PHP-Extension '%s' ist geladen";
 $plugin_tx['twocents']['syscheck_fail']="Fehlschlag";
 $plugin_tx['twocents']['syscheck_phpversion']="PHP-Version ist mindestens %s";
 $plugin_tx['twocents']['syscheck_success']="Okay";

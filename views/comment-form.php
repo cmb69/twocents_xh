@@ -1,6 +1,6 @@
 <?php
 
-use Twocents\Infra\View;
+use Plib\View;
 
 /**
  * @var View $this
@@ -21,8 +21,8 @@ use Twocents\Infra\View;
  */
 ?>
 <!-- twocents comment form -->
-<script type="module" src="<?=$module?>"></script>
-<form class="twocents_form" method="post" action="<?=$url?>" data-config='<?=$this->json($conf)?>'>
+<script type="module" src="<?=$this->esc($module)?>"></script>
+<form class="twocents_form" method="post" action="<?=$this->esc($url)?>" data-config='<?=$this->json($conf)?>'>
 <?if (!$admin):?>
   <p class="xh_info"><?=$this->text('message_moderation')?></p>
 <?endif?>
@@ -30,30 +30,30 @@ use Twocents\Infra\View;
   <p class="xh_fail"><?=$this->text($error)?></p>
 <?endforeach?>
 <?if (isset($csrf_token)):?>
-  <input type="hidden" name="xh_csrf_token" value="<?=$csrf_token?>">
+  <input type="hidden" name="xh_csrf_token" value="<?=$this->esc($csrf_token)?>">
 <?endif?>
   <div>
     <label>
       <span><?=$this->text('label_user')?></span>
-      <input type="text" name="twocents_user" value="<?=$comment_user?>" size="20" required minlength="2" maxlength="100">
+      <input type="text" name="twocents_user" value="<?=$this->esc($comment_user)?>" size="20" required minlength="2" maxlength="100">
     </label>
   </div>
   <div>
     <label>
       <span><?=$this->text('label_email')?></span>
-      <input type="email" name="twocents_email" value="<?=$comment_email?>" size="20" required minlength="2" maxlength="100">
+      <input type="email" name="twocents_email" value="<?=$this->esc($comment_email)?>" size="20" required minlength="2" maxlength="100">
     </label>
   </div>
   <div>
     <label>
       <span><?=$this->text('label_message')?></span>
-      <textarea name="twocents_message" cols="50" rows="8" required minlength="2" maxlength="2000"><?=$comment_message?></textarea>
+      <textarea name="twocents_message" cols="50" rows="8" required minlength="2" maxlength="2000"><?=$this->esc($comment_message)?></textarea>
     </label>
   </div>
-  <?=$captcha?>
+  <?=$this->raw($captcha)?>
   <div class="twocents_form_buttons">
     <button name="twocents_do"><?=$this->text($label)?></button>
-    <a href="<?=$cancel_url?>"><?=$this->text('label_cancel')?></a>
+    <a href="<?=$this->esc($cancel_url)?>"><?=$this->text('label_cancel')?></a>
     <button type="reset"><?=$this->text('label_reset')?></button>
   </div>
 </form>

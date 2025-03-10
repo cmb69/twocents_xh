@@ -22,6 +22,7 @@
 namespace Twocents;
 
 use Plib\SystemChecker;
+use Plib\View;
 use Twocents\Infra\Captcha;
 use Twocents\Infra\CsrfProtector;
 use Twocents\Infra\Db;
@@ -29,7 +30,6 @@ use Twocents\Infra\FlashMessage;
 use Twocents\Infra\HtmlCleaner;
 use Twocents\Infra\Mailer;
 use Twocents\Infra\Random;
-use Twocents\Infra\View;
 
 class Dic
 {

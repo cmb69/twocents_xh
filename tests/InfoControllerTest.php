@@ -25,8 +25,8 @@ use ApprovalTests\Approvals;
 use PHPUnit\Framework\TestCase;
 use Plib\FakeRequest;
 use Plib\FakeSystemChecker;
+use Plib\View;
 use Twocents\Infra\FakeDb;
-use Twocents\Infra\View;
 
 class InfoControllerTest extends TestCase
 {

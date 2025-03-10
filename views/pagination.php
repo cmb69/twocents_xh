@@ -1,6 +1,6 @@
 <?php
 
-use Twocents\Infra\View;
+use Plib\View;
 
 /**
  * @var View $this
@@ -17,7 +17,7 @@ use Twocents\Infra\View;
 <?  elseif (!isset($url)):?>
   <span class="twocents_pag_current"><?=$page?></span>
 <?  else:?>
-  <a class="twocents_button" href="<?=$url?>"><?=$page?></a>
+  <a class="twocents_button" href="<?=$this->esc($url)?>"><?=$page?></a>
 <?  endif?>
 <?endforeach?>
 </div>
