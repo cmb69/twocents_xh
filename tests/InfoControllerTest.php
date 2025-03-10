@@ -24,8 +24,8 @@ namespace Twocents;
 use ApprovalTests\Approvals;
 use PHPUnit\Framework\TestCase;
 use Plib\FakeRequest;
+use Plib\FakeSystemChecker;
 use Twocents\Infra\FakeDb;
-use Twocents\Infra\FakeSystemChecker;
 use Twocents\Infra\View;
 
 class InfoControllerTest extends TestCase

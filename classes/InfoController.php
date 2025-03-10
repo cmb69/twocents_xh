@@ -21,8 +21,8 @@
 
 namespace Twocents;
 
+use Plib\SystemChecker;
 use Twocents\Infra\Db;
-use Twocents\Infra\SystemChecker;
 use Twocents\Infra\View;
 use Twocents\Value\Response;
 
