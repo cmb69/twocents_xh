@@ -34,10 +34,10 @@ if (XH_wantsPluginAdministration('twocents')) {
     $o .= print_plugin_admin('on');
     switch ($admin) {
         case '':
-            $o .= Responder::respond(Dic::makeInfoController()());
+            $o .= Dic::makeInfoController()()();
             break;
         case 'plugin_main':
-            $o .= Responder::respond(Dic::testMakeMainAdminController()(Request::current()));
+            $o .= Dic::testMakeMainAdminController()(Request::current())();
             break;
         default:
             $o .= plugin_admin_common();

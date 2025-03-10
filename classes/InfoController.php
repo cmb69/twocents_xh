@@ -21,10 +21,10 @@
 
 namespace Twocents;
 
+use Plib\Response;
 use Plib\SystemChecker;
 use Plib\View;
 use Twocents\Infra\Db;
-use Twocents\Value\Response;
 
 class InfoController
 {

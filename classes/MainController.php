@@ -23,6 +23,7 @@ namespace Twocents;
 
 use Plib\Codec;
 use Plib\Request;
+use Plib\Response;
 use Plib\Url;
 use Plib\View;
 use Twocents\Infra\Captcha;
@@ -35,7 +36,6 @@ use Twocents\Logic\Pagination;
 use Twocents\Logic\SpamFilter;
 use Twocents\Logic\Util;
 use Twocents\Value\Comment;
-use Twocents\Value\Response;
 
 class MainController
 {

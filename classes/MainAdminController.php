@@ -22,13 +22,13 @@
 namespace Twocents;
 
 use Plib\Request;
+use Plib\Response;
 use Plib\View;
 use Twocents\Infra\CsrfProtector;
 use Twocents\Infra\Db;
 use Twocents\Infra\FlashMessage;
 use Twocents\Infra\HtmlCleaner;
 use Twocents\Logic\Util;
-use Twocents\Value\Response;
 
 class MainAdminController
 {
