@@ -21,6 +21,7 @@
 
 namespace Twocents;
 
+use Plib\Codec;
 use Twocents\Infra\Captcha;
 use Twocents\Infra\CsrfProtector;
 use Twocents\Infra\Db;
@@ -274,7 +275,7 @@ class MainController
         if (!empty($errors)) {
             return $this->respondWith($this->renderCommentForm($request, $comment, $errors));
         }
-        $id = Util::encodeBase64url($this->random->bytes(15));
+        $id = Codec::encodeBase64url($this->random->bytes(15));
         $comment = $comment->withId($id);
         if (!$this->db->insertComment($comment)) {
             return $this->respondWith($this->renderCommentForm($request, $comment, ["error_store"]));

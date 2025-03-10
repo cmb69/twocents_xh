@@ -118,12 +118,6 @@ class Util
         return true;
     }
 
-    public static function encodeBase64url(string $string): string
-    {
-        assert(strlen($string) % 3 === 0);
-        return str_replace(["+", "/"], ["-", "_"], base64_encode($string));
-    }
-
     /**
      * @param list<Comment> $comments
      * @return array{list<Comment>,int,int,int}

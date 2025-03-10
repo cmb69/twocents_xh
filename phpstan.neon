@@ -15,3 +15,5 @@ parameters:
     - ../../cmsimple/utf8.php
     - ../realblog/classes/CommentsBridge.php
     - ./htmlpurifier/HTMLPurifier.standalone.php
+  scanDirectories:
+    - ../plib/classes

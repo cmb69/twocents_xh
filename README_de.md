@@ -30,6 +30,10 @@ und eine einfache Bad-Word-Liste nutzen.
 Twocents_XH ist ein Plugin für [CMSimple_XH](https://www.cmsimple-xh.org/de/).
 Es benötigt CMSimple_XH ≥ 1.7.0 und PHP ≥ 7.1.0 mit der installierten
 JSON Extension.
+Twocents_XH benötigt weiterhin das [Plib_XH](https://github.com/cmb69/plib_xh) Plugin;
+ist dieses noch nicht installiert (see *Einstellungen*→*Info*),
+laden Sie das [aktuelle Release](https://github.com/cmb69/plib_xh/releases/latest)
+herunter, und installieren Sie es.
 
 ## Download
 
