@@ -23,9 +23,9 @@ namespace Twocents;
 
 use ApprovalTests\Approvals;
 use PHPUnit\Framework\TestCase;
+use Plib\FakeRequest;
 use Twocents\Infra\FakeCsrfProtector;
 use Twocents\Infra\FakeDb;
-use Twocents\Infra\FakeRequest;
 use Twocents\Infra\FlashMessage;
 use Twocents\Infra\HtmlCleaner;
 use Twocents\Infra\View;
@@ -52,9 +52,10 @@ class MainAdminControllerTest extends TestCase
     public function testRendersConvertToHtmlConfirmation(): void
     {
         $sut = $this->sut();
-        $response = $sut(new FakeRequest([
-            "query" => "twocents&admin=plugin_main&twocents_action=convert_to_html",
-        ]));
+        $request = new FakeRequest([
+            "url" => "http://example.com/?twocents&admin=plugin_main&twocents_action=convert_to_html",
+        ]);
+        $response = $sut($request);
         $this->assertEquals("Twocents – Conversion", $response->title());
         Approvals::verifyHtml($response->output());
     }
@@ -65,10 +66,11 @@ class MainAdminControllerTest extends TestCase
         $db = new FakeDb;
         $db->insertComment($this->comment());
         $sut = $this->sut(["csrfProtector" => $csrfProtector, "db" => $db]);
-        $response = $sut(new FakeRequest([
-            "query" => "twocents&admin=plugin_main&twocents_action=convert_to_html",
+        $request = new FakeRequest([
+            "url" => "http://example.com/?twocents&admin=plugin_main&twocents_action=convert_to_html",
             "post" => ["twocents_do" => ""],
-        ]));
+        ]);
+        $response = $sut($request);
         $this->assertTrue($csrfProtector->hasChecked());
         $this->assertEquals($this->comment()->topicname(), $db->lastTopicStored);
         $this->assertEquals("http://example.com/?twocents&admin=plugin_main", $response->location());
@@ -77,9 +79,10 @@ class MainAdminControllerTest extends TestCase
     public function testRendersConvertToPlainTextConfirmation(): void
     {
         $sut = $this->sut();
-        $response = $sut(new FakeRequest([
-            "query" => "twocents&admin=plugin_main&twocents_action=convert_to_plain_text",
-        ]));
+        $request = new FakeRequest([
+            "url" => "http://example.com/?twocents&admin=plugin_main&twocents_action=convert_to_plain_text",
+        ]);
+        $response = $sut($request);
         $this->assertEquals("Twocents – Conversion", $response->title());
         Approvals::verifyHtml($response->output());
     }
@@ -90,10 +93,11 @@ class MainAdminControllerTest extends TestCase
         $db = new FakeDb;
         $db->insertComment($this->comment());
         $sut = $this->sut(["csrfProtector" => $csrfProtector, "db" => $db]);
-        $response = $sut(new FakeRequest([
-            "query" => "twocents&admin=plugin_main&twocents_action=convert_to_plain_text",
+        $request = new FakeRequest([
+            "url" => "http://example.com/?twocents&admin=plugin_main&twocents_action=convert_to_plain_text",
             "post" => ["twocents_do" => ""],
-        ]));
+        ]);
+        $response = $sut($request);
         $this->assertTrue($csrfProtector->hasChecked());
         $this->assertEquals($this->comment()->topicname(), $db->lastTopicStored);
         $this->assertEquals("http://example.com/?twocents&admin=plugin_main", $response->location());
@@ -102,9 +106,10 @@ class MainAdminControllerTest extends TestCase
     public function testRendersImportCommentsConfirmation(): void
     {
         $sut = $this->sut();
-        $response = $sut(new FakeRequest([
-            "query" => "twocents&admin=plugin_main&twocents_action=import_comments",
-        ]));
+        $request = new FakeRequest([
+            "url" => "http://example.com/?twocents&admin=plugin_main&twocents_action=import_comments",
+        ]);
+        $response = $sut($request);
         $this->assertEquals("Twocents – Conversion", $response->title());
         Approvals::verifyHtml($response->output());
     }
@@ -115,10 +120,11 @@ class MainAdminControllerTest extends TestCase
         $db = new FakeDb;
         $db->insertComment($this->comment());
         $sut = $this->sut(["csrfProtector" => $csrfProtector, "db" => $db]);
-        $response = $sut(new FakeRequest([
-            "query" => "twocents&admin=plugin_main&twocents_action=import_comments",
-            "post" => ["twocents_do" => ""],
-        ]));
+        $request = new FakeRequest([
+            "url" => "http://example.com/?twocents&admin=plugin_main&twocents_action=import_comments",
+            "post" => ["twocents_do" => ""]
+        ]);
+        $response = $sut($request);
         $this->assertEquals($this->comment()->topicname(), $db->lastTopicStored);
         $this->assertTrue($csrfProtector->hasChecked());
         $this->assertEquals("http://example.com/?twocents&admin=plugin_main", $response->location());
@@ -127,9 +133,10 @@ class MainAdminControllerTest extends TestCase
     public function testRendersImportGbookConfirmation(): void
     {
         $sut = $this->sut();
-        $response = $sut(new FakeRequest([
-            "query" => "twocents&admin=plugin_main&twocents_action=import_gbook",
-        ]));
+        $request = new FakeRequest([
+            "url" => "http://example.com/?twocents&admin=plugin_main&twocents_action=import_gbook",
+        ]);
+        $response = $sut($request);
         $this->assertEquals("Twocents – Conversion", $response->title());
         Approvals::verifyHtml($response->output());
     }
@@ -140,10 +147,11 @@ class MainAdminControllerTest extends TestCase
         $db = new FakeDb;
         $db->insertComment($this->comment());
         $sut = $this->sut(["csrfProtector" => $csrfProtector, "db" => $db]);
-        $response = $sut(new FakeRequest([
-            "query" => "twocents&admin=plugin_main&twocents_action=import_gbook",
+        $request = new FakeRequest([
+            "url" => "http://example.com/?twocents&admin=plugin_main&twocents_action=import_gbook",
             "post" => ["twocents_do" => ""],
-        ]));
+        ]);
+        $response = $sut($request);
         $this->assertTrue($csrfProtector->hasChecked());
         $this->assertEquals($this->comment()->topicname(), $db->lastTopicStored);
         $this->assertEquals("http://example.com/?twocents&admin=plugin_main", $response->location());

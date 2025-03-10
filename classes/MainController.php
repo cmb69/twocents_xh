@@ -22,13 +22,14 @@
 namespace Twocents;
 
 use Plib\Codec;
+use Plib\Request;
+use Plib\Url;
 use Twocents\Infra\Captcha;
 use Twocents\Infra\CsrfProtector;
 use Twocents\Infra\Db;
 use Twocents\Infra\HtmlCleaner;
 use Twocents\Infra\Mailer;
 use Twocents\Infra\Random;
-use Twocents\Infra\Request;
 use Twocents\Infra\View;
 use Twocents\Logic\Pagination;
 use Twocents\Logic\SpamFilter;
@@ -36,7 +37,6 @@ use Twocents\Logic\Util;
 use Twocents\Value\Comment;
 use Twocents\Value\Html;
 use Twocents\Value\Response;
-use Twocents\Value\Url;
 
 class MainController
 {
@@ -95,7 +95,7 @@ class MainController
         if (!preg_match('/^[a-z0-9-]+$/i', $topic)) {
             return Response::create($this->view->error("error_topicname"));
         }
-        switch ($request->action()) {
+        switch ($this->action($request)) {
             default:
                 return $this->defaultAction($request, $topic, $readonly);
             case "create":
@@ -113,12 +113,27 @@ class MainController
         }
     }
 
+    private function action(Request $request): string
+    {
+        $action = $request->get("twocents_action");
+        if ($action === null) {
+            return "";
+        }
+        if (!strncmp($action, "do_", strlen("do_"))) {
+            return "";
+        }
+        if ($request->post("twocents_do") !== null) {
+            return "do_$action";
+        }
+        return $action;
+    }
+
     private function defaultAction(Request $request, string $topic, bool $readonly): Response
     {
         [$comments, $count, $page, $pageCount] = Util::limitComments(
             $this->db->findCommentsOfTopic($topic, !$request->admin()),
             (int) $this->conf['pagination_max'],
-            is_string($request->url()->param("twocents_page")) ? (int) $request->url()->param("twocents_page") : 0,
+            is_string($request->get("twocents_page")) ? (int) $request->get("twocents_page") : 0,
             $this->conf['comments_order'] === 'ASC' ? 1 : -1
         );
         $pagination = $this->renderPaginationView($request->url(), $count, $page, $pageCount);
@@ -225,7 +240,7 @@ class MainController
         if (!$request->admin()) {
             return $this->respondWith($this->view->error("error_unauthorized"));
         }
-        $comment = $this->db->findComment($topic, $request->commentId());
+        $comment = $this->db->findComment($topic, $request->get("twocents_id") ?? "");
         if ($comment === null) {
             return $this->respondWith($this->view->error("error_no_comment"));
         }
@@ -261,7 +276,9 @@ class MainController
         if ($readonly && !$request->admin()) {
             return $this->respondWith($this->view->error("error_unauthorized"));
         }
-        ["user" => $user, "email" => $email, "message" => $message] = $request->commentPost();
+        $user = $request->post("twocents_user") ?? "";
+        $email = $request->post("twocents_email") ?? "";
+        $message = $request->post("twocents_message") ?? "";
         if (!$request->admin() && $this->conf['comments_markup'] == 'HTML') {
             $message = $this->htmlCleaner->clean($message);
         }
@@ -310,11 +327,13 @@ class MainController
             return $this->respondWith($this->view->error("error_unauthorized"));
         }
         $this->csrfProtector->check();
-        $comment = $this->db->findComment($topic, $request->commentId());
+        $comment = $this->db->findComment($topic, $request->get("twocents_id") ?? "");
         if ($comment === null) {
             return $this->respondWith($this->view->error("error_no_comment"));
         }
-        ["user" => $user, "email" => $email, "message" => $message] = $request->commentPost();
+        $user = $request->post("twocents_user") ?? "";
+        $email = $request->post("twocents_email") ?? "";
+        $message = $request->post("twocents_message") ?? "";
         $comment = $comment->with($user, $email, $message);
         $errors = array_merge(
             Util::validateComment($comment),
@@ -360,7 +379,7 @@ class MainController
             return $this->respondWith($this->view->error("error_unauthorized"));
         }
         $this->csrfProtector->check();
-        $comment = $this->db->findComment($topic, $request->commentId());
+        $comment = $this->db->findComment($topic, $request->get("twocents_id") ?? "");
         if ($comment === null) {
             return $this->respondWith($this->view->error("error_no_comment"));
         }
@@ -378,7 +397,7 @@ class MainController
             return $this->respondWith($this->view->error("error_unauthorized"));
         }
         $this->csrfProtector->check();
-        $comment = $this->db->findComment($topic, $request->commentId());
+        $comment = $this->db->findComment($topic, $request->get("twocents_id") ?? "");
         if ($comment === null) {
             return $this->respondWith($this->view->error("error_no_comment"));
         }

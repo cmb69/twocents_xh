@@ -19,8 +19,8 @@
  * along with Twocents_XH.  If not, see <http://www.gnu.org/licenses/>.
  */
 
+use Plib\Request;
 use Twocents\Dic;
-use Twocents\Infra\Request;
 use Twocents\Infra\Responder;
 
 /**

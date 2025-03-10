@@ -21,11 +21,11 @@
 
 namespace Twocents;
 
+use Plib\Request;
 use Twocents\Infra\CsrfProtector;
 use Twocents\Infra\Db;
 use Twocents\Infra\FlashMessage;
 use Twocents\Infra\HtmlCleaner;
-use Twocents\Infra\Request;
 use Twocents\Infra\View;
 use Twocents\Logic\Util;
 use Twocents\Value\Html;
@@ -70,7 +70,7 @@ class MainAdminController
 
     public function __invoke(Request $request): Response
     {
-        switch ($request->action()) {
+        switch ($this->action($request)) {
             default:
                 return $this->overview();
             case "convert_to_html":
@@ -90,6 +90,21 @@ class MainAdminController
             case "do_import_gbook":
                 return $this->doImportGbook($request);
         }
+    }
+
+    private function action(Request $request): string
+    {
+        $action = $request->get("twocents_action");
+        if ($action === null) {
+            return "";
+        }
+        if (!strncmp($action, "do_", strlen("do_"))) {
+            return "";
+        }
+        if ($request->post("twocents_do") !== null) {
+            return "do_$action";
+        }
+        return $action;
     }
 
     private function overview(): Response

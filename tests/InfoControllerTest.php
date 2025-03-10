@@ -23,8 +23,8 @@ namespace Twocents;
 
 use ApprovalTests\Approvals;
 use PHPUnit\Framework\TestCase;
+use Plib\FakeRequest;
 use Twocents\Infra\FakeDb;
-use Twocents\Infra\FakeRequest;
 use Twocents\Infra\FakeSystemChecker;
 use Twocents\Infra\View;
 
@@ -38,7 +38,8 @@ class InfoControllerTest extends TestCase
             new FakeDb,
             new View("./views/", XH_includeVar("./languages/en.php", "plugin_tx")["twocents"])
         );
-        $response = $sut(new FakeRequest());
+        $request = new FakeRequest();
+        $response = $sut($request);
         $this->assertEquals("Twocents 1.0", $response->title());
         Approvals::verifyHtml($response->output());
     }

@@ -22,7 +22,6 @@
 namespace Twocents;
 
 use Twocents\Infra\Db;
-use Twocents\Infra\Request;
 use Twocents\Infra\SystemChecker;
 use Twocents\Infra\View;
 use Twocents\Value\Response;

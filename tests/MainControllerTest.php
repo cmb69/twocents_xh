@@ -23,13 +23,12 @@ namespace Twocents;
 
 use ApprovalTests\Approvals;
 use PHPUnit\Framework\TestCase;
+use Plib\FakeRequest;
 use Twocents\Infra\FakeCaptcha;
 use Twocents\Infra\FakeCsrfProtector;
 use Twocents\Infra\FakeDb;
 use Twocents\Infra\FakeHtmlCleaner;
 use Twocents\Infra\FakeMailer;
-use Twocents\Infra\FakeRequest;
-use Twocents\Infra\HtmlCleaner;
 use Twocents\Infra\Random;
 use Twocents\Infra\View;
 use Twocents\Value\Comment;
@@ -50,8 +49,8 @@ class MainControllerTest extends TestCase
         $db->insertComment($this->comment());
         $sut = $this->sut(["csrfProtector" => $csrfProtector, "db" => $db]);
         $request = new FakeRequest([
-            "query" => "Twocents&twocents_id=63fba86870945&twocents_action=toggle_visibility",
-            "adm" => true,
+            "url" => "http://example.com/?Twocents&twocents_id=63fba86870945&twocents_action=toggle_visibility",
+            "admin" => true,
             "post" => ["twocents_do" => ""],
         ]);
         $response = $sut($request, "test-topic", false);
@@ -67,9 +66,9 @@ class MainControllerTest extends TestCase
         $db->insertComment($this->comment());
         $sut = $this->sut(["csrfProtector" => $csrfProtector, "db" => $db]);
         $request = new FakeRequest([
-            "query" => "Twocents&twocents_id=63fba86870945&twocents_action=delete",
-            "adm" => true,
-            "post" => ["twocents_do" => ""],
+            "url" => "http://example.com/?Twocents&twocents_id=63fba86870945&twocents_action=delete",
+            "admin" => true,
+            "post" => ["twocents_do" => ""]
         ]);
         $response = $sut($request, "test-topic", false);
         $this->assertTrue($csrfProtector->hasChecked());
@@ -83,7 +82,10 @@ class MainControllerTest extends TestCase
         $db = new FakeDb;
         $db->insertComment($this->comment());
         $sut = $this->sut(["csrfProtector" => $csrfProtector, "db" => $db]);
-        $request = new FakeRequest(["query" => "Twocents", "adm" => true]);
+        $request = new FakeRequest([
+            "url" => "http://example.com/?Twocents",
+            "admin" => true,
+        ]);
         $response = $sut($request, "test-topic", false);
         Approvals::verifyHtml($response->output());
     }
@@ -96,7 +98,7 @@ class MainControllerTest extends TestCase
             $db->insertComment($this->comment((string) $i, $i));
         }
         $sut = $this->sut(["conf" => ["pagination_max" => "3"], "csrfProtector" => $csrfProtector, "db" => $db]);
-        $request = new FakeRequest(["query" => "Twocents"]);
+        $request = new FakeRequest(["url" => "http://example.com/?Twocents"]);
         $response = $sut($request, "test-topic", false);
         Approvals::verifyHtml($response->output());
     }
@@ -108,8 +110,8 @@ class MainControllerTest extends TestCase
         $db->insertComment($this->comment());
         $sut = $this->sut(["csrfProtector" => $csrfProtector, "db" => $db]);
         $request = new FakeRequest([
-            "query" => "Twocents&twocents_action=create",
-            "adm" => true,
+            "url" => "http://example.com/?Twocents&twocents_action=create",
+            "admin" => true,
         ]);
         $response = $sut($request, "test-topic", false);
         Approvals::verifyHtml($response->output());
@@ -118,7 +120,9 @@ class MainControllerTest extends TestCase
     public function testReportsAuthorizationFailureToCreateComment(): void
     {
         $sut = $this->sut();
-        $request = new FakeRequest(["query" => "Twocents&twocents_action=create"]);
+        $request = new FakeRequest([
+            "url" => "http://example.com/?Twocents&twocents_action=create",
+        ]);
         $response = $sut($request, "test-topic", true);
         Approvals::verifyHtml($response->output());
     }
@@ -130,8 +134,8 @@ class MainControllerTest extends TestCase
         $db->insertComment($this->comment());
         $sut = $this->sut(["csrfProtector" => $csrfProtector, "db" => $db]);
         $request = new FakeRequest([
-            "query" => "Twocents&twocents_id=63fba86870945&twocents_action=edit",
-            "adm" => true,
+            "url" => "http://example.com/?Twocents&twocents_id=63fba86870945&twocents_action=edit",
+            "admin" => true,
         ]);
         $response = $sut($request, "test-topic", false);
         Approvals::verifyHtml($response->output());
@@ -140,7 +144,9 @@ class MainControllerTest extends TestCase
     public function testReportsAuthorizationFailureToUpdateComment(): void
     {
         $sut = $this->sut();
-        $request = new FakeRequest(["query" => "Twocents&twocents_action=edit"]);
+        $request = new FakeRequest([
+            "url" => "http://example.com/?Twocents&twocents_action=edit",
+        ]);
         $response = $sut($request, "test-topic", false);
         Approvals::verifyHtml($response->output());
     }
@@ -148,7 +154,10 @@ class MainControllerTest extends TestCase
     public function testReportsMissingCommentForUpdate(): void
     {
         $sut = $this->sut();
-        $request = new FakeRequest(["query" => "Twocents&twocents_action=edit", "adm" => true]);
+        $request = new FakeRequest([
+            "url" => "http://example.com/?Twocents&twocents_action=edit",
+            "admin" => true,
+        ]);
         $response = $sut($request, "test-topic", false);
         Approvals::verifyHtml($response->output());
     }
@@ -158,9 +167,9 @@ class MainControllerTest extends TestCase
         $csrfProtector = new FakeCsrfProtector;
         $sut = $this->sut(["csrfProtector" => $csrfProtector]);
         $request = new FakeRequest([
-            "query" => "Twocents&twocents_action=create",
+            "url" => "http://example.com/?Twocents&twocents_action=create",
+            "admin" => true,
             "time" => 1677493797,
-            "adm" => true,
             "post" => [
                 "twocents_user" => "cmb",
                 "twocents_email" => "cmb69@gmx.de",
@@ -177,7 +186,8 @@ class MainControllerTest extends TestCase
         $mailer = new FakeMailer;
         $sut = $this->sut(["conf" => ["email_address" => "admin@example.com"], "mailer" => $mailer]);
         $request = new FakeRequest([
-            "query" => "Twocents&twocents_action=create",
+            "url" => "http://example.com/?Twocents&twocents_action=create",
+            "admin" => false,
             "time" => 1677493797,
             "post" => [
                 "twocents_user" => "cmb",
@@ -197,7 +207,8 @@ class MainControllerTest extends TestCase
         $db = new FakeDb();
         $sut = $this->sut(["conf" => ["comments_markup" => "HTML"], "csrfProtector" => $csrfProtector, "db" => $db]);
         $request = new FakeRequest([
-            "query" => "Twocents&twocents_action=create",
+            "url" => "http://example.com/?Twocents&twocents_action=create",
+            "admin" => false,
             "time" => 1677493797,
             "post" => [
                 "twocents_user" => "cmb",
@@ -217,14 +228,8 @@ class MainControllerTest extends TestCase
         $db->insertComment($this->comment());
         $sut = $this->sut(["csrfProtector" => null, "db" => $db]);
         $request = new FakeRequest([
-            "query" => "Twocents&twocents_action=create",
+            "url" => "http://example.com/?Twocents&twocents_action=create",
             "time" => 1677493797,
-            "post" => [
-                "twocents_user" => "cmb",
-                "twocents_email" => "cmb69@gmx.de",
-                "twocents_message" => "I fixed that typo",
-                "twocents_do" => "",
-            ],
         ]);
         $response = $sut($request, "test-topic", true);
         Approvals::verifyHtml($response->output());
@@ -235,15 +240,10 @@ class MainControllerTest extends TestCase
         $csrfProtector = new FakeCsrfProtector;
         $sut = $this->sut(["csrfProtector" => $csrfProtector]);
         $request = new FakeRequest([
-            "query" => "Twocents&twocents_action=create",
+            "url" => "http://example.com/?Twocents&twocents_action=create",
+            "admin" => true,
             "time" => 1677493797,
-            "adm" => true,
-            "post" => [
-                "twocents_user" => "",
-                "twocents_email" => "",
-                "twocents_message" => "",
-                "twocents_do" => "",
-            ],
+            "post" => ["twocents_do" => ""],
         ]);
         $response = $sut($request, "test-topic", false);
         Approvals::verifyHtml($response->output());
@@ -255,9 +255,9 @@ class MainControllerTest extends TestCase
         $db = new FakeDb(["insert" => false]);
         $sut = $this->sut(["csrfProtector" => $csrfProtector, "db" => $db]);
         $request = new FakeRequest([
-            "query" => "Twocents&twocents_action=create",
+            "url" => "http://example.com/?Twocents&twocents_action=create",
+            "admin" => true,
             "time" => 1677493797,
-            "adm" => true,
             "post" => [
                 "twocents_user" => "cmb",
                 "twocents_email" => "cmb69@gmx.de",
@@ -277,8 +277,8 @@ class MainControllerTest extends TestCase
         $db->insertComment($comment);
         $sut = $this->sut(["csrfProtector" => $csrfProtector, "db" => $db]);
         $request = new FakeRequest([
-            "query" => "Twocents&twocents_id=63fba86870945&twocents_action=edit",
-            "adm" => true,
+            "url" => "http://example.com/?Twocents&twocents_id=63fba86870945&twocents_action=edit",
+            "admin" => true,
             "post" => [
                 "twocents_user" => "cmb",
                 "twocents_email" => "cmb69@gmx.de",
@@ -294,8 +294,7 @@ class MainControllerTest extends TestCase
     {
         $sut = $this->sut();
         $request = new FakeRequest([
-            "query" => "Twocents&twocents_id=63fba86870945&twocents_action=edit",
-            "post" => ["twocents_do" => ""],
+            "url" => "http://example.com/?Twocents&twocents_action=edit",
         ]);
         $response = $sut($request, "test-topic", false);
         Approvals::verifyHtml($response->output());
@@ -306,9 +305,8 @@ class MainControllerTest extends TestCase
         $db = new FakeDb(["insert" => false]);
         $sut = $this->sut(["db" => $db]);
         $request = new FakeRequest([
-            "query" => "Twocents&twocents_id=63fba86870945&twocents_action=edit",
-            "adm" => true,
-            "post" => ["twocents_do" => ""],
+            "url" => "http://example.com/?Twocents&twocents_action=edit",
+            "admin" => true,
         ]);
         $response = $sut($request, "test-topic", false);
         Approvals::verifyHtml($response->output());
@@ -321,14 +319,9 @@ class MainControllerTest extends TestCase
         $db->insertComment($this->comment());
         $sut = $this->sut(["csrfProtector" => $csrfProtector, "db" => $db]);
         $request = new FakeRequest([
-            "query" => "Twocents&twocents_id=63fba86870945&twocents_action=edit",
-            "adm" => true,
-            "post" => [
-                "twocents_user" => "",
-                "twocents_email" => "",
-                "twocents_message" => "",
-                "twocents_do" => "",
-            ],
+            "url" => "http://example.com/?Twocents&twocents_id=63fba86870945&twocents_action=edit",
+            "admin" => true,
+            "post" => ["twocents_do" => ""],
         ]);
         $response = $sut($request, "test-topic", false);
         Approvals::verifyHtml($response->output());
@@ -342,8 +335,8 @@ class MainControllerTest extends TestCase
         $db->insertComment($comment);
         $sut = $this->sut(["csrfProtector" => $csrfProtector, "db" => $db]);
         $request = new FakeRequest([
-            "query" => "Twocents&twocents_id=63fba86870945&twocents_action=edit",
-            "adm" => true,
+            "url" => "http://example.com/?Twocents&twocents_id=63fba86870945&twocents_action=edit",
+            "admin" => true,
             "post" => [
                 "twocents_user" => "cmb",
                 "twocents_email" => "cmb69@gmx.de",
@@ -359,10 +352,8 @@ class MainControllerTest extends TestCase
     {
         $sut = $this->sut();
         $request = new FakeRequest([
-            "query" => "Twocents&twocents_id=63fba86870945&twocents_action=toggle_visibility",
-            "post" => [
-                "twocents_do" => "",
-            ],
+            "url" => "http://example.com/?Twocents&twocents_action=toggle_visibility",
+            "post" => ["twocents_do" => ""],
         ]);
         $response = $sut($request, "test-topic", false);
         Approvals::verifyHtml($response->output());
@@ -372,11 +363,9 @@ class MainControllerTest extends TestCase
     {
         $sut = $this->sut();
         $request = new FakeRequest([
-            "query" => "Twocents&twocents_id=63fba86870945&twocents_action=toggle_visibility",
-            "adm" => true,
-            "post" => [
-                "twocents_do" => "",
-            ],
+            "url" => "http://example.com/?Twocents&twocents_action=toggle_visibility",
+            "admin" => true,
+            "post" => ["twocents_do" => ""],
         ]);
         $response = $sut($request, "test-topic", false);
         Approvals::verifyHtml($response->output());
@@ -388,11 +377,9 @@ class MainControllerTest extends TestCase
         $db->insertComment($this->comment());
         $sut = $this->sut(["db" => $db]);
         $request = new FakeRequest([
-            "query" => "Twocents&twocents_id=63fba86870945&twocents_action=toggle_visibility",
-            "adm" => true,
-            "post" => [
-                "twocents_do" => "",
-            ],
+            "url" => "http://example.com/?Twocents&twocents_id=63fba86870945&twocents_action=toggle_visibility",
+            "admin" => true,
+            "post" => ["twocents_do" => ""],
         ]);
         $response = $sut($request, "test-topic", false);
         Approvals::verifyHtml($response->output());
@@ -402,10 +389,8 @@ class MainControllerTest extends TestCase
     {
         $sut = $this->sut();
         $request = new FakeRequest([
-            "query" => "Twocents&twocents_id=63fba86870945&twocents_action=delete",
-            "post" => [
-                "twocents_do" => "",
-            ],
+            "url" => "http://example.com/?Twocents&twocents_action=delete",
+            "post" => ["twocents_do" => ""],
         ]);
         $response = $sut($request, "test-topic", false);
         Approvals::verifyHtml($response->output());
@@ -415,11 +400,9 @@ class MainControllerTest extends TestCase
     {
         $sut = $this->sut();
         $request = new FakeRequest([
-            "query" => "Twocents&twocents_id=63fba86870945&twocents_action=delete",
-            "adm" => true,
-            "post" => [
-                "twocents_do" => "",
-            ],
+            "url" => "http://example.com/?Twocents&twocents_id=63fba86870945&twocents_action=delete",
+            "admin" => true,
+            "post" => ["twocents_do" => ""],
         ]);
         $response = $sut($request, "test-topic", false);
         Approvals::verifyHtml($response->output());
@@ -431,11 +414,9 @@ class MainControllerTest extends TestCase
         $db->insertComment($this->comment());
         $sut = $this->sut(["db" => $db]);
         $request = new FakeRequest([
-            "query" => "Twocents&twocents_id=63fba86870945&twocents_action=delete",
-            "adm" => true,
-            "post" => [
-                "twocents_do" => "",
-            ],
+            "url" => "http://example.com/?Twocents&twocents_id=63fba86870945&twocents_action=delete",
+            "admin" => true,
+            "post" => ["twocents_do" => ""],
         ]);
         $response = $sut($request, "test-topic", false);
         Approvals::verifyHtml($response->output());

@@ -21,9 +21,9 @@
 
 namespace Twocents;
 
+use Plib\Request;
 use Realblog\CommentsBridge;
 use Twocents\Infra\Db;
-use Twocents\Infra\Request;
 use Twocents\Infra\Responder;
 
 class RealblogBridge implements CommentsBridge
