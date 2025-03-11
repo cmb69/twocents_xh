@@ -31,6 +31,7 @@ include_once '../../cmsimple/utf8.php';
 require_once '../../cmsimple/classes/CSRFProtection.php';
 require_once "../../cmsimple/classes/Mail.php";
 require_once "../plib/classes/Codec.php";
+require_once "../plib/classes/Random.php";
 require_once "../plib/classes/Request.php";
 require_once "../plib/classes/Response.php";
 require_once "../plib/classes/SystemChecker.php";

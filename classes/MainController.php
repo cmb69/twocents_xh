@@ -22,6 +22,7 @@
 namespace Twocents;
 
 use Plib\Codec;
+use Plib\Random;
 use Plib\Request;
 use Plib\Response;
 use Plib\Url;
@@ -31,7 +32,6 @@ use Twocents\Infra\CsrfProtector;
 use Twocents\Infra\Db;
 use Twocents\Infra\HtmlCleaner;
 use Twocents\Infra\Mailer;
-use Twocents\Infra\Random;
 use Twocents\Logic\Pagination;
 use Twocents\Logic\SpamFilter;
 use Twocents\Logic\Util;
