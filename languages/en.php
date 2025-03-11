@@ -70,6 +70,7 @@ $plugin_tx['twocents']['alt_icon']="empty speech bubble";
 $plugin_tx['twocents']['menu_main']="Conversion";
 $plugin_tx['twocents']['syscheck_fail']="failure";
 $plugin_tx['twocents']['syscheck_phpversion']="PHP version is at least %s";
+$plugin_tx['twocents']['syscheck_plibversion']="Plib_XH version is at least %s";
 $plugin_tx['twocents']['syscheck_success']="okay";
 $plugin_tx['twocents']['syscheck_title']="System check";
 $plugin_tx['twocents']['syscheck_warning']="warning";
