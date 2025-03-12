@@ -358,8 +358,8 @@ class MainController
 
     private function isXmlHttpRequest(): bool
     {
-        return isset($_SERVER['HTTP_X_REQUESTED_WITH'])
-            && $_SERVER['HTTP_X_REQUESTED_WITH'] === 'XMLHttpRequest';
+        return isset($_SERVER['HTTP_X_CMSIMPLE_XH_REQUEST'])
+            && $_SERVER['HTTP_X_CMSIMPLE_XH_REQUEST'] === 'twocents';
     }
 
     /** @return array<string,scalar> */
