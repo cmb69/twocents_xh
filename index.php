@@ -21,12 +21,6 @@
 
 use Plib\Request;
 use Twocents\Dic;
-use Twocents\Infra\Responder;
-
-if (!defined('CMSIMPLE_XH_VERSION')) {
-    header("HTTP/1.1 403 Forbidden");
-    exit;
-}
 
 const TWOCENTS_VERSION = "1.0";
 
