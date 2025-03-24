@@ -40,6 +40,9 @@
     <exec executable="jshint" passthru="true" checkreturn="true">
       <arg line="twocents.min.js"/>
     </exec>
+    <exec executable="tsc" passthru="true" checkreturn="true">
+      <arg line="--checkJs --strictNullChecks --lib ES6,DOM --noEmit twocents.min.js"/>
+    </exec>
   </target>
 
   <target name="gen-help" description="builds help.htm from README.md">
