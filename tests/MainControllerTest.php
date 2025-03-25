@@ -103,6 +103,19 @@ class MainControllerTest extends TestCase
         Approvals::verifyHtml($response->output());
     }
 
+    public function testRendersSingleComment(): void
+    {
+        $csrfProtector = new FakeCsrfProtector;
+        $db = new FakeDb;
+        $db->insertComment($this->comment("63fba86870945", 1677437048, true));
+        $request = new FakeRequest([
+            "url" => "http://example.com/?Twocents&twocents_action=show&twocents_id=63fba86870945",
+        ]);
+        $sut = $this->sut(["db" => $db]);
+        $response = $sut($request, "test-topic", false);
+        Approvals::verifyHtml($response->output());
+    }
+
     public function testRendersCreateForm(): void
     {
         $csrfProtector = new FakeCsrfProtector;
@@ -190,7 +203,10 @@ class MainControllerTest extends TestCase
             ],
         ]);
         $response = $sut($request, "test-topic", false);
-        $this->assertEquals("http://example.com/?Twocents", $response->location());
+        $this->assertEquals(
+            "http://example.com/?Twocents&twocents_action=show&twocents_id=gfcafKrX1PCEFRh74DT5",
+            $response->location()
+        );
     }
 
     public function testNewCommentSendsNotificationEmail(): void
@@ -466,7 +482,7 @@ class MainControllerTest extends TestCase
         return XH_includeVar("./languages/en.php", "plugin_tx")["twocents"];
     }
 
-    private function comment(string $id = "63fba86870945", int $time = 1677437048)
+    private function comment(string $id = "63fba86870945", int $time = 1677437048, bool $hidden = false)
     {
         return new Comment(
             $id,
@@ -475,7 +491,7 @@ class MainControllerTest extends TestCase
             "cmb",
             "cmb@example.com",
             "A nice comment",
-            false
+            $hidden
         );
     }
 }
