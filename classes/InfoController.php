@@ -62,7 +62,7 @@ class InfoController
         return array(
             $this->checkPhpVersion('7.1.0'),
             $this->checkXhVersion('1.7.0'),
-            $this->checkPlibVersion("1.1"),
+            $this->checkPlibVersion("1.4"),
             $this->checkWritability($this->db->getFoldername()),
             $this->checkWritability($this->pluginFolder . "config/"),
             $this->checkWritability($this->pluginFolder . "css/"),

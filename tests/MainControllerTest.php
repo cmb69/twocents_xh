@@ -204,7 +204,7 @@ class MainControllerTest extends TestCase
         ]);
         $response = $sut($request, "test-topic", false);
         $this->assertEquals(
-            "http://example.com/?Twocents&twocents_action=show&twocents_id=gfcafKrX1PCEFRh74DT5",
+            "http://example.com/?Twocents&twocents_action=show&twocents_id=G7RHKV5AQVAF110L31TU0D7P",
             $response->location()
         );
     }
@@ -246,7 +246,7 @@ class MainControllerTest extends TestCase
             ],
         ]);
         $sut($request, "test-topic", false);
-        $comment = $db->findComment("test-topic", "gfcafKrX1PCEFRh74DT5");
+        $comment = $db->findComment("test-topic", "G7RHKV5AQVAF110L31TU0D7P");
         $this->assertEquals("<p>This is an image: .</p>", $comment->message());
     }
 
