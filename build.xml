@@ -99,13 +99,13 @@
     <delete dir="export"/>
     <copy file="dist/config/config.php" tofile="dist/config/defaultconfig.php"/>
     <copy file="dist/languages/en.php" tofile="dist/languages/default.php"/>
-    <zip destfile="Twocents_XH-1.1-dev.zip" basedir="dist" prefix="twocents/"/>
+    <zip destfile="Twocents_XH-1.2.zip" basedir="dist" prefix="twocents/"/>
     <delete dir="dist"/>
   </target>
 
   <target name="build-patch" description="builds a distributable update package">
     <fail unless="patchee" message="patchee is not defined!"/>
-    <unzip file="Twocents_XH-1.1-dev.zip" todir="current"/>
+    <unzip file="Twocents_XH-1.2.zip" todir="current"/>
     <unzip file="${patchee}" todir="patchee"/>
     <copy todir="dist">
       <fileset dir="current">
@@ -119,7 +119,7 @@
         <include name="css/stylesheet.css"/>
       </fileset>
     </delete>
-    <zip destfile="Twocents_XH-1.1-dev-update-from-1.x.zip" basedir="dist" includeemptydirs="false"/>
+    <zip destfile="Twocents_XH-1.2-update-from-1.x.zip" basedir="dist" includeemptydirs="false"/>
     <delete dir="patchee" quiet="true"/>
     <delete dir="current" quiet="true"/>
     <delete dir="dist" quiet="true"/>

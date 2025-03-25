@@ -22,7 +22,7 @@
 use Plib\Request;
 use Twocents\Dic;
 
-const TWOCENTS_VERSION = "1.1-dev";
+const TWOCENTS_VERSION = "1.2";
 
 /**
  * @param string $topicname
