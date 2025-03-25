@@ -172,7 +172,8 @@ class MainController
     {
         $mayAddComment = $request->admin() || !$readonly;
         return $this->view->render('comments', [
-            "module" => $this->pluginFolder . "twocents.min.js",
+            "module" => $request->url()->path($this->pluginFolder . "twocents.min.js")
+                ->with("v", TWOCENTS_VERSION)->relative(),
             'comments' => $this->commentRecords($request, $comments),
             'has_comment_form_above' => $mayAddComment && $this->conf['comments_order'] === 'DESC',
             'has_comment_form_below' => $mayAddComment && $this->conf['comments_order'] === 'ASC',
