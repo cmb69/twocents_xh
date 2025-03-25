@@ -315,7 +315,7 @@ class MainController
         if (!empty($errors)) {
             return $this->respondWith($request, $this->renderCommentForm($request, $comment, $errors));
         }
-        $id = Base32::encode($this->random->bytes(15));
+        $id = Codec::encodeBase32hex($this->random->bytes(15));
         $comment = $comment->withId($id);
         if (!$this->db->insertComment($comment)) {
             return $this->respondWith($request, $this->renderCommentForm($request, $comment, ["error_store"]));
