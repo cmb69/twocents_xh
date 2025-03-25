@@ -22,7 +22,7 @@ use Plib\View;
 ?>
 <!-- twocents comment form -->
 <script type="module" src="<?=$this->esc($module)?>"></script>
-<form class="twocents_form" method="post" action="<?=$this->esc($url)?>" data-config='<?=$this->json($conf)?>'>
+<form class="twocents_form" method="post" action="<?=$this->esc($url)?>">
 <?if ($moderated):?>
   <p class="xh_info"><?=$this->text('message_moderation')?></p>
 <?endif?>
@@ -47,7 +47,7 @@ use Plib\View;
   <div>
     <label>
       <span><?=$this->text('label_message')?></span>
-      <textarea name="twocents_message" cols="50" rows="8" required minlength="2" maxlength="2000"><?=$this->esc($comment_message)?></textarea>
+      <textarea name="twocents_message" cols="50" rows="8" required minlength="2" maxlength="2000" data-config='<?=$this->json($conf)?>'><?=$this->esc($comment_message)?></textarea>
     </label>
   </div>
   <?=$this->raw($captcha)?>
