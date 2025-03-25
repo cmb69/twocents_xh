@@ -171,9 +171,12 @@ class MainController
     private function renderCommentsView(Request $request, array $comments, bool $readonly): string
     {
         $mayAddComment = $request->admin() || !$readonly;
+        $js = $this->pluginFolder . "twocents.min.js";
+        if (!is_file($js)) {
+            $js = $this->pluginFolder . "twocents.js";
+        }
         return $this->view->render('comments', [
-            "module" => $request->url()->path($this->pluginFolder . "twocents.min.js")
-                ->with("v", TWOCENTS_VERSION)->relative(),
+            "module" => $request->url()->path($js)->with("v", TWOCENTS_VERSION)->relative(),
             'comments' => $this->commentRecords($request, $comments),
             'has_comment_form_above' => $mayAddComment && $this->conf['comments_order'] === 'DESC',
             'has_comment_form_below' => $mayAddComment && $this->conf['comments_order'] === 'ASC',
