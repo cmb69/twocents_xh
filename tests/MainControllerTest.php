@@ -103,6 +103,19 @@ class MainControllerTest extends TestCase
         Approvals::verifyHtml($response->output());
     }
 
+    public function testRendersSingleComment(): void
+    {
+        $csrfProtector = new FakeCsrfProtector;
+        $db = new FakeDb;
+        $db->insertComment($this->comment("63fba86870945", 1677437048, true));
+        $request = new FakeRequest([
+            "url" => "http://example.com/?Twocents&twocents_action=show&twocents_id=63fba86870945",
+        ]);
+        $sut = $this->sut(["db" => $db]);
+        $response = $sut($request, "test-topic", false);
+        Approvals::verifyHtml($response->output());
+    }
+
     public function testRendersCreateForm(): void
     {
         $csrfProtector = new FakeCsrfProtector;
@@ -112,6 +125,18 @@ class MainControllerTest extends TestCase
         $request = new FakeRequest([
             "url" => "http://example.com/?Twocents&twocents_action=create",
             "admin" => true,
+        ]);
+        $response = $sut($request, "test-topic", false);
+        Approvals::verifyHtml($response->output());
+    }
+
+    public function testRendersModeratedCreateForm(): void
+    {
+        $db = new FakeDb;
+        $db->insertComment($this->comment());
+        $sut = $this->sut(["conf" => ["comments_moderated" => "true"], "db" => $db]);
+        $request = new FakeRequest([
+            "url" => "http://example.com/?Twocents&twocents_action=create",
         ]);
         $response = $sut($request, "test-topic", false);
         Approvals::verifyHtml($response->output());
@@ -178,7 +203,10 @@ class MainControllerTest extends TestCase
             ],
         ]);
         $response = $sut($request, "test-topic", false);
-        $this->assertEquals("http://example.com/?Twocents", $response->location());
+        $this->assertEquals(
+            "http://example.com/?Twocents&twocents_action=show&twocents_id=G7RHKV5AQVAF110L31TU0D7P",
+            $response->location()
+        );
     }
 
     public function testNewCommentSendsNotificationEmail(): void
@@ -218,7 +246,7 @@ class MainControllerTest extends TestCase
             ],
         ]);
         $sut($request, "test-topic", false);
-        $comment = $db->findComment("test-topic", "gfcafKrX1PCEFRh74DT5");
+        $comment = $db->findComment("test-topic", "G7RHKV5AQVAF110L31TU0D7P");
         $this->assertEquals("<p>This is an image: .</p>", $comment->message());
     }
 
@@ -454,7 +482,7 @@ class MainControllerTest extends TestCase
         return XH_includeVar("./languages/en.php", "plugin_tx")["twocents"];
     }
 
-    private function comment(string $id = "63fba86870945", int $time = 1677437048)
+    private function comment(string $id = "63fba86870945", int $time = 1677437048, bool $hidden = false)
     {
         return new Comment(
             $id,
@@ -463,7 +491,7 @@ class MainControllerTest extends TestCase
             "cmb",
             "cmb@example.com",
             "A nice comment",
-            false
+            $hidden
         );
     }
 }

@@ -97,6 +97,8 @@ class MainController
         switch ($this->action($request)) {
             default:
                 return $this->defaultAction($request, $topic, $readonly);
+            case "show":
+                return $this->showSingle($request, $topic);
             case "create":
                 return $this->createComment($request, $readonly);
             case "do_create":
@@ -172,7 +174,7 @@ class MainController
     {
         $mayAddComment = $request->admin() || !$readonly;
         return $this->view->render('comments', [
-            "module" => $this->pluginFolder . "twocents.min.js",
+            "module" => $this->js($request),
             'comments' => $this->commentRecords($request, $comments),
             'has_comment_form_above' => $mayAddComment && $this->conf['comments_order'] === 'DESC',
             'has_comment_form_below' => $mayAddComment && $this->conf['comments_order'] === 'ASC',
@@ -224,6 +226,28 @@ class MainController
         }
     }
 
+    private function showSingle(Request $request, string $topic): Response
+    {
+        $comment = $this->db->findComment($topic, $request->get("twocents_id") ?? "");
+        if ($comment === null) {
+            return $this->respondWith($request, $this->view->message("fail", "error_no_comment"));
+        }
+        $html = $this->renderCommentView($request, $comment);
+        return $this->respondWith($request, $html);
+    }
+
+    private function renderCommentView(Request $request, Comment $comment): string
+    {
+        return $this->view->render('comment', [
+            "module" => $this->js($request),
+            "id" => $comment->id(),
+            "attribution" => $this->renderAttribution($comment),
+            'message' => $this->renderMessage($comment),
+            "url" => $request->url()->without("twocents_action")->without("twocents_id")->relative(),
+            'moderated' => !$request->admin() && $comment->hidden(),
+        ]);
+    }
+
     private function createComment(Request $request, bool $readonly): Response
     {
         if ($readonly && !$request->admin()) {
@@ -260,8 +284,8 @@ class MainController
             "comment_email" => $comment->email(),
             "comment_message" => $comment->message(),
             'captcha' => $this->captcha->render($request->admin()),
-            "admin" => $request->admin(),
-            "module" => $this->pluginFolder . "twocents.min.js",
+            "moderated" => !$request->admin() && $this->conf["comments_moderated"],
+            "module" => $this->js($request),
             "url" => $url->with("twocents_action", $action)->relative(),
             "cancel_url" => $url->without("twocents_id")->without("twocents_action")->relative(),
             "csrf_token" => $request->admin() ? $this->csrfProtector->token() : null,
@@ -291,7 +315,7 @@ class MainController
         if (!empty($errors)) {
             return $this->respondWith($request, $this->renderCommentForm($request, $comment, $errors));
         }
-        $id = Codec::encodeBase64url($this->random->bytes(15));
+        $id = Codec::encodeBase32hex($this->random->bytes(15));
         $comment = $comment->withId($id);
         if (!$this->db->insertComment($comment)) {
             return $this->respondWith($request, $this->renderCommentForm($request, $comment, ["error_store"]));
@@ -299,7 +323,7 @@ class MainController
         if (!$request->admin() && $this->conf['email_address']) {
             $this->sendNotificationEmail($request->url(), $comment);
         }
-        $url = $request->url()->without("twocents_action")->absolute();
+        $url = $request->url()->with("twocents_action", "show")->with("twocents_id", $id)->absolute();
         return Response::redirect($url);
     }
 
@@ -354,6 +378,15 @@ class MainController
             return Response::create($html)->withContentType("text/html; charset=UTF-8");
         }
         return Response::create("<div class=\"twocents_container\">\n$html</div>\n");
+    }
+
+    private function js(Request $request): string
+    {
+        $js = $this->pluginFolder . "twocents.min.js";
+        if (!is_file($js)) {
+            $js = $this->pluginFolder . "twocents.js";
+        }
+        return $request->url()->path($js)->with("v", TWOCENTS_VERSION)->relative();
     }
 
     /** @return array<string,scalar> */

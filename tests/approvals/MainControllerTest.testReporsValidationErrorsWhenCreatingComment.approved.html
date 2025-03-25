@@ -1,7 +1,7 @@
 <div class="twocents_container">
 <!-- twocents comment form -->
-<script type="module" src="./plugins/twocents/twocents.min.js"></script>
-<form class="twocents_form" method="post" action="/?Twocents&amp;twocents_action=create" data-config='{"comments_markup":"","label_bold":"Bold","label_italic":"Italic","label_link":"Link","label_unlink":"Unlink","message_link":"Enter the URL to link to:"}'>
+<script type="module" src="/plugins/twocents/twocents.js?&amp;v=1.2"></script>
+<form class="twocents_form" method="post" action="/?Twocents&amp;twocents_action=create">
   <p class="xh_fail">Invalid name!</p>
   <p class="xh_fail">Invalid email address!</p>
   <p class="xh_fail">Invalid comment!</p>
@@ -21,7 +21,7 @@
   <div>
     <label>
       <span>Comment</span>
-      <textarea name="twocents_message" cols="50" rows="8" required minlength="2" maxlength="2000"></textarea>
+      <textarea name="twocents_message" cols="50" rows="8" required minlength="2" maxlength="2000" data-config='{"comments_markup":"","label_bold":"Bold","label_italic":"Italic","label_link":"Link","label_unlink":"Unlink","message_link":"Enter the URL to link to:"}'></textarea>
     </label>
   </div>
   <p>This is not a real CAPTCHA</p>
