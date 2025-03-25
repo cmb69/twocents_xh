@@ -260,7 +260,7 @@ class MainController
             "comment_email" => $comment->email(),
             "comment_message" => $comment->message(),
             'captcha' => $this->captcha->render($request->admin()),
-            "admin" => $request->admin(),
+            "moderated" => !$request->admin() && $this->conf["comments_moderated"],
             "module" => $this->pluginFolder . "twocents.min.js",
             "url" => $url->with("twocents_action", $action)->relative(),
             "cancel_url" => $url->without("twocents_id")->without("twocents_action")->relative(),

@@ -36,6 +36,15 @@
 
   <target name="check" description="runs all checks" depends="sniff,stan,test"/>
 
+  <target name="js" description="run jshint">
+    <exec executable="jshint" passthru="true" checkreturn="true">
+      <arg line="twocents.min.js"/>
+    </exec>
+    <exec executable="tsc" passthru="true" checkreturn="true">
+      <arg line="--checkJs --strictNullChecks --lib ES6,DOM --noEmit twocents.min.js"/>
+    </exec>
+  </target>
+
   <target name="gen-help" description="builds help.htm from README.md">
     <exec executable="pandoc" passthru="true" checkreturn="true">
       <arg line="-s --eol=lf --template=help/template.htm -Vlang=en -Vpagetitle=&quot;User Manual&quot; -o help/help.htm README.md -t html"/>
@@ -85,8 +94,30 @@
     <delete dir="export"/>
     <copy file="dist/config/config.php" tofile="dist/config/defaultconfig.php"/>
     <copy file="dist/languages/en.php" tofile="dist/languages/default.php"/>
-    <zip destfile="Twocents_XH-1.0.zip" basedir="dist" prefix="twocents/"/>
+    <zip destfile="Twocents_XH-1.1-dev.zip" basedir="dist" prefix="twocents/"/>
     <delete dir="dist"/>
+  </target>
+
+  <target name="build-patch" description="builds a distributable update package">
+    <fail unless="patchee" message="patchee is not defined!"/>
+    <unzip file="Twocents_XH-1.1-dev.zip" todir="current"/>
+    <unzip file="${patchee}" todir="patchee"/>
+    <copy todir="dist">
+      <fileset dir="current">
+        <different targetdir="patchee" ignoreFileTimes="true"/>
+      </fileset>
+    </copy>
+    <delete>
+      <fileset dir="dist/twocents">
+        <include name="config/config.php"/>
+        <include name="languages/??.php"/>
+        <include name="css/stylesheet.css"/>
+      </fileset>
+    </delete>
+    <zip destfile="Twocents_XH-1.1-dev-update-from-1.x.zip" basedir="dist" includeemptydirs="false"/>
+    <delete dir="patchee" quiet="true"/>
+    <delete dir="current" quiet="true"/>
+    <delete dir="dist" quiet="true"/>
   </target>
 
 </project>

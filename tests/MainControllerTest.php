@@ -117,6 +117,18 @@ class MainControllerTest extends TestCase
         Approvals::verifyHtml($response->output());
     }
 
+    public function testRendersModeratedCreateForm(): void
+    {
+        $db = new FakeDb;
+        $db->insertComment($this->comment());
+        $sut = $this->sut(["conf" => ["comments_moderated" => "true"], "db" => $db]);
+        $request = new FakeRequest([
+            "url" => "http://example.com/?Twocents&twocents_action=create",
+        ]);
+        $response = $sut($request, "test-topic", false);
+        Approvals::verifyHtml($response->output());
+    }
+
     public function testReportsAuthorizationFailureToCreateComment(): void
     {
         $sut = $this->sut();

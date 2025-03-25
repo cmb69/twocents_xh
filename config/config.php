@@ -2,7 +2,7 @@
 
 $plugin_cf['twocents']['comments_moderated']="";
 $plugin_cf['twocents']['comments_order']="ASC";
-$plugin_cf['twocents']['comments_markup']="";
+$plugin_cf['twocents']['comments_markup']="HTML";
 $plugin_cf['twocents']['email_address']="";
 $plugin_cf['twocents']['pagination_max']="12";
 $plugin_cf['twocents']['pagination_radius']="3";

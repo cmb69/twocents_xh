@@ -11,7 +11,7 @@ use Plib\View;
  * @var string $comment_email
  * @var string $comment_message
  * @var string $captcha
- * @var bool $admin
+ * @var bool $moderated
  * @var string $module
  * @var string $url
  * @var string $cancel_url
@@ -23,7 +23,7 @@ use Plib\View;
 <!-- twocents comment form -->
 <script type="module" src="<?=$this->esc($module)?>"></script>
 <form class="twocents_form" method="post" action="<?=$this->esc($url)?>" data-config='<?=$this->json($conf)?>'>
-<?if (!$admin):?>
+<?if ($moderated):?>
   <p class="xh_info"><?=$this->text('message_moderation')?></p>
 <?endif?>
 <?foreach ($errors as $error):?>
