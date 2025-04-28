@@ -1,6 +1,6 @@
 <?xml version="1.0" encoding="UTF-8"?>
 <phive xmlns="https://phar.io/phive">
   <phar name="phing" version="^3.0" installed="3.0.1" location="./tools/phing" copy="false"/>
-  <phar name="phpcs" version="^3.11" installed="3.11.3" location="./tools/phpcs" copy="false"/>
-  <phar name="phpstan" version="^1.12" installed="1.12.21" location="./tools/phpstan" copy="false"/>
+  <phar name="phpcs" version="^3.11" installed="3.12.2" location="./tools/phpcs" copy="false"/>
+  <phar name="phpstan" version="^1.12" installed="1.12.25" location="./tools/phpstan" copy="false"/>
 </phive>
