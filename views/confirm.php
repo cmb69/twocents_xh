@@ -14,6 +14,6 @@ use Plib\View;
 <h1>Twocents – <?=$this->text('menu_main')?></h1>
 <p class="xh_info"><?=$this->plural($message_key, $count)?></p>
 <form method="post">
-  <input type="hidden" name="xh_csrf_token" value="<?=$this->esc($csrf_token)?>">
+  <input type="hidden" name="twocents_token" value="<?=$this->esc($csrf_token)?>">
   <button name="twocents_do" ><?=$this->text($key)?></button>
 </form>

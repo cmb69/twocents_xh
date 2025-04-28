@@ -23,11 +23,11 @@ namespace Twocents;
 
 use ApprovalTests\Approvals;
 use PHPUnit\Framework\TestCase;
+use Plib\CsrfProtector;
 use Plib\FakeRequest;
 use Plib\Random;
 use Plib\View;
 use Twocents\Infra\FakeCaptcha;
-use Twocents\Infra\FakeCsrfProtector;
 use Twocents\Infra\FakeDb;
 use Twocents\Infra\FakeHtmlCleaner;
 use Twocents\Infra\FakeMailer;
@@ -44,7 +44,8 @@ class MainControllerTest extends TestCase
 
     public function testTogglesVisibility(): void
     {
-        $csrfProtector = new FakeCsrfProtector;
+        $csrfProtector = $this->createStub(CsrfProtector::class);
+        $csrfProtector->method("check")->willReturn(true);
         $db = new FakeDb;
         $db->insertComment($this->comment());
         $sut = $this->sut(["csrfProtector" => $csrfProtector, "db" => $db]);
@@ -61,7 +62,8 @@ class MainControllerTest extends TestCase
 
     public function testRemovesComment(): void
     {
-        $csrfProtector = new FakeCsrfProtector;
+        $csrfProtector = $this->createStub(CsrfProtector::class);
+        $csrfProtector->method("check")->willReturn(true);
         $db = new FakeDb;
         $db->insertComment($this->comment());
         $sut = $this->sut(["csrfProtector" => $csrfProtector, "db" => $db]);
@@ -71,14 +73,13 @@ class MainControllerTest extends TestCase
             "post" => ["twocents_do" => ""]
         ]);
         $response = $sut($request, "test-topic", false);
-        $this->assertTrue($csrfProtector->hasChecked());
         $this->assertNull($db->findComment($this->comment()->topicname(), $this->comment()->id()));
         $this->assertEquals("http://example.com/?Twocents", $response->location());
     }
 
     public function testRendersOverview(): void
     {
-        $csrfProtector = new FakeCsrfProtector;
+        $csrfProtector = $this->createStub(CsrfProtector::class);
         $db = new FakeDb;
         $db->insertComment($this->comment());
         $sut = $this->sut(["csrfProtector" => $csrfProtector, "db" => $db]);
@@ -92,7 +93,7 @@ class MainControllerTest extends TestCase
 
     public function testRendersOverviewWithPagination(): void
     {
-        $csrfProtector = new FakeCsrfProtector;
+        $csrfProtector = $this->createStub(CsrfProtector::class);
         $db = new FakeDb;
         for ($i = 1677437048; $i < 1677437068; $i++) {
             $db->insertComment($this->comment((string) $i, $i));
@@ -105,7 +106,7 @@ class MainControllerTest extends TestCase
 
     public function testRendersSingleComment(): void
     {
-        $csrfProtector = new FakeCsrfProtector;
+        $csrfProtector = $this->createStub(CsrfProtector::class);
         $db = new FakeDb;
         $db->insertComment($this->comment("63fba86870945", 1677437048, true));
         $request = new FakeRequest([
@@ -118,7 +119,7 @@ class MainControllerTest extends TestCase
 
     public function testRendersCreateForm(): void
     {
-        $csrfProtector = new FakeCsrfProtector;
+        $csrfProtector = $this->createStub(CsrfProtector::class);
         $db = new FakeDb;
         $db->insertComment($this->comment());
         $sut = $this->sut(["csrfProtector" => $csrfProtector, "db" => $db]);
@@ -154,7 +155,7 @@ class MainControllerTest extends TestCase
 
     public function testRendersEditForm(): void
     {
-        $csrfProtector = new FakeCsrfProtector;
+        $csrfProtector = $this->createStub(CsrfProtector::class);
         $db = new FakeDb;
         $db->insertComment($this->comment());
         $sut = $this->sut(["csrfProtector" => $csrfProtector, "db" => $db]);
@@ -189,7 +190,7 @@ class MainControllerTest extends TestCase
 
     public function testAddsComment(): void
     {
-        $csrfProtector = new FakeCsrfProtector;
+        $csrfProtector = $this->createStub(CsrfProtector::class);
         $sut = $this->sut(["csrfProtector" => $csrfProtector]);
         $request = new FakeRequest([
             "url" => "http://example.com/?Twocents&twocents_action=create",
@@ -231,7 +232,7 @@ class MainControllerTest extends TestCase
 
     public function testCleansHtmlComment(): void
     {
-        $csrfProtector = new FakeCsrfProtector;
+        $csrfProtector = $this->createStub(CsrfProtector::class);
         $db = new FakeDb();
         $sut = $this->sut(["conf" => ["comments_markup" => "HTML"], "csrfProtector" => $csrfProtector, "db" => $db]);
         $request = new FakeRequest([
@@ -265,7 +266,7 @@ class MainControllerTest extends TestCase
 
     public function testReporsValidationErrorsWhenCreatingComment(): void
     {
-        $csrfProtector = new FakeCsrfProtector;
+        $csrfProtector = $this->createStub(CsrfProtector::class);
         $sut = $this->sut(["csrfProtector" => $csrfProtector]);
         $request = new FakeRequest([
             "url" => "http://example.com/?Twocents&twocents_action=create",
@@ -279,7 +280,7 @@ class MainControllerTest extends TestCase
 
     public function testReporsFailureToStoreWhenCreatingComment(): void
     {
-        $csrfProtector = new FakeCsrfProtector;
+        $csrfProtector = $this->createStub(CsrfProtector::class);
         $db = new FakeDb(["insert" => false]);
         $sut = $this->sut(["csrfProtector" => $csrfProtector, "db" => $db]);
         $request = new FakeRequest([
@@ -300,7 +301,8 @@ class MainControllerTest extends TestCase
     public function testUpdatesComment(): void
     {
         $comment = $this->comment();
-        $csrfProtector = new FakeCsrfProtector;
+        $csrfProtector = $this->createStub(CsrfProtector::class);
+        $csrfProtector->method("check")->willReturn(true);
         $db = new FakeDb;
         $db->insertComment($comment);
         $sut = $this->sut(["csrfProtector" => $csrfProtector, "db" => $db]);
@@ -342,7 +344,8 @@ class MainControllerTest extends TestCase
 
     public function testReporsValidationErrorsWhenUpdatingComment(): void
     {
-        $csrfProtector = new FakeCsrfProtector;
+        $csrfProtector = $this->createStub(CsrfProtector::class);
+        $csrfProtector->method("check")->willReturn(true);
         $db = new FakeDb;
         $db->insertComment($this->comment());
         $sut = $this->sut(["csrfProtector" => $csrfProtector, "db" => $db]);
@@ -358,7 +361,8 @@ class MainControllerTest extends TestCase
     public function testReportsFailureToStoreWhenUpdatingComment(): void
     {
         $comment = $this->comment();
-        $csrfProtector = new FakeCsrfProtector;
+        $csrfProtector = $this->createStub(CsrfProtector::class);
+        $csrfProtector->method("check")->willReturn(true);
         $db = new FakeDb(["update" => false]);
         $db->insertComment($comment);
         $sut = $this->sut(["csrfProtector" => $csrfProtector, "db" => $db]);
@@ -389,7 +393,9 @@ class MainControllerTest extends TestCase
 
     public function testReportsFailureToFindCommentWhenTogglingVisibility(): void
     {
-        $sut = $this->sut();
+        $csrfProtector = $this->createStub(CsrfProtector::class);
+        $csrfProtector->method("check")->willReturn(true);
+        $sut = $this->sut(["csrfProtector" => $csrfProtector]);
         $request = new FakeRequest([
             "url" => "http://example.com/?Twocents&twocents_action=toggle_visibility",
             "admin" => true,
@@ -401,9 +407,11 @@ class MainControllerTest extends TestCase
 
     public function testReportsFailureToStoreWhenTogglingVisibility(): void
     {
+        $csrfProtector = $this->createStub(CsrfProtector::class);
+        $csrfProtector->method("check")->willReturn(true);
         $db = new FakeDb(["update" => false]);
         $db->insertComment($this->comment());
-        $sut = $this->sut(["db" => $db]);
+        $sut = $this->sut(["csrfProtector" => $csrfProtector, "db" => $db]);
         $request = new FakeRequest([
             "url" => "http://example.com/?Twocents&twocents_id=63fba86870945&twocents_action=toggle_visibility",
             "admin" => true,
@@ -426,7 +434,9 @@ class MainControllerTest extends TestCase
 
     public function testReportsFailureToFindCommentWhenDeleting(): void
     {
-        $sut = $this->sut();
+        $csrfProtector = $this->createStub(CsrfProtector::class);
+        $csrfProtector->method("check")->willReturn(true);
+        $sut = $this->sut(["csrfProtector" => $csrfProtector]);
         $request = new FakeRequest([
             "url" => "http://example.com/?Twocents&twocents_id=63fba86870945&twocents_action=delete",
             "admin" => true,
@@ -438,9 +448,11 @@ class MainControllerTest extends TestCase
 
     public function testReportsFailureToStoreWhenDeleting(): void
     {
+        $csrfProtector = $this->createStub(CsrfProtector::class);
+        $csrfProtector->method("check")->willReturn(true);
         $db = new FakeDb(["delete" => false]);
         $db->insertComment($this->comment());
-        $sut = $this->sut(["db" => $db]);
+        $sut = $this->sut(["csrfProtector" => $csrfProtector, "db" => $db]);
         $request = new FakeRequest([
             "url" => "http://example.com/?Twocents&twocents_id=63fba86870945&twocents_action=delete",
             "admin" => true,
@@ -452,10 +464,12 @@ class MainControllerTest extends TestCase
 
     private function sut($options = [])
     {
+        $csrfProtector = $options["csrfProtector"] ?? $this->createStub(CsrfProtector::class);
+        $csrfProtector->method("token")->willReturn("e3c1b42a6098b48a39f9f54ddb3388f7");
         return new MainController(
             "./plugins/twocents/",
             $this->conf($options["conf"] ?? []),
-            $options["csrfProtector"] ?? new FakeCsrfProtector,
+            $csrfProtector,
             $options["db"] ?? new FakeDb,
             new FakeHtmlCleaner("./plugins/twocents/"),
             $this->random(),

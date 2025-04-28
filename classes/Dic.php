@@ -21,11 +21,11 @@
 
 namespace Twocents;
 
+use Plib\CsrfProtector;
 use Plib\Random;
 use Plib\SystemChecker;
 use Plib\View;
 use Twocents\Infra\Captcha;
-use Twocents\Infra\CsrfProtector;
 use Twocents\Infra\Db;
 use Twocents\Infra\FlashMessage;
 use Twocents\Infra\HtmlCleaner;

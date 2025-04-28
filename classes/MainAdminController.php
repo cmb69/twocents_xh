@@ -21,10 +21,10 @@
 
 namespace Twocents;
 
+use Plib\CsrfProtector;
 use Plib\Request;
 use Plib\Response;
 use Plib\View;
-use Twocents\Infra\CsrfProtector;
 use Twocents\Infra\Db;
 use Twocents\Infra\FlashMessage;
 use Twocents\Infra\HtmlCleaner;
@@ -135,7 +135,9 @@ class MainAdminController
 
     private function doConvertTo(Request $request, string $to): Response
     {
-        $this->csrfProtector->check();
+        if (!$this->csrfProtector->check($request->post("twocents_token"))) {
+            return Response::create($this->view->message("fail", "error_unauthorized"));
+        }
         $count = 0;
         $topics = $this->db->findTopics();
         foreach ($topics as $topic) {
@@ -168,7 +170,9 @@ class MainAdminController
 
     private function doImportComments(Request $request): Response
     {
-        $this->csrfProtector->check();
+        if (!$this->csrfProtector->check($request->post("twocents_token"))) {
+            return Response::create($this->view->message("fail", "error_unauthorized"));
+        }
         $count = 0;
         $topics = $this->db->findTopics("txt");
         foreach ($topics as $topic) {
@@ -202,7 +206,9 @@ class MainAdminController
 
     private function doImportGbook(Request $request): Response
     {
-        $this->csrfProtector->check();
+        if (!$this->csrfProtector->check($request->post("twocents_token"))) {
+            return Response::create($this->view->message("fail", "error_unauthorized"));
+        }
         $count = 0;
         $topics = $this->db->findTopics("txt");
         foreach ($topics as $topic) {

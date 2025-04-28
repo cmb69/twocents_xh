@@ -23,9 +23,9 @@ namespace Twocents;
 
 use ApprovalTests\Approvals;
 use PHPUnit\Framework\TestCase;
+use Plib\CsrfProtector;
 use Plib\FakeRequest;
 use Plib\View;
-use Twocents\Infra\FakeCsrfProtector;
 use Twocents\Infra\FakeDb;
 use Twocents\Infra\FlashMessage;
 use Twocents\Infra\HtmlCleaner;
@@ -60,9 +60,23 @@ class MainAdminControllerTest extends TestCase
         Approvals::verifyHtml($response->output());
     }
 
+    public function testConvertToHtmlIsCsrfProtected(): void
+    {
+        $csrfProtector = $this->createStub(CsrfProtector::class);
+        $csrfProtector->method("check")->willReturn(false);
+        $sut = $this->sut(["csrfProtector" => $csrfProtector]);
+        $request = new FakeRequest([
+            "url" => "http://example.com/?twocents&admin=plugin_main&twocents_action=convert_to_html",
+            "post" => ["twocents_do" => ""],
+        ]);
+        $response = $sut($request);
+        $this->assertStringContainsString("You are not authorized for this operation!", $response->output());
+    }
+
     public function testConvertsToHtml()
     {
-        $csrfProtector = new FakeCsrfProtector;
+        $csrfProtector = $this->createStub(CsrfProtector::class);
+        $csrfProtector->method("check")->willReturn(true);
         $db = new FakeDb;
         $db->insertComment($this->comment());
         $sut = $this->sut(["csrfProtector" => $csrfProtector, "db" => $db]);
@@ -71,7 +85,6 @@ class MainAdminControllerTest extends TestCase
             "post" => ["twocents_do" => ""],
         ]);
         $response = $sut($request);
-        $this->assertTrue($csrfProtector->hasChecked());
         $this->assertEquals($this->comment()->topicname(), $db->lastTopicStored);
         $this->assertEquals("http://example.com/?twocents&admin=plugin_main", $response->location());
     }
@@ -87,9 +100,23 @@ class MainAdminControllerTest extends TestCase
         Approvals::verifyHtml($response->output());
     }
 
+    public function testConvertToPlainTextIsCsrfProtected(): void
+    {
+        $csrfProtector = $this->createStub(CsrfProtector::class);
+        $csrfProtector->method("check")->willReturn(false);
+        $sut = $this->sut(["csrfProtector" => $csrfProtector]);
+        $request = new FakeRequest([
+            "url" => "http://example.com/?twocents&admin=plugin_main&twocents_action=convert_to_plain_text",
+            "post" => ["twocents_do" => ""],
+        ]);
+        $response = $sut($request);
+        $this->assertStringContainsString("You are not authorized for this operation!", $response->output());
+    }
+
     public function testConvertsToPlainText()
     {
-        $csrfProtector = new FakeCsrfProtector;
+        $csrfProtector = $this->createStub(CsrfProtector::class);
+        $csrfProtector->method("check")->willReturn(true);
         $db = new FakeDb;
         $db->insertComment($this->comment());
         $sut = $this->sut(["csrfProtector" => $csrfProtector, "db" => $db]);
@@ -98,7 +125,6 @@ class MainAdminControllerTest extends TestCase
             "post" => ["twocents_do" => ""],
         ]);
         $response = $sut($request);
-        $this->assertTrue($csrfProtector->hasChecked());
         $this->assertEquals($this->comment()->topicname(), $db->lastTopicStored);
         $this->assertEquals("http://example.com/?twocents&admin=plugin_main", $response->location());
     }
@@ -114,9 +140,23 @@ class MainAdminControllerTest extends TestCase
         Approvals::verifyHtml($response->output());
     }
 
+    public function testCommentImportIsCsrfProtected(): void
+    {
+        $csrfProtector = $this->createStub(CsrfProtector::class);
+        $csrfProtector->method("check")->willReturn(false);
+        $sut = $this->sut(["csrfProtector" => $csrfProtector]);
+        $request = new FakeRequest([
+            "url" => "http://example.com/?twocents&admin=plugin_main&twocents_action=import_comments",
+            "post" => ["twocents_do" => ""]
+        ]);
+        $response = $sut($request);
+        $this->assertStringContainsString("You are not authorized for this operation!", $response->output());
+    }
+
     public function testImportsComments()
     {
-        $csrfProtector = new FakeCsrfProtector;
+        $csrfProtector = $this->createStub(CsrfProtector::class);
+        $csrfProtector->method("check")->willReturn(true);
         $db = new FakeDb;
         $db->insertComment($this->comment());
         $sut = $this->sut(["csrfProtector" => $csrfProtector, "db" => $db]);
@@ -126,7 +166,6 @@ class MainAdminControllerTest extends TestCase
         ]);
         $response = $sut($request);
         $this->assertEquals($this->comment()->topicname(), $db->lastTopicStored);
-        $this->assertTrue($csrfProtector->hasChecked());
         $this->assertEquals("http://example.com/?twocents&admin=plugin_main", $response->location());
     }
 
@@ -141,9 +180,23 @@ class MainAdminControllerTest extends TestCase
         Approvals::verifyHtml($response->output());
     }
 
+    public function testGbookImportIsCsrfProtected(): void
+    {
+        $csrfProtector = $this->createStub(CsrfProtector::class);
+        $csrfProtector->method("check")->willReturn(false);
+        $sut = $this->sut(["csrfProtector" => $csrfProtector]);
+        $request = new FakeRequest([
+            "url" => "http://example.com/?twocents&admin=plugin_main&twocents_action=import_gbook",
+            "post" => ["twocents_do" => ""]
+        ]);
+        $response = $sut($request);
+        $this->assertStringContainsString("You are not authorized for this operation!", $response->output());
+    }
+
     public function testImportsGbook()
     {
-        $csrfProtector = new FakeCsrfProtector;
+        $csrfProtector = $this->createStub(CsrfProtector::class);
+        $csrfProtector->method("check")->willReturn(true);
         $db = new FakeDb;
         $db->insertComment($this->comment());
         $sut = $this->sut(["csrfProtector" => $csrfProtector, "db" => $db]);
@@ -152,16 +205,17 @@ class MainAdminControllerTest extends TestCase
             "post" => ["twocents_do" => ""],
         ]);
         $response = $sut($request);
-        $this->assertTrue($csrfProtector->hasChecked());
         $this->assertEquals($this->comment()->topicname(), $db->lastTopicStored);
         $this->assertEquals("http://example.com/?twocents&admin=plugin_main", $response->location());
     }
 
     private function sut($options = [])
     {
+        $csrfProtector = $options["csrfProtector"] ?? $this->createStub(CsrfProtector::class);
+        $csrfProtector->method("token")->willReturn("e3c1b42a6098b48a39f9f54ddb3388f7");
         return new MainAdminController(
             $this->conf($options["conf"] ?? []),
-            $options["csrfProtector"] ?? new FakeCsrfProtector,
+            $csrfProtector,
             $options["db"] ?? new FakeDb,
             $this->htmlCleaner(),
             $this->flashMessage(),

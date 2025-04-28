@@ -22,13 +22,13 @@
 namespace Twocents;
 
 use Plib\Codec;
+use Plib\CsrfProtector;
 use Plib\Random;
 use Plib\Request;
 use Plib\Response;
 use Plib\Url;
 use Plib\View;
 use Twocents\Infra\Captcha;
-use Twocents\Infra\CsrfProtector;
 use Twocents\Infra\Db;
 use Twocents\Infra\HtmlCleaner;
 use Twocents\Infra\Mailer;
@@ -346,10 +346,9 @@ class MainController
 
     private function updateCommentAction(Request $request, string $topic): Response
     {
-        if (!$request->admin()) {
+        if (!$request->admin() || !$this->csrfProtector->check($request->post("twocents_token"))) {
             return $this->respondWith($request, $this->view->message("fail", "error_unauthorized"));
         }
-        $this->csrfProtector->check();
         $comment = $this->db->findComment($topic, $request->get("twocents_id") ?? "");
         if ($comment === null) {
             return $this->respondWith($request, $this->view->message("fail", "error_no_comment"));
@@ -401,10 +400,9 @@ class MainController
 
     private function toggleVisibilityAction(Request $request, string $topic): Response
     {
-        if (!$request->admin()) {
+        if (!$request->admin() || !$this->csrfProtector->check($request->post("twocents_token"))) {
             return $this->respondWith($request, $this->view->message("fail", "error_unauthorized"));
         }
-        $this->csrfProtector->check();
         $comment = $this->db->findComment($topic, $request->get("twocents_id") ?? "");
         if ($comment === null) {
             return $this->respondWith($request, $this->view->message("fail", "error_no_comment"));
@@ -419,10 +417,9 @@ class MainController
 
     private function removeCommentAction(Request $request, string $topic): Response
     {
-        if (!$request->admin()) {
+        if (!$request->admin() || !$this->csrfProtector->check($request->post("twocents_token"))) {
             return $this->respondWith($request, $this->view->message("fail", "error_unauthorized"));
         }
-        $this->csrfProtector->check();
         $comment = $this->db->findComment($topic, $request->get("twocents_id") ?? "");
         if ($comment === null) {
             return $this->respondWith($request, $this->view->message("fail", "error_no_comment"));

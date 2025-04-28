@@ -30,7 +30,7 @@ use Plib\View;
   <p class="xh_fail"><?=$this->text($error)?></p>
 <?endforeach?>
 <?if (isset($csrf_token)):?>
-  <input type="hidden" name="xh_csrf_token" value="<?=$this->esc($csrf_token)?>">
+  <input type="hidden" name="twocents_token" value="<?=$this->esc($csrf_token)?>">
 <?endif?>
   <div>
     <label>

@@ -29,7 +29,7 @@ use Plib\View;
     <div class="twocents_admin_tools">
       <a href="<?=$this->esc($comment['edit_url'])?>"><?=$this->text('label_edit')?></a>
       <form method="post" action="<?=$this->esc($action_url)?>">
-        <input type="hidden" name="xh_csrf_token" value="<?=$this->esc($csrf_token)?>">
+        <input type="hidden" name="twocents_token" value="<?=$this->esc($csrf_token)?>">
         <button type="submit" formaction="<?=$this->esc($comment['visibility_action'])?>" name="twocents_do"><?=$this->text($comment['visibility'])?></button>
         <button data-confirm='<?=$this->json($this->text('message_delete'))?>' formaction="<?=$this->esc($comment['delete_action'])?>" name="twocents_do"><?=$this->text('label_delete')?></button>
       </form>
