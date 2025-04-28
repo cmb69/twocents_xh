@@ -22,7 +22,7 @@
 namespace Twocents\Infra;
 
 use Error;
-use Twocents\Value\Comment;
+use Twocents\Model\Comment;
 
 class FakeDb extends Db
 {

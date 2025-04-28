@@ -30,7 +30,7 @@ use Plib\View;
 use Twocents\Infra\FakeDb;
 use Twocents\Infra\FlashMessage;
 use Twocents\Infra\HtmlCleaner;
-use Twocents\Value\Comment;
+use Twocents\Model\Comment;
 
 class MainAdminControllerTest extends TestCase
 {

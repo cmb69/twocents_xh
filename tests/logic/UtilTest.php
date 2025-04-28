@@ -22,7 +22,7 @@
 namespace Twocents\Logic;
 
 use PHPUnit\Framework\TestCase;
-use Twocents\Value\Comment;
+use Twocents\Model\Comment;
 
 class UtilTest extends TestCase
 {

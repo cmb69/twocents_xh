@@ -35,7 +35,7 @@ use Twocents\Infra\Mailer;
 use Twocents\Logic\Pagination;
 use Twocents\Logic\SpamFilter;
 use Twocents\Logic\Util;
-use Twocents\Value\Comment;
+use Twocents\Model\Comment;
 
 class MainController
 {

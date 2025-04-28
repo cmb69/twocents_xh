@@ -21,7 +21,7 @@
 
 namespace Twocents\Logic;
 
-use Twocents\Value\Comment;
+use Twocents\Model\Comment;
 
 class Util
 {

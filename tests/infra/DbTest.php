@@ -25,7 +25,7 @@ use Error;
 use org\bovigo\vfs\vfsStream;
 use PHPUnit\Framework\TestCase;
 use Twocents\Infra\Db;
-use Twocents\Value\Comment;
+use Twocents\Model\Comment;
 
 class DbTest extends TestCase
 {

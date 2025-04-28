@@ -32,7 +32,7 @@ use Twocents\Infra\FakeCaptcha;
 use Twocents\Infra\FakeDb;
 use Twocents\Infra\FakeHtmlCleaner;
 use Twocents\Infra\FakeMailer;
-use Twocents\Value\Comment;
+use Twocents\Model\Comment;
 
 class MainControllerTest extends TestCase
 {
