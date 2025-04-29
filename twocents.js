@@ -138,7 +138,7 @@ function prepareForm() {
         if (button.name === "twocents_do") {
             const form = button.form;
             button.form.onsubmit = event => {
-                form.querySelectorAll(".twocents_editor textarea").forEach(editor => {
+                form.querySelectorAll(".twocents_editor").forEach(editor => {
                     form.querySelectorAll("textarea").forEach(textarea => {
                         textarea.value = editor.innerHTML;
                     });
