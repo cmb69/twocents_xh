@@ -22,17 +22,19 @@
 namespace Twocents;
 
 use ApprovalTests\Approvals;
+use org\bovigo\vfs\vfsStream;
 use PHPUnit\Framework\MockObject\Stub;
 use PHPUnit\Framework\TestCase;
 use Plib\CsrfProtector;
+use Plib\DocumentStore;
 use Plib\FakeRequest;
 use Plib\Random;
 use Plib\View;
 use Twocents\Infra\FakeCaptcha;
-use Twocents\Infra\FakeDb;
 use Twocents\Infra\FakeHtmlCleaner;
 use Twocents\Infra\FakeMailer;
 use Twocents\Model\Comment;
+use Twocents\Model\Topic;
 
 class MainControllerTest extends TestCase
 {
@@ -42,8 +44,8 @@ class MainControllerTest extends TestCase
     /** @var CsrfProtector&Stub */
     private $csrfProtector;
 
-    /** @var FakeDb */
-    private $db;
+    /** @var DocumentStore */
+    private $store;
 
     /** @var FakeHtmlCleaner */
     private $htmlCleaner;
@@ -62,10 +64,11 @@ class MainControllerTest extends TestCase
 
     public function setUp(): void
     {
+        vfsStream::setup("root");
         $this->conf = XH_includeVar("./config/config.php", "plugin_cf")["twocents"];
         $this->csrfProtector = $this->createStub(CsrfProtector::class);
         $this->csrfProtector->method("token")->willReturn("e3c1b42a6098b48a39f9f54ddb3388f7");
-        $this->db = new FakeDb();
+        $this->store = new DocumentStore(vfsStream::url("root/"));
         $this->htmlCleaner = new FakeHtmlCleaner("./plugins/twocents/");
         $this->random = $this->createStub(Random::class);
         $this->random->method("bytes")->willReturn(hex2bin("81f71a7caad7d4f08415187be034f9"));
@@ -87,7 +90,7 @@ class MainControllerTest extends TestCase
             "./plugins/twocents/",
             $this->conf,
             $this->csrfProtector,
-            $this->db,
+            $this->store,
             $this->htmlCleaner,
             $this->random,
             $this->captcha,
@@ -99,14 +102,14 @@ class MainControllerTest extends TestCase
     public function testTogglesVisibility(): void
     {
         $this->csrfProtector->method("check")->willReturn(true);
-        $this->db->insertComment($this->comment());
+        $this->store($this->comment());
         $request = new FakeRequest([
             "url" => "http://example.com/?Twocents&twocents_id=63fba86870945&twocents_action=toggle_visibility",
             "admin" => true,
             "post" => ["twocents_do" => ""],
         ]);
         $response = $this->sut()($request, "test-topic", false);
-        $comment = $this->db->findComment($this->comment()->topicname(), $this->comment()->id());
+        $comment = Topic::retrieve("test-topic", $this->store)->comment($this->comment()->id());
         $this->assertTrue($comment->hidden());
         $this->assertEquals("http://example.com/?Twocents", $response->location());
     }
@@ -114,20 +117,20 @@ class MainControllerTest extends TestCase
     public function testRemovesComment(): void
     {
         $this->csrfProtector->method("check")->willReturn(true);
-        $this->db->insertComment($this->comment());
+        $this->store($this->comment());
         $request = new FakeRequest([
             "url" => "http://example.com/?Twocents&twocents_id=63fba86870945&twocents_action=delete",
             "admin" => true,
             "post" => ["twocents_do" => ""]
         ]);
         $response = $this->sut()($request, "test-topic", false);
-        $this->assertNull($this->db->findComment($this->comment()->topicname(), $this->comment()->id()));
+        $this->assertNull(Topic::retrieve("test-topic", $this->store)->comment($this->comment()->id()));
         $this->assertEquals("http://example.com/?Twocents", $response->location());
     }
 
     public function testRendersOverview(): void
     {
-        $this->db->insertComment($this->comment());
+        $this->store($this->comment());
         $request = new FakeRequest([
             "url" => "http://example.com/?Twocents",
             "admin" => true,
@@ -138,9 +141,11 @@ class MainControllerTest extends TestCase
 
     public function testRendersOverviewWithPagination(): void
     {
+        $topic = Topic::update("test-topic", $this->store);
         for ($i = 1677437048; $i < 1677437068; $i++) {
-            $this->db->insertComment($this->comment((string) $i, $i));
+            $topic->addComment($this->comment((string) $i, $i));
         }
+        $this->store->commit();
         $this->conf["pagination_max"] = "3";
         $request = new FakeRequest(["url" => "http://example.com/?Twocents"]);
         $response = $this->sut()($request, "test-topic", false);
@@ -149,7 +154,7 @@ class MainControllerTest extends TestCase
 
     public function testRendersSingleComment(): void
     {
-        $this->db->insertComment($this->comment("63fba86870945", 1677437048, true));
+        $this->store($this->comment("63fba86870945", 1677437048, true));
         $request = new FakeRequest([
             "url" => "http://example.com/?Twocents&twocents_action=show&twocents_id=63fba86870945",
         ]);
@@ -159,7 +164,6 @@ class MainControllerTest extends TestCase
 
     public function testRendersCreateForm(): void
     {
-        $this->db->insertComment($this->comment());
         $request = new FakeRequest([
             "url" => "http://example.com/?Twocents&twocents_action=create",
             "admin" => true,
@@ -170,7 +174,6 @@ class MainControllerTest extends TestCase
 
     public function testRendersModeratedCreateForm(): void
     {
-        $this->db->insertComment($this->comment());
         $this->conf["comments_moderated"] = "true";
         $request = new FakeRequest([
             "url" => "http://example.com/?Twocents&twocents_action=create",
@@ -190,7 +193,7 @@ class MainControllerTest extends TestCase
 
     public function testRendersEditForm(): void
     {
-        $this->db->insertComment($this->comment());
+        $this->store($this->comment());
         $request = new FakeRequest([
             "url" => "http://example.com/?Twocents&twocents_id=63fba86870945&twocents_action=edit",
             "admin" => true,
@@ -272,13 +275,12 @@ class MainControllerTest extends TestCase
             ],
         ]);
         $this->sut()($request, "test-topic", false);
-        $comment = $this->db->findComment("test-topic", "G7RHKV5AQVAF110L31TU0D7P");
+        $comment = Topic::retrieve("test-topic", $this->store)->comment("G7RHKV5AQVAF110L31TU0D7P");
         $this->assertEquals("<p>This is an image: .</p>", $comment->message());
     }
 
     public function testOnlyAdminCanAddCommentIfReadOnly(): void
     {
-        $this->db->insertComment($this->comment());
         $request = new FakeRequest([
             "url" => "http://example.com/?Twocents&twocents_action=create",
             "time" => 1677493797,
@@ -301,7 +303,7 @@ class MainControllerTest extends TestCase
 
     public function testReporsFailureToStoreWhenCreatingComment(): void
     {
-        $this->db = new FakeDb(["insert" => false]);
+        vfsStream::setQuota(0);
         $request = new FakeRequest([
             "url" => "http://example.com/?Twocents&twocents_action=create",
             "admin" => true,
@@ -319,9 +321,8 @@ class MainControllerTest extends TestCase
 
     public function testUpdatesComment(): void
     {
-        $comment = $this->comment();
         $this->csrfProtector->method("check")->willReturn(true);
-        $this->db->insertComment($comment);
+        $this->store($this->comment());
         $request = new FakeRequest([
             "url" => "http://example.com/?Twocents&twocents_id=63fba86870945&twocents_action=edit",
             "admin" => true,
@@ -347,7 +348,6 @@ class MainControllerTest extends TestCase
 
     public function testReportsFailureToFindCommentWhenUpdating(): void
     {
-        $this->db = new FakeDb(["insert" => false]);
         $request = new FakeRequest([
             "url" => "http://example.com/?Twocents&twocents_action=edit",
             "admin" => true,
@@ -359,7 +359,7 @@ class MainControllerTest extends TestCase
     public function testReporsValidationErrorsWhenUpdatingComment(): void
     {
         $this->csrfProtector->method("check")->willReturn(true);
-        $this->db->insertComment($this->comment());
+        $this->store($this->comment());
         $request = new FakeRequest([
             "url" => "http://example.com/?Twocents&twocents_id=63fba86870945&twocents_action=edit",
             "admin" => true,
@@ -371,10 +371,9 @@ class MainControllerTest extends TestCase
 
     public function testReportsFailureToStoreWhenUpdatingComment(): void
     {
-        $comment = $this->comment();
         $this->csrfProtector->method("check")->willReturn(true);
-        $this->db = new FakeDb(["update" => false]);
-        $this->db->insertComment($comment);
+        $this->store($this->comment());
+        vfsStream::setQuota(0);
         $request = new FakeRequest([
             "url" => "http://example.com/?Twocents&twocents_id=63fba86870945&twocents_action=edit",
             "admin" => true,
@@ -414,8 +413,8 @@ class MainControllerTest extends TestCase
     public function testReportsFailureToStoreWhenTogglingVisibility(): void
     {
         $this->csrfProtector->method("check")->willReturn(true);
-        $this->db = new FakeDb(["update" => false]);
-        $this->db->insertComment($this->comment());
+        $this->store($this->comment());
+        vfsStream::setQuota(0);
         $request = new FakeRequest([
             "url" => "http://example.com/?Twocents&twocents_id=63fba86870945&twocents_action=toggle_visibility",
             "admin" => true,
@@ -450,8 +449,9 @@ class MainControllerTest extends TestCase
     public function testReportsFailureToStoreWhenDeleting(): void
     {
         $this->csrfProtector->method("check")->willReturn(true);
-        $this->db = new FakeDb(["delete" => false]);
-        $this->db->insertComment($this->comment());
+        $this->store($this->comment("123"));
+        $this->store($this->comment());
+        vfsStream::setQuota(0);
         $request = new FakeRequest([
             "url" => "http://example.com/?Twocents&twocents_id=63fba86870945&twocents_action=delete",
             "admin" => true,
@@ -459,6 +459,13 @@ class MainControllerTest extends TestCase
         ]);
         $response = $this->sut()($request, "test-topic", false);
         Approvals::verifyHtml($response->output());
+    }
+
+    private function store(Comment $comment): void
+    {
+        $topic = Topic::update("test-topic", $this->store);
+        $topic->addComment($comment);
+        $this->store->commit();
     }
 
     private function comment(string $id = "63fba86870945", int $time = 1677437048, bool $hidden = false)

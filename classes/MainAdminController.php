@@ -22,13 +22,14 @@
 namespace Twocents;
 
 use Plib\CsrfProtector;
+use Plib\DocumentStore;
 use Plib\Request;
 use Plib\Response;
 use Plib\View;
-use Twocents\Infra\Db;
 use Twocents\Infra\FlashMessage;
 use Twocents\Infra\HtmlCleaner;
 use Twocents\Logic\Util;
+use Twocents\Model\Topic;
 
 class MainAdminController
 {
@@ -38,8 +39,8 @@ class MainAdminController
     /** @var CsrfProtector */
     private $csrfProtector;
 
-    /** @var Db */
-    private $db;
+    /** @var DocumentStore */
+    private $store;
 
     /** @var HtmlCleaner */
     private $htmlCleaner;
@@ -54,14 +55,14 @@ class MainAdminController
     public function __construct(
         array $conf,
         CsrfProtector $csrfProtector,
-        Db $db,
+        DocumentStore $store,
         HtmlCleaner $htmlCleaner,
         FlashMessage $flashMessage,
         View $view
     ) {
         $this->conf = $conf;
         $this->csrfProtector = $csrfProtector;
-        $this->db = $db;
+        $this->store = $store;
         $this->htmlCleaner = $htmlCleaner;
         $this->flashMessage = $flashMessage;
         $this->view = $view;
@@ -128,7 +129,7 @@ class MainAdminController
         return Response::create($this->view->render("confirm", [
             "csrf_token" => $this->csrfProtector->token(),
             "message_key" => "message_topics_to_convert",
-            "count" => count($this->db->findTopics()),
+            "count" => count(Topic::all($this->store)),
             "key" => $to === "html" ? "label_convert_to_html" : "label_convert_to_plain_text",
         ]))->withTitle("Twocents – " . $this->view->text("menu_main"));
     }
@@ -139,21 +140,20 @@ class MainAdminController
             return Response::create($this->view->message("fail", "error_unauthorized"));
         }
         $count = 0;
-        $topics = $this->db->findTopics();
-        foreach ($topics as $topic) {
-            $newComments = [];
-            $comments = $this->db->findCommentsOfTopic($topic);
-            foreach ($comments as $comment) {
+        $topics = Topic::all($this->store);
+        foreach ($topics as $topicname) {
+            $topic = Topic::update($topicname, $this->store);
+            foreach ($topic->comments() as $comment) {
                 if ($to == 'html') {
                     $message = Util::htmlify($this->view->esc($comment->message()));
                 } else {
                     $message = Util::plainify($comment->message());
                 }
-                $newComments[] = $comment->withMessage($message);
+                $topic->updateComment($comment->withMessage($message));
                 $count++;
             }
-            $this->db->storeTopic($topic, $newComments);
         }
+        $this->store->commit(); // TODO handle failure
         $this->flashMessage->push($this->view->pmessage("success", "message_converted_$to", $count));
         return Response::redirect($request->url()->without("twocents_action")->absolute());
     }
@@ -163,7 +163,7 @@ class MainAdminController
         return Response::create($this->view->render("confirm", [
             "csrf_token" => $this->csrfProtector->token(),
             "message_key" => "message_topics_to_import",
-            "count" => count($this->db->findTopics("txt")),
+            "count" => count(Topic::legacy($this->store)),
             "key" => "label_import_comments",
         ]))->withTitle("Twocents – " . $this->view->text("menu_main"));
     }
@@ -174,21 +174,21 @@ class MainAdminController
             return Response::create($this->view->message("fail", "error_unauthorized"));
         }
         $count = 0;
-        $topics = $this->db->findTopics("txt");
-        foreach ($topics as $topic) {
-            $newComments = [];
-            $comments = $this->db->findCommentsOfCommentsTopic($topic);
-            foreach ($comments as $comment) {
+        $topics = Topic::legacy($this->store);
+        foreach ($topics as $topicname) {
+            $oldtopic = Topic::retrieve($topicname, $this->store);
+            $newtopic = Topic::update($topicname, $this->store);
+            foreach ($oldtopic->comments() as $comment) {
                 $message = $comment->message();
                 if ($this->conf['comments_markup'] == 'HTML') {
                     $message = $this->htmlCleaner->clean($message);
                 } else {
                     $message = Util::plainify($message);
                 }
-                $newComments[] = $comment->withMessage($message);
+                $newtopic->addComment($comment->withMessage($message));
                 $count++;
             }
-            $this->db->storeTopic($topic, $newComments);
+            $this->store->commit();
         }
         $this->flashMessage->push($this->view->pmessage("success", "message_imported_comments", $count));
         return Response::redirect($request->url()->without("twocents_action")->absolute());
@@ -199,7 +199,7 @@ class MainAdminController
         return Response::create($this->view->render("confirm", [
             "csrf_token" => $this->csrfProtector->token(),
             "message_key" => "message_topics_to_import",
-            "count" => count($this->db->findTopics("txt")),
+            "count" => count(Topic::legacy($this->store)),
             "key" => "label_import_gbook",
         ]))->withTitle("Twocents – " . $this->view->text("menu_main"));
     }
@@ -210,21 +210,21 @@ class MainAdminController
             return Response::create($this->view->message("fail", "error_unauthorized"));
         }
         $count = 0;
-        $topics = $this->db->findTopics("txt");
-        foreach ($topics as $topic) {
-            $newComments = [];
-            $oldComments = $this->db->findCommentsOfGbookTopic($topic);
-            foreach ($oldComments as $comment) {
+        $topics = Topic::legacy($this->store);
+        foreach ($topics as $topicname) {
+            $oldtopic = Topic::retrieve($topicname, $this->store);
+            $newtopic = Topic::update($topicname, $this->store);
+            foreach ($oldtopic->comments() as $comment) {
                 $message = $comment->message();
                 if ($this->conf['comments_markup'] == 'HTML') {
                     $message = $this->htmlCleaner->clean($message);
                 } else {
                     $message = Util::plainify($message);
                 }
-                $newComments[] = $comment->withMessage($message);
+                $newtopic->addComment($comment->withMessage($message));
                 $count++;
             }
-            $this->db->storeTopic($topic, $newComments);
+            $this->store->commit();
         }
         $this->flashMessage->push($this->view->pmessage("success", "message_imported_gbook", $count));
         return Response::redirect($request->url()->without("twocents_action")->absolute());

@@ -22,15 +22,17 @@
 namespace Twocents;
 
 use ApprovalTests\Approvals;
+use org\bovigo\vfs\vfsStream;
 use PHPUnit\Framework\MockObject\Stub;
 use PHPUnit\Framework\TestCase;
 use Plib\CsrfProtector;
+use Plib\DocumentStore;
 use Plib\FakeRequest;
 use Plib\View;
-use Twocents\Infra\FakeDb;
 use Twocents\Infra\FlashMessage;
 use Twocents\Infra\HtmlCleaner;
 use Twocents\Model\Comment;
+use Twocents\Model\Topic;
 
 class MainAdminControllerTest extends TestCase
 {
@@ -40,8 +42,8 @@ class MainAdminControllerTest extends TestCase
     /** @var CsrfProtector&Stub */
     private $csrfProtector;
 
-    /** @var FakeDb */
-    private $db;
+    /** @var DocumentStore */
+    private $store;
 
     /** @var HtmlCleaner&Stub */
     private $htmlCleaner;
@@ -54,10 +56,11 @@ class MainAdminControllerTest extends TestCase
 
     public function setUp(): void
     {
+        vfsStream::setup("root");
         $this->conf = XH_includeVar("./config/config.php", "plugin_cf")["twocents"];
         $this->csrfProtector = $this->createStub(CsrfProtector::class);
         $this->csrfProtector->method("token")->willReturn("e3c1b42a6098b48a39f9f54ddb3388f7");
-        $this->db = new FakeDb();
+        $this->store = new DocumentStore(vfsStream::url("root/"));
         $this->htmlCleaner = $this->createStub(HtmlCleaner::class);
         $this->flashMessage = $this->createStub(FlashMessage::class);
         $this->flashMessage->method("pop")->willReturn("");
@@ -69,7 +72,7 @@ class MainAdminControllerTest extends TestCase
         return new MainAdminController(
             $this->conf,
             $this->csrfProtector,
-            $this->db,
+            $this->store,
             $this->htmlCleaner,
             $this->flashMessage,
             $this->view
@@ -115,13 +118,16 @@ class MainAdminControllerTest extends TestCase
     public function testConvertsToHtml()
     {
         $this->csrfProtector->method("check")->willReturn(true);
-        $this->db->insertComment($this->comment());
+        $this->store($this->comment());
         $request = new FakeRequest([
             "url" => "http://example.com/?twocents&admin=plugin_main&twocents_action=convert_to_html",
             "post" => ["twocents_do" => ""],
         ]);
         $response = $this->sut()($request);
-        $this->assertEquals($this->comment()->topicname(), $this->db->lastTopicStored);
+        $this->assertSame(
+            "<p>A nice comment</p>",
+            Topic::retrieve("topic1", $this->store)->comment("63fba86870945")->message()
+        );
         $this->assertEquals("http://example.com/?twocents&admin=plugin_main", $response->location());
     }
 
@@ -149,13 +155,16 @@ class MainAdminControllerTest extends TestCase
     public function testConvertsToPlainText()
     {
         $this->csrfProtector->method("check")->willReturn(true);
-        $this->db->insertComment($this->comment());
+        $this->store($this->comment());
         $request = new FakeRequest([
             "url" => "http://example.com/?twocents&admin=plugin_main&twocents_action=convert_to_plain_text",
             "post" => ["twocents_do" => ""],
         ]);
         $response = $this->sut()($request);
-        $this->assertEquals($this->comment()->topicname(), $this->db->lastTopicStored);
+        $this->assertSame(
+            "A nice comment",
+            Topic::retrieve("topic1", $this->store)->comment("63fba86870945")->message()
+        );
         $this->assertEquals("http://example.com/?twocents&admin=plugin_main", $response->location());
     }
 
@@ -183,13 +192,13 @@ class MainAdminControllerTest extends TestCase
     public function testImportsComments()
     {
         $this->csrfProtector->method("check")->willReturn(true);
-        $this->db->insertComment($this->comment());
+        touch(vfsStream::url("root/topic1.txt"));
         $request = new FakeRequest([
             "url" => "http://example.com/?twocents&admin=plugin_main&twocents_action=import_comments",
             "post" => ["twocents_do" => ""]
         ]);
         $response = $this->sut()($request);
-        $this->assertEquals($this->comment()->topicname(), $this->db->lastTopicStored);
+        $this->assertFileExists(vfsStream::url("root/topic1.csv"));
         $this->assertEquals("http://example.com/?twocents&admin=plugin_main", $response->location());
     }
 
@@ -218,15 +227,22 @@ class MainAdminControllerTest extends TestCase
     public function testImportsGbook()
     {
         $this->csrfProtector->method("check")->willReturn(true);
-        $this->db->insertComment($this->comment());
+        touch(vfsStream::url("root/topic1.txt"));
         $sut = $this->sut();
         $request = new FakeRequest([
             "url" => "http://example.com/?twocents&admin=plugin_main&twocents_action=import_gbook",
             "post" => ["twocents_do" => ""],
         ]);
         $response = $sut($request);
-        $this->assertEquals($this->comment()->topicname(), $this->db->lastTopicStored);
+        $this->assertFileExists(vfsStream::url("root/topic1.csv"));
         $this->assertEquals("http://example.com/?twocents&admin=plugin_main", $response->location());
+    }
+
+    private function store(Comment $comment): void
+    {
+        $topic = Topic::update("topic1", $this->store);
+        $topic->addComment($comment);
+        $this->store->commit();
     }
 
     private function comment()

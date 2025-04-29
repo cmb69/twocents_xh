@@ -22,20 +22,22 @@
 namespace Twocents;
 
 use ApprovalTests\Approvals;
+use org\bovigo\vfs\vfsStream;
 use PHPUnit\Framework\TestCase;
+use Plib\DocumentStore;
 use Plib\FakeRequest;
 use Plib\FakeSystemChecker;
 use Plib\View;
-use Twocents\Infra\FakeDb;
 
 class InfoControllerTest extends TestCase
 {
     public function testRendersPluginInfo(): void
     {
+        vfsStream::setup("root");
         $sut = new InfoController(
             "./plugins/twocents/",
             new FakeSystemChecker,
-            new FakeDb,
+            new DocumentStore(vfsStream::url("root/")),
             new View("./views/", XH_includeVar("./languages/en.php", "plugin_tx")["twocents"])
         );
         $request = new FakeRequest();

@@ -23,19 +23,20 @@ namespace Twocents;
 
 use Plib\Codec;
 use Plib\CsrfProtector;
+use Plib\DocumentStore;
 use Plib\Random;
 use Plib\Request;
 use Plib\Response;
 use Plib\Url;
 use Plib\View;
 use Twocents\Infra\Captcha;
-use Twocents\Infra\Db;
 use Twocents\Infra\HtmlCleaner;
 use Twocents\Infra\Mailer;
 use Twocents\Logic\Pagination;
 use Twocents\Logic\SpamFilter;
 use Twocents\Logic\Util;
 use Twocents\Model\Comment;
+use Twocents\Model\Topic;
 
 class MainController
 {
@@ -48,8 +49,8 @@ class MainController
     /** @var CsrfProtector */
     private $csrfProtector;
 
-    /** @var Db */
-    private $db;
+    /** @var DocumentStore */
+    private $store;
 
     /** @var HtmlCleaner */
     private $htmlCleaner;
@@ -71,7 +72,7 @@ class MainController
         string $pluginFolder,
         array $conf,
         CsrfProtector $csrfProtector,
-        Db $db,
+        DocumentStore $store,
         HtmlCleaner $htmlCleaner,
         Random $random,
         Captcha $captcha,
@@ -81,7 +82,7 @@ class MainController
         $this->pluginFolder = $pluginFolder;
         $this->conf = $conf;
         $this->csrfProtector = $csrfProtector;
-        $this->db = $db;
+        $this->store = $store;
         $this->htmlCleaner = $htmlCleaner;
         $this->random = $random;
         $this->captcha = $captcha;
@@ -131,8 +132,9 @@ class MainController
 
     private function defaultAction(Request $request, string $topic, bool $readonly): Response
     {
+        $topic = Topic::retrieve($topic, $this->store);
         [$comments, $count, $page, $pageCount] = Util::limitComments(
-            $this->db->findCommentsOfTopic($topic, !$request->admin()),
+            $request->admin() ? $topic->comments() :  $topic->visibleComments(),
             (int) $this->conf['pagination_max'],
             is_string($request->get("twocents_page")) ? (int) $request->get("twocents_page") : 0,
             $this->conf['comments_order'] === 'ASC' ? 1 : -1
@@ -228,7 +230,8 @@ class MainController
 
     private function showSingle(Request $request, string $topic): Response
     {
-        $comment = $this->db->findComment($topic, $request->get("twocents_id") ?? "");
+        $topic = Topic::retrieve($topic, $this->store);
+        $comment = $topic->comment($request->get("twocents_id") ?? "");
         if ($comment === null) {
             return $this->respondWith($request, $this->view->message("fail", "error_no_comment"));
         }
@@ -263,7 +266,8 @@ class MainController
         if (!$request->admin()) {
             return $this->respondWith($request, $this->view->message("fail", "error_unauthorized"));
         }
-        $comment = $this->db->findComment($topic, $request->get("twocents_id") ?? "");
+        $topic = Topic::retrieve($topic, $this->store);
+        $comment = $topic->comment($request->get("twocents_id") ?? "");
         if ($comment === null) {
             return $this->respondWith($request, $this->view->message("fail", "error_no_comment"));
         }
@@ -317,7 +321,9 @@ class MainController
         }
         $id = Codec::encodeBase32hex($this->random->bytes(15));
         $comment = $comment->withId($id);
-        if (!$this->db->insertComment($comment)) {
+        $topic = Topic::update($topic, $this->store);
+        $topic->addComment($comment);
+        if (!$this->store->commit()) {
             return $this->respondWith($request, $this->renderCommentForm($request, $comment, ["error_store"]));
         }
         if (!$request->admin() && $this->conf['email_address']) {
@@ -349,8 +355,10 @@ class MainController
         if (!$request->admin() || !$this->csrfProtector->check($request->post("twocents_token"))) {
             return $this->respondWith($request, $this->view->message("fail", "error_unauthorized"));
         }
-        $comment = $this->db->findComment($topic, $request->get("twocents_id") ?? "");
+        $topic = Topic::update($topic, $this->store);
+        $comment = $topic->comment($request->get("twocents_id") ?? "");
         if ($comment === null) {
+            $this->store->rollback();
             return $this->respondWith($request, $this->view->message("fail", "error_no_comment"));
         }
         $user = $request->post("twocents_user") ?? "";
@@ -362,9 +370,11 @@ class MainController
             $this->captcha->check($request->admin()) ? [] : ["error_captcha"]
         );
         if ($errors) {
+            $this->store->rollback();
             return $this->respondWith($request, $this->renderCommentForm($request, $comment, $errors));
         }
-        if (!$this->db->updateComment($comment)) {
+        $topic->updateComment($comment);
+        if (!$this->store->commit()) {
             return $this->respondWith($request, $this->renderCommentForm($request, $comment, ["error_store"]));
         }
         $url = $request->url()->without("twocents_id")->without("twocents_action")->absolute();
@@ -403,12 +413,15 @@ class MainController
         if (!$request->admin() || !$this->csrfProtector->check($request->post("twocents_token"))) {
             return $this->respondWith($request, $this->view->message("fail", "error_unauthorized"));
         }
-        $comment = $this->db->findComment($topic, $request->get("twocents_id") ?? "");
+        $topic = Topic::update($topic, $this->store);
+        $comment = $topic->comment($request->get("twocents_id") ?? "");
         if ($comment === null) {
+            $this->store->rollback();
             return $this->respondWith($request, $this->view->message("fail", "error_no_comment"));
         }
         $comment = $comment->withToggledVisibility();
-        if (!$this->db->updateComment($comment)) {
+        $topic->updateComment($comment);
+        if (!$this->store->commit()) {
             return $this->respondWith($request, $this->renderCommentForm($request, $comment, ["error_store"]));
         }
         $url = $request->url()->without("twocents_id")->without('twocents_action')->absolute();
@@ -420,11 +433,15 @@ class MainController
         if (!$request->admin() || !$this->csrfProtector->check($request->post("twocents_token"))) {
             return $this->respondWith($request, $this->view->message("fail", "error_unauthorized"));
         }
-        $comment = $this->db->findComment($topic, $request->get("twocents_id") ?? "");
+        $topic = Topic::update($topic, $this->store);
+        $comment = $topic->comment($request->get("twocents_id") ?? "");
         if ($comment === null) {
+            $this->store->rollback();
             return $this->respondWith($request, $this->view->message("fail", "error_no_comment"));
         }
-        if (!$this->db->deleteComment($comment)) {
+        assert($comment->id() !== null);
+        $topic->deleteComment($comment->id());
+        if (!$this->store->commit()) {
             return $this->respondWith($request, $this->renderCommentForm($request, $comment, ["error_store"]));
         }
         $url = $request->url()->without("twocents_id")->without('twocents_action')->absolute();

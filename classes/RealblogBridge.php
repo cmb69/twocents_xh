@@ -23,8 +23,7 @@ namespace Twocents;
 
 use Plib\Request;
 use Realblog\CommentsBridge;
-use Twocents\Infra\Db;
-use Twocents\Infra\Responder;
+use Twocents\Model\Topic;
 
 class RealblogBridge implements CommentsBridge
 {
@@ -34,9 +33,7 @@ class RealblogBridge implements CommentsBridge
      */
     public static function count($topic)
     {
-        global $pth;
-
-        return count((new Db($pth['folder']['content'] . 'twocents/'))->findCommentsOfTopic($topic, true));
+        return count(Topic::retrieve($topic, Dic::store())->comments());
     }
 
     /**

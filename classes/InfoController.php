@@ -21,10 +21,10 @@
 
 namespace Twocents;
 
+use Plib\DocumentStore;
 use Plib\Response;
 use Plib\SystemChecker;
 use Plib\View;
-use Twocents\Infra\Db;
 
 class InfoController
 {
@@ -34,17 +34,17 @@ class InfoController
     /** @var SystemChecker */
     private $systemChecker;
 
-    /** @var Db */
-    private $db;
+    /** @var DocumentStore */
+    private $store;
 
     /** @var View */
     private $view;
 
-    public function __construct(string $pluginFolder, SystemChecker $systemChecker, Db $db, View $view)
+    public function __construct(string $pluginFolder, SystemChecker $systemChecker, DocumentStore $store, View $view)
     {
         $this->pluginFolder = $pluginFolder;
         $this->systemChecker = $systemChecker;
-        $this->db = $db;
+        $this->store = $store;
         $this->view = $view;
     }
 
@@ -63,7 +63,7 @@ class InfoController
             $this->checkPhpVersion('7.1.0'),
             $this->checkXhVersion('1.7.0'),
             $this->checkPlibVersion("1.4"),
-            $this->checkWritability($this->db->getFoldername()),
+            $this->checkWritability($this->store->folder()),
             $this->checkWritability($this->pluginFolder . "config/"),
             $this->checkWritability($this->pluginFolder . "css/"),
             $this->checkWritability($this->pluginFolder . "languages/"),

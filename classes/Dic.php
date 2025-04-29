@@ -22,11 +22,11 @@
 namespace Twocents;
 
 use Plib\CsrfProtector;
+use Plib\DocumentStore;
 use Plib\Random;
 use Plib\SystemChecker;
 use Plib\View;
 use Twocents\Infra\Captcha;
-use Twocents\Infra\Db;
 use Twocents\Infra\FlashMessage;
 use Twocents\Infra\HtmlCleaner;
 use Twocents\Infra\Mailer;
@@ -35,12 +35,12 @@ class Dic
 {
     public static function makeMainController(): MainController
     {
-        global $pth, $plugin_cf, $_XH_csrfProtection;
+        global $pth, $plugin_cf;
         return new MainController(
             $pth["folder"]["plugins"] . "twocents/",
             $plugin_cf["twocents"],
             new CsrfProtector(),
-            self::makeDb(),
+            self::store(),
             self::makeHtmlCleaner(),
             new Random(),
             self::makeCaptcha(),
@@ -55,7 +55,7 @@ class Dic
         return new InfoController(
             $pth["folder"]["plugins"] . "twocents/",
             new SystemChecker(),
-            self::makeDb(),
+            self::store(),
             self::makeView()
         );
     }
@@ -67,18 +67,17 @@ class Dic
         return new MainAdminController(
             $plugin_cf["twocents"],
             new CsrfProtector(),
-            self::makeDb(),
+            self::store(),
             self::makeHtmlCleaner(),
             new FlashMessage(),
             self::makeView()
         );
     }
 
-    private static function makeDb(): Db
+    public static function store(): DocumentStore
     {
         global $pth;
-
-        return new Db($pth["folder"]["content"] . "twocents/");
+        return new DocumentStore($pth["folder"]["content"] . "twocents/");
     }
 
     private static function makeCaptcha(): Captcha
