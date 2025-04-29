@@ -42,7 +42,6 @@ class Mailer
         return $xhMail->send();
     }
 
-    /** @codeCoverageIgnore */
     protected function xhMail(): XhMail
     {
         return new XhMail();

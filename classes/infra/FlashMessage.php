@@ -23,16 +23,11 @@ namespace Twocents\Infra;
 
 class FlashMessage
 {
-    /**
-     * @return void
-     * @codeCoverageIgnore
-     */
-    public function push(string $message)
+    public function push(string $message): void
     {
         $_SESSION["twocents_message"] = $message;
     }
 
-    /** @codeCoverageIgnore */
     public function pop(): string
     {
         $message = $_SESSION["twocents_message"] ?? "";

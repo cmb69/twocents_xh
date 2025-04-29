@@ -37,11 +37,7 @@ class HtmlCleaner
         $this->pluginFolder = $pluginFolder;
     }
 
-    /**
-     * @return void
-     * @codeCoverageIgnore
-     */
-    protected function init()
+    protected function init(): void
     {
         if ($this->purifier !== null) {
             return;
