@@ -134,7 +134,7 @@ class MainAdminController
                 } else {
                     $message = Util::plainify($comment->message());
                 }
-                $topic->updateComment($comment->withMessage($message));
+                $comment->setMessage($message);
                 $count++;
             }
         }

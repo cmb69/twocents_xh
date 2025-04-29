@@ -97,35 +97,27 @@ class Comment
         return $this->hidden;
     }
 
-    public function withId(string $id): self
+    public function setId(string $id): void
     {
         assert($this->id === null || $this->id === "");
-        $that = clone $this;
-        $that->id = $id;
-        return $that;
+        $this->id = $id;
     }
 
-    public function with(string $user, string $email, string $message): self
+    public function update(string $user, string $email, string $message): void
     {
-        $that = clone $this;
-        $that->user = $user;
-        $that->email = $email;
-        $that->message = $message;
-        return $that;
+        $this->user = $user;
+        $this->email = $email;
+        $this->message = $message;
     }
 
-    public function withMessage(string $message): self
+    public function setMessage(string $message): void
     {
-        $that = clone $this;
-        $that->message = $message;
-        return $that;
+        $this->message = $message;
     }
 
-    public function withToggledVisibility(): self
+    public function toggleVisibility(): void
     {
-        $that = clone $this;
-        $that->hidden = !$that->hidden;
-        return $that;
+        $this->hidden = !$this->hidden;
     }
 
     /** @return array{string,int,string,string,string,int} */

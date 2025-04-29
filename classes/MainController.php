@@ -320,7 +320,7 @@ class MainController
             return $this->respondWith($request, $this->renderCommentForm($request, $comment, $errors));
         }
         $id = Codec::encodeBase32hex($this->random->bytes(15));
-        $comment = $comment->withId($id);
+        $comment->setId($id);
         $topic = Topic::update($topic, $this->store);
         $topic->addComment($comment);
         if (!$this->store->commit()) {
@@ -364,7 +364,7 @@ class MainController
         $user = $request->post("twocents_user") ?? "";
         $email = $request->post("twocents_email") ?? "";
         $message = $request->post("twocents_message") ?? "";
-        $comment = $comment->with($user, $email, $message);
+        $comment->update($user, $email, $message);
         $errors = array_merge(
             Util::validateComment($comment),
             $this->captcha->check($request->admin()) ? [] : ["error_captcha"]
@@ -373,7 +373,6 @@ class MainController
             $this->store->rollback();
             return $this->respondWith($request, $this->renderCommentForm($request, $comment, $errors));
         }
-        $topic->updateComment($comment);
         if (!$this->store->commit()) {
             return $this->respondWith($request, $this->renderCommentForm($request, $comment, ["error_store"]));
         }
@@ -419,8 +418,7 @@ class MainController
             $this->store->rollback();
             return $this->respondWith($request, $this->view->message("fail", "error_no_comment"));
         }
-        $comment = $comment->withToggledVisibility();
-        $topic->updateComment($comment);
+        $comment->toggleVisibility();
         if (!$this->store->commit()) {
             return $this->respondWith($request, $this->renderCommentForm($request, $comment, ["error_store"]));
         }

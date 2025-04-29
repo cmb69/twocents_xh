@@ -198,11 +198,11 @@ final class Topic implements Document
         assert($newtopic instanceof self);
         foreach ($that->comments as $comment) {
             if (($comment->id() === null || $comment->id() === "") && $genId !== null) {
-                $comment = $comment->withId($genId());
+                $comment->setId($genId());
             }
             if ($convert !== null) {
                 $message = $convert($comment->message());
-                $comment = $comment->withMessage($message);
+                $comment->setMessage($message);
             }
             $newtopic->addComment($comment);
         }
@@ -219,7 +219,7 @@ final class Topic implements Document
         assert($newtopic instanceof self);
         foreach ($newtopic->comments as $id => $comment) {
             if ($comment->id() === "") {
-                $comment = $comment->withId($genId());
+                $comment->setId($genId());
             }
             unset($newtopic->comments[$id]);
             $newtopic->comments[$comment->id()] = $comment;
@@ -289,13 +289,6 @@ final class Topic implements Document
     {
         assert($comment->id() !== null);
         assert(!array_key_exists($comment->id(), $this->comments));
-        $this->comments[$comment->id()] = $comment;
-    }
-
-    public function updateComment(Comment $comment): void
-    {
-        assert($comment->id() !== null);
-        assert(array_key_exists($comment->id(), $this->comments));
         $this->comments[$comment->id()] = $comment;
     }
 
