@@ -19,6 +19,7 @@ und eine einfache Bad-Word-Liste nutzen.
 - [Installation](#installation)
 - [Einstellungen](#einstellungen)
 - [Verwendung](#verwendung)
+  - [Comments und Gbook Daten](#comments-und-gbook-daten)
   - [Administration](#administration)
 - [Einschränkungen](#einschränkungen)
 - [Problembehebung](#problembehebung)
@@ -105,6 +106,26 @@ Wörtern enthält, konfiguriert werden. Kommt eines dieser Wörter in der
 Nachricht vor (wobei Groß-/Kleinschreibung keine Rolle spielt), dann wird
 der Kommentar automatisch versteckt.
 
+### Comments und Gbook Daten
+
+Es ist möglich die Datendateien des
+[Comments](https://ge-webdesign.de/cmsimpleplugins/?Eigene_Plugins___Comments)
+und des GBook Plugin zu verwenden.
+Dazu müssen diese in den Datenordner von Twocents_XH
+(der der Unterordner `twocents/` des `content/` Ordner von CMSimple_XH ist)
+kopiert werden.
+Sind die Dateinamen ungültige Themennamen, dann können die Dateien passend
+umbenannt werden (die `.txt` Erweiterung muss aber beibehalten werden).
+Dann wird [auf einer Seite ein Pluginaufruf wie üblich](#verwendung) eingetragen,
+und in den Ansichtsmodus umgeschaltet.
+Falls alles gut gegangen ist, sieht man die Kommentare, und es gibt nun
+entsprechende Dateien mit einer `.csv` Erweiterung, die die migrierten Daten
+enthalten.
+Danach können die alten `.txt` Dateien nach Belieben gelöscht werden.
+Beachten Sie, dass allerdings einige Informationen ignoriert werden, z.B. die IP-Adresse
+und das hoch geladene Bild, sowie die Formatierung,
+wenn Twocents_XH auf einfachen Text konfiguriert ist.
+
 ### Administration
 
 Die Administration der Kommentare erfolgt auf den Seiten, auf denen die
@@ -118,17 +139,6 @@ existierende Kommentare von bzw. nach HTML konvertieren. Beachten Sie, dass
 es das Beste ist, wenn Sie das nur tun, wenn sich die Website im
 Wartungsmodus befindet, und dass Sie nach der Konvertierung diese
 Konfigurationsoption umstellen müssen.
-
-Des weiteren gibt es die Möglichkeit Kommentare aus dem
-[Comments](https://ge-webdesign.de/cmsimpleplugins/?Eigene_Plugins___Comments)
-und dem GBook Plugin zu importieren.
-Um diese zu verwenden, müssen Sie die Daten-Dateien des Comments
-oder GBook Plugins in den Datenordner von Twocents_XH
-(der der Unterordner `twocents/` des `content/` Ordner von CMSimple_XH ist)
-kopieren.
-Beachten Sie, dass einige Informationen ignoriert werden, z.B. die IP-Adresse
-und das hoch geladene Bild, sowie die Formatierung,
-wenn Twocents_XH auf einfachen Text konfiguriert ist.
 
 ## Einschränkungen
 

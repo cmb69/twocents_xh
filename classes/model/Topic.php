@@ -145,16 +145,30 @@ final class Topic implements Document
         }, $store->find('/\.txt$/'));
     }
 
-    public static function retrieve(string $name, DocumentStore $store): self
+    public static function retrieve(string $name, DocumentStore $store, ?callable $convert = null): self
     {
         $filenames = $store->find("/^$name\.(?:csv|txt)$/");
         if (in_array("$name.csv", $filenames)) {
-            $filename = "$name.csv";
+            $ext = "csv";
         } else {
-            $filename = "$name.txt";
+            $ext = "txt";
         }
-        $that = $store->retrieve($filename, self::class);
+        $that = $store->retrieve("$name.$ext", self::class);
         assert($that instanceof self);
+        if ($ext === "txt") {
+            $newtopic = $store->update("$name.csv", self::class);
+            assert($newtopic instanceof self);
+            foreach ($that->comments() as $comment) {
+                if ($convert !== null) {
+                    $message = $convert($comment->message());
+                    $comment = $comment->withMessage($message);
+                }
+                $newtopic->addComment($comment);
+            }
+            $store->commit();
+            $that = $store->retrieve("$name.csv", self::class);
+            assert($that instanceof self);
+        }
         return $that;
     }
 

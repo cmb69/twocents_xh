@@ -18,6 +18,7 @@ and a simple bad-word list.
 - [Installation](#installation)
 - [Settings](#settings)
 - [Usage](#usage)
+  - [Comments and Gbook Data](#comments-and-gbook-data)
   - [Adminstration](#administration)
 - [Limitations](#limitations)
 - [Troubleshooting](#troubleshooting)
@@ -99,6 +100,22 @@ settings under `Spam` → `Words` which a list of comma separated
 words. If any of these words are contained in the message (the actual case
 of the letters doesn't matter), the comment will automatically be hidden.
 
+### Comments and Gbook Data
+
+You can use the data files of the
+[Comments](https://ge-webdesign.de/cmsimpleplugins/?Eigene_Plugins___Comments)
+and GBook plugins.
+Just copy these into the data folder of Twocents_XH (which is the subfolder
+`twocents/` of the `content/` folder of CMSimple_XH).
+If the names of the files do not constitute valid topicnames, just rename the
+files (but keep the `.txt` extension).
+Then [put a plugin call on a page as usual](#usage), and switch to view mode.
+If everything worked well, you see the comments, and there is now a respective
+file with a `.csv` extension, which contains the migrated data.
+You can then delete the old `.txt` file if you like.
+Note that some of the information will be ignored, though, e.g. the IP address
+and the uploaded image, as well as the markup when Twocents_XH is in plain text mode.
+
 ### Administration
 
 The administration of the comments happens on the pages where the comments
@@ -110,15 +127,6 @@ and to HTML, respectively, depending on the setting of the configuration option
 `Comments` → `Markup`. Note that it is best to do this only when
 the site is in maintenance mode, and that you have to change this
 configuration option after the conversion.
-
-Furthermore there is the possibility to import comments from the
-[Comments](https://ge-webdesign.de/cmsimpleplugins/?Eigene_Plugins___Comments)
-and GBook plugins.
-To use this, you have to copy the data files of the Comments or GBook plugin
-into the data folder of Twocents_XH (which is the subfolder
-`twocents/` of the `content/` folder of CMSimple_XH).
-Note that some of the information will be ignored, e.g. the IP address
-and the uploaded image, as well as the markup when Twocents_XH is in plain text mode.
 
 ## Limitations
 

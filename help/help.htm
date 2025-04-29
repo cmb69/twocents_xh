@@ -39,6 +39,7 @@
 <li><a href="#settings">Settings</a></li>
 <li><a href="#usage">Usage</a>
 <ul>
+<li><a href="#comments-and-gbook-data">Comments and Gbook Data</a></li>
 <li><a href="#administration">Adminstration</a></li>
 </ul></li>
 <li><a href="#limitations">Limitations</a></li>
@@ -75,10 +76,11 @@
 <pre><code>{{{twocents(&#39;archived&#39;, true}}}</code></pre>
 <p>Note that there must be at most one call of <code>twocents</code> on a single page.</p>
 <p>You can configure the very simplistic spam protection in the language settings under <code>Spam</code> → <code>Words</code> which a list of comma separated words. If any of these words are contained in the message (the actual case of the letters doesn’t matter), the comment will automatically be hidden.</p>
+<h3 id="comments-and-gbook-data">Comments and Gbook Data</h3>
+<p>You can use the data files of the <a href="https://ge-webdesign.de/cmsimpleplugins/?Eigene_Plugins___Comments">Comments</a> and GBook plugins. Just copy these into the data folder of Twocents_XH (which is the subfolder <code>twocents/</code> of the <code>content/</code> folder of CMSimple_XH). If the names of the files do not constitute valid topicnames, just rename the files (but keep the <code>.txt</code> extension). Then <a href="#usage">put a plugin call on a page as usual</a>, and switch to view mode. If everything worked well, you see the comments, and there is now a respective file with a <code>.csv</code> extension, which contains the migrated data. You can then delete the old <code>.txt</code> file if you like. Note that some of the information will be ignored, though, e.g. the IP address and the uploaded image, as well as the markup when Twocents_XH is in plain text mode.</p>
 <h3 id="administration">Administration</h3>
 <p>The administration of the comments happens on the pages where the comments are displayed. When you are logged in as administrator, you will see buttons to edit, hide/show and delete each comment.</p>
 <p>In the plugin administration area you can convert existing comments from and to HTML, respectively, depending on the setting of the configuration option <code>Comments</code> → <code>Markup</code>. Note that it is best to do this only when the site is in maintenance mode, and that you have to change this configuration option after the conversion.</p>
-<p>Furthermore there is the possibility to import comments from the <a href="https://ge-webdesign.de/cmsimpleplugins/?Eigene_Plugins___Comments">Comments</a> and GBook plugins. To use this, you have to copy the data files of the Comments or GBook plugin into the data folder of Twocents_XH (which is the subfolder <code>twocents/</code> of the <code>content/</code> folder of CMSimple_XH). Note that some of the information will be ignored, e.g. the IP address and the uploaded image, as well as the markup when Twocents_XH is in plain text mode.</p>
 <h2 id="limitations">Limitations</h2>
 <p>Currently, posting comments from very old browsers such as IE 6 and IE 7 is not possible; the form submission will silently fail.</p>
 <h2 id="troubleshooting">Troubleshooting</h2>

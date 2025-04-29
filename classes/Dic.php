@@ -68,7 +68,6 @@ class Dic
             $plugin_cf["twocents"],
             new CsrfProtector(),
             self::store(),
-            self::makeHtmlCleaner(),
             new FlashMessage(),
             self::makeView()
         );

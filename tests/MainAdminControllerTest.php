@@ -30,7 +30,6 @@ use Plib\DocumentStore;
 use Plib\FakeRequest;
 use Plib\View;
 use Twocents\Infra\FlashMessage;
-use Twocents\Infra\HtmlCleaner;
 use Twocents\Model\Comment;
 use Twocents\Model\Topic;
 
@@ -45,9 +44,6 @@ class MainAdminControllerTest extends TestCase
     /** @var DocumentStore */
     private $store;
 
-    /** @var HtmlCleaner&Stub */
-    private $htmlCleaner;
-
     /** @var FlashMessage&Stub */
     private $flashMessage;
 
@@ -61,7 +57,6 @@ class MainAdminControllerTest extends TestCase
         $this->csrfProtector = $this->createStub(CsrfProtector::class);
         $this->csrfProtector->method("token")->willReturn("e3c1b42a6098b48a39f9f54ddb3388f7");
         $this->store = new DocumentStore(vfsStream::url("root/"));
-        $this->htmlCleaner = $this->createStub(HtmlCleaner::class);
         $this->flashMessage = $this->createStub(FlashMessage::class);
         $this->flashMessage->method("pop")->willReturn("");
         $this->view = new View("./views/", XH_includeVar("./languages/en.php", "plugin_tx")["twocents"]);
@@ -73,7 +68,6 @@ class MainAdminControllerTest extends TestCase
             $this->conf,
             $this->csrfProtector,
             $this->store,
-            $this->htmlCleaner,
             $this->flashMessage,
             $this->view
         );
@@ -165,76 +159,6 @@ class MainAdminControllerTest extends TestCase
             "A nice comment",
             Topic::retrieve("topic1", $this->store)->comment("63fba86870945")->message()
         );
-        $this->assertEquals("http://example.com/?twocents&admin=plugin_main", $response->location());
-    }
-
-    public function testRendersImportCommentsConfirmation(): void
-    {
-        $request = new FakeRequest([
-            "url" => "http://example.com/?twocents&admin=plugin_main&twocents_action=import_comments",
-        ]);
-        $response = $this->sut()($request);
-        $this->assertEquals("Twocents – Conversion", $response->title());
-        Approvals::verifyHtml($response->output());
-    }
-
-    public function testCommentImportIsCsrfProtected(): void
-    {
-        $this->csrfProtector->method("check")->willReturn(false);
-        $request = new FakeRequest([
-            "url" => "http://example.com/?twocents&admin=plugin_main&twocents_action=import_comments",
-            "post" => ["twocents_do" => ""]
-        ]);
-        $response = $this->sut()($request);
-        $this->assertStringContainsString("You are not authorized for this operation!", $response->output());
-    }
-
-    public function testImportsComments()
-    {
-        $this->csrfProtector->method("check")->willReturn(true);
-        touch(vfsStream::url("root/topic1.txt"));
-        $request = new FakeRequest([
-            "url" => "http://example.com/?twocents&admin=plugin_main&twocents_action=import_comments",
-            "post" => ["twocents_do" => ""]
-        ]);
-        $response = $this->sut()($request);
-        $this->assertFileExists(vfsStream::url("root/topic1.csv"));
-        $this->assertEquals("http://example.com/?twocents&admin=plugin_main", $response->location());
-    }
-
-    public function testRendersImportGbookConfirmation(): void
-    {
-        $request = new FakeRequest([
-            "url" => "http://example.com/?twocents&admin=plugin_main&twocents_action=import_gbook",
-        ]);
-        $response = $this->sut()($request);
-        $this->assertEquals("Twocents – Conversion", $response->title());
-        Approvals::verifyHtml($response->output());
-    }
-
-    public function testGbookImportIsCsrfProtected(): void
-    {
-        $this->csrfProtector->method("check")->willReturn(false);
-        $sut = $this->sut();
-        $request = new FakeRequest([
-            "url" => "http://example.com/?twocents&admin=plugin_main&twocents_action=import_gbook",
-            "post" => ["twocents_do" => ""]
-        ]);
-        $response = $sut($request);
-        $this->assertStringContainsString("You are not authorized for this operation!", $response->output());
-    }
-
-    public function testImportsGbook()
-    {
-        $this->csrfProtector->method("check")->willReturn(true);
-        touch(vfsStream::url("root/topic1.txt"));
-        $sut = $this->sut();
-        $request = new FakeRequest([
-            "url" => "http://example.com/?twocents&admin=plugin_main&twocents_action=import_gbook",
-            "post" => ["twocents_do" => ""],
-        ]);
-        $response = $sut($request);
-        $this->assertFileExists(vfsStream::url("root/topic1.csv"));
         $this->assertEquals("http://example.com/?twocents&admin=plugin_main", $response->location());
     }
 

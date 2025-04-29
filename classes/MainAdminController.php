@@ -42,9 +42,6 @@ class MainAdminController
     /** @var DocumentStore */
     private $store;
 
-    /** @var HtmlCleaner */
-    private $htmlCleaner;
-
     /** @var FlashMessage */
     private $flashMessage;
 
@@ -56,14 +53,12 @@ class MainAdminController
         array $conf,
         CsrfProtector $csrfProtector,
         DocumentStore $store,
-        HtmlCleaner $htmlCleaner,
         FlashMessage $flashMessage,
         View $view
     ) {
         $this->conf = $conf;
         $this->csrfProtector = $csrfProtector;
         $this->store = $store;
-        $this->htmlCleaner = $htmlCleaner;
         $this->flashMessage = $flashMessage;
         $this->view = $view;
     }
@@ -81,14 +76,6 @@ class MainAdminController
                 return $this->convertTo("plain");
             case "do_convert_to_plain_text":
                 return $this->doConvertTo($request, "plain");
-            case "import_comments":
-                return $this->importComments();
-            case "do_import_comments":
-                return $this->doImportComments($request);
-            case "import_gbook":
-                return $this->importGbook();
-            case "do_import_gbook":
-                return $this->doImportGbook($request);
         }
     }
 
@@ -118,8 +105,6 @@ class MainAdminController
             "flash_message" => $this->flashMessage->pop(),
             "buttons" => [
                 ["value" => $button, "label" => "label_$button"],
-                ["value" => "import_comments", "label" => "label_import_comments"],
-                ["value" => "import_gbook", "label" => "label_import_gbook"],
             ],
         ]))->withTitle("Twocents – " . $this->view->text("menu_main"));
     }
@@ -155,78 +140,6 @@ class MainAdminController
         }
         $this->store->commit(); // TODO handle failure
         $this->flashMessage->push($this->view->pmessage("success", "message_converted_$to", $count));
-        return Response::redirect($request->url()->without("twocents_action")->absolute());
-    }
-
-    private function importComments(): Response
-    {
-        return Response::create($this->view->render("confirm", [
-            "csrf_token" => $this->csrfProtector->token(),
-            "message_key" => "message_topics_to_import",
-            "count" => count(Topic::legacy($this->store)),
-            "key" => "label_import_comments",
-        ]))->withTitle("Twocents – " . $this->view->text("menu_main"));
-    }
-
-    private function doImportComments(Request $request): Response
-    {
-        if (!$this->csrfProtector->check($request->post("twocents_token"))) {
-            return Response::create($this->view->message("fail", "error_unauthorized"));
-        }
-        $count = 0;
-        $topics = Topic::legacy($this->store);
-        foreach ($topics as $topicname) {
-            $oldtopic = Topic::retrieve($topicname, $this->store);
-            $newtopic = Topic::update($topicname, $this->store);
-            foreach ($oldtopic->comments() as $comment) {
-                $message = $comment->message();
-                if ($this->conf['comments_markup'] == 'HTML') {
-                    $message = $this->htmlCleaner->clean($message);
-                } else {
-                    $message = Util::plainify($message);
-                }
-                $newtopic->addComment($comment->withMessage($message));
-                $count++;
-            }
-            $this->store->commit();
-        }
-        $this->flashMessage->push($this->view->pmessage("success", "message_imported_comments", $count));
-        return Response::redirect($request->url()->without("twocents_action")->absolute());
-    }
-
-    private function importGbook(): Response
-    {
-        return Response::create($this->view->render("confirm", [
-            "csrf_token" => $this->csrfProtector->token(),
-            "message_key" => "message_topics_to_import",
-            "count" => count(Topic::legacy($this->store)),
-            "key" => "label_import_gbook",
-        ]))->withTitle("Twocents – " . $this->view->text("menu_main"));
-    }
-
-    private function doImportGbook(Request $request): Response
-    {
-        if (!$this->csrfProtector->check($request->post("twocents_token"))) {
-            return Response::create($this->view->message("fail", "error_unauthorized"));
-        }
-        $count = 0;
-        $topics = Topic::legacy($this->store);
-        foreach ($topics as $topicname) {
-            $oldtopic = Topic::retrieve($topicname, $this->store);
-            $newtopic = Topic::update($topicname, $this->store);
-            foreach ($oldtopic->comments() as $comment) {
-                $message = $comment->message();
-                if ($this->conf['comments_markup'] == 'HTML') {
-                    $message = $this->htmlCleaner->clean($message);
-                } else {
-                    $message = Util::plainify($message);
-                }
-                $newtopic->addComment($comment->withMessage($message));
-                $count++;
-            }
-            $this->store->commit();
-        }
-        $this->flashMessage->push($this->view->pmessage("success", "message_imported_gbook", $count));
         return Response::redirect($request->url()->without("twocents_action")->absolute());
     }
 }
