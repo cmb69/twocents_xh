@@ -252,9 +252,14 @@ final class Topic implements Document
     }
 
     /** @return list<Comment> */
-    public function comments(): array
+    public function comments(int $order = 0, int $limit = PHP_INT_MAX, int $offset = 0): array
     {
-        return array_values($this->comments);
+        return $this->paginatedComments($this->comments, $order, $limit, $offset);
+    }
+
+    public function commentCount(): int
+    {
+        return count($this->comments);
     }
 
     public function comment(string $id): ?Comment
@@ -266,15 +271,40 @@ final class Topic implements Document
     }
 
     /** @return list<Comment> */
-    public function visibleComments(): array
+    public function visibleComments(int $order = 0, int $limit = PHP_INT_MAX, int $offset = 0): array
     {
-        $res = [];
+        $comments = [];
         foreach ($this->comments as $comment) {
             if (!$comment->hidden()) {
-                $res[] = $comment;
+                $comments[] = $comment;
+            }
+        }
+        return $this->paginatedComments($comments, $order, $limit, $offset);
+    }
+
+    public function visibleCommentCount(): int
+    {
+        $res = 0;
+        foreach ($this->comments as $comment) {
+            if (!$comment->hidden()) {
+                $res++;
             }
         }
         return $res;
+    }
+
+    /**
+     * @param list<Comment> $comments
+     * @return list<Comment>
+     */
+    private function paginatedComments(array $comments, int $order, int $limit, int $offset): array
+    {
+        if ($order !== 0) {
+            usort($comments, function ($a, $b) use ($order) {
+                return ($a->time() <=> $b->time()) * $order;
+            });
+        }
+        return array_slice($comments, $offset, $limit);
     }
 
     public function addComment(Comment $comment): void

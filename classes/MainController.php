@@ -133,12 +133,14 @@ class MainController
     private function defaultAction(Request $request, string $topic, bool $readonly): Response
     {
         $topic = Topic::retrieve($topic, $this->store, [$this, "generateId"], [$this, "convertMessage"]);
-        [$comments, $count, $page, $pageCount] = Util::limitComments(
-            $request->admin() ? $topic->comments() :  $topic->visibleComments(),
-            (int) $this->conf['pagination_max'],
-            is_string($request->get("twocents_page")) ? (int) $request->get("twocents_page") : 0,
-            $this->conf['comments_order'] === 'ASC' ? 1 : -1
-        );
+        $limit = (int) $this->conf['pagination_max'];
+        $order = $this->conf['comments_order'] === 'ASC' ? 1 : -1;
+        $count = $request->admin() ? $topic->commentCount() :  $topic->visibleCommentCount();
+        $pageCount = (int) ceil($count / $limit);
+        $page = max(1, min($pageCount, (int) ($request->get("twocents_page") ?? 0)));
+        $comments = $request->admin()
+            ? $topic->comments($order, $limit, ($page - 1) * $limit)
+            : $topic->visibleComments($order, $limit, ($page - 1) * $limit);
         $pagination = $this->renderPaginationView($request->url(), $count, $page, $pageCount);
         $html = $pagination . $this->renderCommentsView($request, $comments, $readonly) . $pagination;
         return $this->respondWith($request, $html);
