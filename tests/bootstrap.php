@@ -26,9 +26,7 @@ const TWOCENTS_VERSION = "1.2-dev";
 require_once "./vendor/autoload.php";
 
 require_once '../../cmsimple/functions.php';
-require_once '../../cmsimple/adminfuncs.php';
 include_once '../../cmsimple/utf8.php';
-require_once '../../cmsimple/classes/CSRFProtection.php';
 require_once "../../cmsimple/classes/Mail.php";
 
 require_once "../plib/classes/Codec.php";
