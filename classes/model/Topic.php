@@ -26,7 +26,7 @@ use Plib\DocumentStore;
 
 final class Topic implements Document
 {
-    /** @var array<string,Comment> */
+    /** @var array<Comment> */
     private $comments = [];
 
     public static function fromString(string $contents, string $key): self
@@ -62,7 +62,7 @@ final class Topic implements Document
             }
             assert(is_string($record[1]) && is_string($record[2])
                 && is_string($record[3]) && is_string($record[4]));
-            $that->comments[$record[0]] = new Comment(
+            $comment = new Comment(
                 $record[0],
                 $topicname,
                 (int) $record[1],
@@ -71,6 +71,11 @@ final class Topic implements Document
                 $record[4],
                 isset($record[5]) ? (bool) $record[5] : false
             );
+            if ($record[0] === "") {
+                $that->comments[] = $comment;
+            } else {
+                $that->comments[$record[0]] = $comment;
+            }
         }
         fclose($stream);
         return $that;
@@ -89,9 +94,8 @@ final class Topic implements Document
             if (count($record) < 8) {
                 continue;
             }
-            $id = uniqid(); // TODO: better ID
-            $that->comments[$id] = new Comment(
-                $id,
+            $that->comments[] = new Comment(
+                null,
                 $topicname,
                 (int) $record[5],
                 $record[1],
@@ -115,9 +119,8 @@ final class Topic implements Document
             if (count($record) < 7) {
                 continue;
             }
-            $id = uniqid(); // TODO: better ID
-            $that->comments[$id] = new Comment(
-                $id,
+            $that->comments[] = new Comment(
+                null,
                 $topicname,
                 (int) ($record[8] ?? strtotime("{$record[4]} {$record[3]}")),
                 $record[0],
@@ -145,8 +148,16 @@ final class Topic implements Document
         }, $store->find('/\.txt$/'));
     }
 
-    public static function retrieve(string $name, DocumentStore $store, ?callable $convert = null): self
-    {
+    /**
+     * @phpstan-param callable():string $genId
+     * @phpstan-param callable(string):string $convert
+     */
+    public static function retrieve(
+        string $name,
+        DocumentStore $store,
+        ?callable $genId = null,
+        ?callable $convert = null
+    ): self {
         $filenames = $store->find("/^$name\.(?:csv|txt)$/");
         if (in_array("$name.csv", $filenames)) {
             $ext = "csv";
@@ -156,19 +167,66 @@ final class Topic implements Document
         $that = $store->retrieve("$name.$ext", self::class);
         assert($that instanceof self);
         if ($ext === "txt") {
-            $newtopic = $store->update("$name.csv", self::class);
-            assert($newtopic instanceof self);
-            foreach ($that->comments() as $comment) {
-                if ($convert !== null) {
-                    $message = $convert($comment->message());
-                    $comment = $comment->withMessage($message);
+            $that = self::migrate($that, $name, $store, $genId, $convert);
+        } elseif ($genId !== null) {
+            $ok = true;
+            foreach ($that->comments as $comment) {
+                if ($comment->id() === "") {
+                    $ok = false;
+                    break;
                 }
-                $newtopic->addComment($comment);
             }
-            $store->commit();
-            $that = $store->retrieve("$name.csv", self::class);
-            assert($that instanceof self);
+            if (!$ok) {
+                $that = self::generateIds($name, $store, $genId);
+            }
         }
+        return $that;
+    }
+
+    /**
+     * @phpstan-param callable():string $genId
+     * @phpstan-param callable(string):string $convert
+     */
+    private static function migrate(
+        self $that,
+        string $name,
+        DocumentStore $store,
+        ?callable $genId = null,
+        ?callable $convert = null
+    ): self {
+        $newtopic = $store->update("$name.csv", self::class);
+        assert($newtopic instanceof self);
+        foreach ($that->comments as $comment) {
+            if (($comment->id() === null || $comment->id() === "") && $genId !== null) {
+                $comment = $comment->withId($genId());
+            }
+            if ($convert !== null) {
+                $message = $convert($comment->message());
+                $comment = $comment->withMessage($message);
+            }
+            $newtopic->addComment($comment);
+        }
+        $store->commit();
+        $that = $store->retrieve("$name.csv", self::class);
+        assert($that instanceof self);
+        return $that;
+    }
+
+    /** @phpstan-param callable():string $genId */
+    private static function generateIds(string $name, DocumentStore $store, callable $genId): self
+    {
+        $newtopic = $store->update("$name.csv", self::class);
+        assert($newtopic instanceof self);
+        foreach ($newtopic->comments as $id => $comment) {
+            if ($comment->id() === "") {
+                $comment = $comment->withId($genId());
+            }
+            unset($newtopic->comments[$id]);
+            $newtopic->comments[$comment->id()] = $comment;
+        }
+        $store->commit();
+        $that = $store->retrieve("$name.csv", self::class);
+        assert($that instanceof self);
         return $that;
     }
 

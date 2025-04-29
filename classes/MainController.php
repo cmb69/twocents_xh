@@ -132,7 +132,7 @@ class MainController
 
     private function defaultAction(Request $request, string $topic, bool $readonly): Response
     {
-        $topic = Topic::retrieve($topic, $this->store, [$this, "convertMessage"]);
+        $topic = Topic::retrieve($topic, $this->store, [$this, "generateId"], [$this, "convertMessage"]);
         [$comments, $count, $page, $pageCount] = Util::limitComments(
             $request->admin() ? $topic->comments() :  $topic->visibleComments(),
             (int) $this->conf['pagination_max'],
@@ -230,7 +230,7 @@ class MainController
 
     private function showSingle(Request $request, string $topic): Response
     {
-        $topic = Topic::retrieve($topic, $this->store, [$this, "convertMessage"]);
+        $topic = Topic::retrieve($topic, $this->store, [$this, "generateId"], [$this, "convertMessage"]);
         $comment = $topic->comment($request->get("twocents_id") ?? "");
         if ($comment === null) {
             return $this->respondWith($request, $this->view->message("fail", "error_no_comment"));
@@ -266,7 +266,7 @@ class MainController
         if (!$request->admin()) {
             return $this->respondWith($request, $this->view->message("fail", "error_unauthorized"));
         }
-        $topic = Topic::retrieve($topic, $this->store, [$this, "convertMessage"]);
+        $topic = Topic::retrieve($topic, $this->store, [$this, "generateId"], [$this, "convertMessage"]);
         $comment = $topic->comment($request->get("twocents_id") ?? "");
         if ($comment === null) {
             return $this->respondWith($request, $this->view->message("fail", "error_no_comment"));
@@ -446,6 +446,11 @@ class MainController
         }
         $url = $request->url()->without("twocents_id")->without('twocents_action')->absolute();
         return Response::redirect($url);
+    }
+
+    public function generateId(): string
+    {
+        return Codec::encodeBase32hex($this->random->bytes(15));
     }
 
     public function convertMessage(string $message): string

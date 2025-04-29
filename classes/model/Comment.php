@@ -99,7 +99,7 @@ class Comment
 
     public function withId(string $id): self
     {
-        assert($this->id === null);
+        assert($this->id === null || $this->id === "");
         $that = clone $this;
         $that->id = $id;
         return $that;
