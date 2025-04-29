@@ -31,8 +31,8 @@ use Plib\FakeRequest;
 use Plib\Random;
 use Plib\View;
 use Twocents\Infra\FakeCaptcha;
-use Twocents\Infra\FakeHtmlCleaner;
 use Twocents\Infra\FakeMailer;
+use Twocents\Infra\HtmlCleaner;
 use Twocents\Model\Comment;
 use Twocents\Model\Topic;
 
@@ -47,7 +47,7 @@ class MainControllerTest extends TestCase
     /** @var DocumentStore */
     private $store;
 
-    /** @var FakeHtmlCleaner */
+    /** @var HtmlCleaner */
     private $htmlCleaner;
 
     /** @var Random&Stub */
@@ -69,7 +69,7 @@ class MainControllerTest extends TestCase
         $this->csrfProtector = $this->createStub(CsrfProtector::class);
         $this->csrfProtector->method("token")->willReturn("e3c1b42a6098b48a39f9f54ddb3388f7");
         $this->store = new DocumentStore(vfsStream::url("root/"));
-        $this->htmlCleaner = new FakeHtmlCleaner("./plugins/twocents/");
+        $this->htmlCleaner = new HtmlCleaner("./");
         $this->random = $this->createStub(Random::class);
         $this->random->method("bytes")->willReturn(hex2bin("81f71a7caad7d4f08415187be034f9"));
         $this->captcha = new FakeCaptcha();
