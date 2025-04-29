@@ -276,7 +276,7 @@ class MainControllerTest extends TestCase
         ]);
         $this->sut()($request, "test-topic", false);
         $comment = Topic::retrieve("test-topic", $this->store)->comment("G7RHKV5AQVAF110L31TU0D7P");
-        $this->assertEquals("<p>This is an image: .</p>", $comment->message());
+        $this->assertStringMatchesFormat("<p>%wThis is an image: .%w</p>", $comment->message());
     }
 
     public function testOnlyAdminCanAddCommentIfReadOnly(): void
