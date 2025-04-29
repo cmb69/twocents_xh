@@ -140,14 +140,6 @@ final class Topic implements Document
         }, $store->find('/\.csv$/'));
     }
 
-    /** @return list<string> */
-    public static function legacy(DocumentStore $store): array
-    {
-        return array_map(function (string $filename) {
-            return basename($filename, ".txt");
-        }, $store->find('/\.txt$/'));
-    }
-
     /**
      * @phpstan-param callable():string $genId
      * @phpstan-param callable(string):string $convert
