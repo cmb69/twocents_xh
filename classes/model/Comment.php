@@ -120,13 +120,17 @@ class Comment
         $this->hidden = !$this->hidden;
     }
 
-    /** @return array{string,int,string,string,string,int} */
+    /** @return list<string> */
     public function toRecord()
     {
         assert($this->id !== null);
-        return array(
-            $this->id, $this->time, $this->user, $this->email,
-            $this->message, (int) $this->hidden
-        );
+        return [
+            $this->id,
+            (string) $this->time,
+            $this->user,
+            $this->email,
+            $this->message,
+            (string) (int) $this->hidden
+        ];
     }
 }

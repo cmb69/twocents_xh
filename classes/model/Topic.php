@@ -23,6 +23,7 @@ namespace Twocents\Model;
 
 use Plib\Document;
 use Plib\DocumentStore;
+use Twocents\Infra\Csv;
 
 final class Topic implements Document
 {
@@ -43,25 +44,13 @@ final class Topic implements Document
     private static function fromCsvString(string $contents, string $topicname): self
     {
         $that = new self();
-        $stream = fopen("php://memory", "w+");
-        if ($stream === false) {
+        if (($records = Csv::recordsFromString($contents)) === null) {
             return $that;
         }
-        if (fwrite($stream, $contents) !== strlen($contents)) {
-            fclose($stream);
-            return $that;
-        }
-        if (!rewind($stream)) {
-            fclose($stream);
-            return $that;
-        }
-        while (($record = fgetcsv($stream, 0, ",", "\"", "\0")) !== false) {
-            assert($record !== null);
-            if ($record[0] === null || count($record) < 5) {
+        foreach ($records as $record) {
+            if (count($record) < 5) {
                 continue;
             }
-            assert(is_string($record[1]) && is_string($record[2])
-                && is_string($record[3]) && is_string($record[4]));
             $comment = new Comment(
                 $record[0],
                 $topicname,
@@ -77,7 +66,6 @@ final class Topic implements Document
                 $that->comments[$record[0]] = $comment;
             }
         }
-        fclose($stream);
         return $that;
     }
 
@@ -231,24 +219,11 @@ final class Topic implements Document
 
     public function toString(): string
     {
-        $contents = "";
-        $stream = fopen("php://memory", "w+");
-        if ($stream === false) {
-            return $contents;
-        }
+        $records = [];
         foreach ($this->comments as $comment) {
-            if (!fputcsv($stream, $comment->toRecord(), ",", "\"", "\0")) {
-                fclose($stream);
-                return $contents;
-            }
+            $records[] = $comment->toRecord();
         }
-        if (!rewind($stream)) {
-            fclose($stream);
-            return $contents;
-        }
-        $contents = (string) stream_get_contents($stream);
-        fclose($stream);
-        return $contents;
+        return (string) Csv::stringFromRecords($records);
     }
 
     /** @return list<Comment> */
