@@ -21,7 +21,7 @@
 
 namespace Twocents\Infra;
 
-use XH\Mail as XhMail;
+use PHPMailer\Mail;
 
 class Mailer
 {
@@ -42,8 +42,8 @@ class Mailer
         return $xhMail->send();
     }
 
-    protected function xhMail(): XhMail
+    protected function xhMail(): Mail
     {
-        return new XhMail();
+        return new Mail(phpmailer_create());
     }
 }

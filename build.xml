@@ -58,7 +58,7 @@
       <arg line="-s --eol=lf --template=help/template.htm -Vlang=en -Vpagetitle=&quot;User Manual&quot; -o help/help.htm README.md -t html"/>
     </exec>
     <exec executable="pandoc" passthru="true" checkreturn="true">
-      <arg line="-s --eol=lf --template=help/template.htm -Vlang=cs -Vpagetitle=&quot;Benutzerhandbuch&quot; -o help/help_de.htm README_DE.md -t html"/>
+      <arg line="-s --eol=lf --template=help/template.htm -Vlang=de -Vpagetitle=&quot;Benutzerhandbuch&quot; -o help/help_de.htm README_DE.md -t html"/>
     </exec>
   </target>
 

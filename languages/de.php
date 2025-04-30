@@ -59,6 +59,7 @@ $plugin_tx['twocents']['alt_icon']="leere Sprechblase";
 $plugin_tx['twocents']['menu_main']="Konvertierung";
 $plugin_tx['twocents']['syscheck_fail']="Fehlschlag";
 $plugin_tx['twocents']['syscheck_phpversion']="PHP-Version ist mindestens %s";
+$plugin_tx['twocents']['syscheck_phpmailerversion']="Phpmailer_XH-Version ist mindestens %s";
 $plugin_tx['twocents']['syscheck_plibversion']="Plib_XH-Version ist mindestens %s";
 $plugin_tx['twocents']['syscheck_success']="Okay";
 $plugin_tx['twocents']['syscheck_title']="System-Prüfung";

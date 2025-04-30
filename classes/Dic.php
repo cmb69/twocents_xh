@@ -51,9 +51,10 @@ class Dic
 
     public static function makeInfoController(): InfoController
     {
-        global $pth;
+        global $pth, $plugin_cf;
         return new InfoController(
             $pth["folder"]["plugins"] . "twocents/",
+            $plugin_cf["twocents"],
             new SystemChecker(),
             self::store(),
             self::makeView()

@@ -42,6 +42,8 @@ require_once "../plib/classes/View.php";
 require_once "../plib/classes/FakeRequest.php";
 require_once "../plib/classes/FakeSystemChecker.php";
 
+require_once "../phpmailer/classes/Mail.php";
+
 spl_autoload_register(function (string $className) {
     $parts = explode("\\", $className);
     if ($parts[0] !== "Twocents") {

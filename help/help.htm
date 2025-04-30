@@ -39,6 +39,7 @@
 <li><a href="#settings">Settings</a></li>
 <li><a href="#usage">Usage</a>
 <ul>
+<li><a href="#notification-emails">Notification Emails</a></li>
 <li><a href="#comments-and-gbook-data">Comments and Gbook Data</a></li>
 <li><a href="#administration">Adminstration</a></li>
 </ul></li>
@@ -48,7 +49,7 @@
 <li><a href="#credits">Credits</a></li>
 </ul>
 <h2 id="requirements">Requirements</h2>
-<p>Twocents_XH is a plugin for <a href="https://www.cmsimple-xh.org/">CMSimple_XH</a>. It requires CMSimple_XH ≥ 1.7.0, and PHP ≥ 7.1.0. Twocents_XH also requires <a href="https://github.com/cmb69/plib_xh">Plib_XH</a> ≥ 1.7; if that is not already installed (see <em>Settings</em>→<em>Info</em>), get the <a href="https://github.com/cmb69/plib_xh/releases/latest">lastest release</a>, and install it.</p>
+<p>Twocents_XH is a plugin for <a href="https://www.cmsimple-xh.org/">CMSimple_XH</a>. It requires CMSimple_XH ≥ 1.7.0, and PHP ≥ 7.1.0. Twocents_XH also requires <a href="https://github.com/cmb69/plib_xh">Plib_XH</a> ≥ 1.7; if that is not already installed (see <em>Settings</em>→<em>Info</em>), get the <a href="https://github.com/cmb69/plib_xh/releases/latest">lastest release</a>, and install it. For <a href="#notification-emails">Notification Emails</a>, <a href="https://github.com/cmb69/phpmailer_xh">Phpmailer_XH</a> is required.</p>
 <h2 id="download">Download</h2>
 <p>The <a href="https://github.com/cmb69/twocents_xh/releases/latest">lastest release</a> is available for download on Github.</p>
 <h2 id="installation">Installation</h2>
@@ -76,6 +77,8 @@
 <pre><code>{{{twocents(&#39;archived&#39;, true}}}</code></pre>
 <p>Note that there must be at most one call of <code>twocents</code> on a single page.</p>
 <p>You can configure the very simplistic spam protection in the language settings under <code>Spam</code> → <code>Words</code> which a list of comma separated words. If any of these words are contained in the message (the actual case of the letters doesn’t matter), the comment will automatically be hidden.</p>
+<h3 id="notification-emails">Notification Emails</h3>
+<p>If you enter an email address in the configuration (<code>Plugins</code> → <code>Twocents</code> → <code>Config</code> → <code>Email</code> → <code>Address</code>), whenever a comment is added, a notification email about this is sent (unless the comment has been added by the admin). This requires <a href="https://github.com/cmb69/phpmailer_xh/releases">Phpmailer_XH to be installed</a>.</p>
 <h3 id="comments-and-gbook-data">Comments and Gbook Data</h3>
 <p>You can use the data files of the <a href="https://ge-webdesign.de/cmsimpleplugins/?Eigene_Plugins___Comments">Comments</a> and GBook plugins. Just copy these into the data folder of Twocents_XH (which is the subfolder <code>twocents/</code> of the <code>content/</code> folder of CMSimple_XH). If the names of the files do not constitute valid topicnames, just rename the files (but keep the <code>.txt</code> extension). Then <a href="#usage">put a plugin call on a page as usual</a>, and switch to view mode. If everything worked well, you see the comments, and there is now a respective file with a <code>.csv</code> extension, which contains the migrated data. You can then delete the old <code>.txt</code> file if you like. Note that some of the information will be ignored, though, e.g. the IP address and the uploaded image, as well as the markup when Twocents_XH is in plain text mode.</p>
 <h3 id="administration">Administration</h3>

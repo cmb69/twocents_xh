@@ -31,6 +31,9 @@ class InfoController
     /** @var string */
     private $pluginFolder;
 
+    /** @var array<string,string> */
+    private $conf;
+
     /** @var SystemChecker */
     private $systemChecker;
 
@@ -40,9 +43,16 @@ class InfoController
     /** @var View */
     private $view;
 
-    public function __construct(string $pluginFolder, SystemChecker $systemChecker, DocumentStore $store, View $view)
-    {
+    /** @param array<string,string> $conf */
+    public function __construct(
+        string $pluginFolder,
+        array $conf,
+        SystemChecker $systemChecker,
+        DocumentStore $store,
+        View $view
+    ) {
         $this->pluginFolder = $pluginFolder;
+        $this->conf = $conf;
         $this->systemChecker = $systemChecker;
         $this->store = $store;
         $this->view = $view;
@@ -59,15 +69,16 @@ class InfoController
     /** @return list<array{key:string,arg:string,class:string,state:string}> */
     private function getChecks()
     {
-        return array(
+        return array_filter([
             $this->checkPhpVersion('7.1.0'),
             $this->checkXhVersion('1.7.0'),
             $this->checkPlibVersion("1.4"),
+            $this->checkPhpmailerVersion("6.9.3"),
             $this->checkWritability($this->store->folder()),
             $this->checkWritability($this->pluginFolder . "config/"),
             $this->checkWritability($this->pluginFolder . "css/"),
             $this->checkWritability($this->pluginFolder . "languages/"),
-        );
+        ]);
     }
 
     /** @return array{key:string,arg:string,class:string,state:string} */
@@ -100,6 +111,21 @@ class InfoController
         $state = $this->systemChecker->checkPlugin("plib", $version) ? 'success' : 'fail';
         return [
             "key" => "syscheck_plibversion",
+            "arg" => $version,
+            "class" => "xh_$state",
+            "state" => "syscheck_$state",
+        ];
+    }
+
+    /** @return ?array{key:string,arg:string,class:string,state:string} */
+    private function checkPhpmailerVersion(string $version): ?array
+    {
+        if (!$this->conf["email_address"]) {
+            return null;
+        }
+        $state = $this->systemChecker->checkPlugin("phpmailer", $version) ? 'success' : 'fail';
+        return [
+            "key" => "syscheck_phpmailerversion",
             "arg" => $version,
             "class" => "xh_$state",
             "state" => "syscheck_$state",

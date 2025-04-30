@@ -18,6 +18,7 @@ and a simple bad-word list.
 - [Installation](#installation)
 - [Settings](#settings)
 - [Usage](#usage)
+  - [Notification Emails](#notification-emails)
   - [Comments and Gbook Data](#comments-and-gbook-data)
   - [Adminstration](#administration)
 - [Limitations](#limitations)
@@ -33,6 +34,8 @@ Twocents_XH also requires [Plib_XH](https://github.com/cmb69/plib_xh) ≥ 1.7;
 if that is not already installed (see *Settings*→*Info*),
 get the [lastest release](https://github.com/cmb69/plib_xh/releases/latest),
 and install it.
+For [Notification Emails](#notification-emails),
+[Phpmailer_XH](https://github.com/cmb69/phpmailer_xh) is required.
 
 ## Download
 
@@ -99,6 +102,14 @@ You can configure the very simplistic spam protection in the language
 settings under `Spam` → `Words` which a list of comma separated
 words. If any of these words are contained in the message (the actual case
 of the letters doesn't matter), the comment will automatically be hidden.
+
+### Notification Emails
+
+If you enter an email address in the configuration
+(`Plugins` → `Twocents` → `Config` → `Email` → `Address`),
+whenever a comment is added, a notification email about this is sent
+(unless the comment has been added by the admin).  This requires
+[Phpmailer_XH to be installed](https://github.com/cmb69/phpmailer_xh/releases).
 
 ### Comments and Gbook Data
 

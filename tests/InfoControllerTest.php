@@ -36,6 +36,7 @@ class InfoControllerTest extends TestCase
         vfsStream::setup("root");
         $sut = new InfoController(
             "./plugins/twocents/",
+            XH_includeVar("./config/config.php", "plugin_cf")["twocents"],
             new FakeSystemChecker,
             new DocumentStore(vfsStream::url("root/")),
             new View("./views/", XH_includeVar("./languages/en.php", "plugin_tx")["twocents"])

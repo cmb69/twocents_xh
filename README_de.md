@@ -19,6 +19,7 @@ und eine einfache Bad-Word-Liste nutzen.
 - [Installation](#installation)
 - [Einstellungen](#einstellungen)
 - [Verwendung](#verwendung)
+  - [E-Mail Benachrichtigungen](#e-mail-benachrichtigungen)
   - [Comments und Gbook Daten](#comments-und-gbook-daten)
   - [Administration](#administration)
 - [Einschränkungen](#einschränkungen)
@@ -34,6 +35,8 @@ Twocents_XH benötigt weiterhin [Plib_XH](https://github.com/cmb69/plib_xh) ≥ 
 ist dieses noch nicht installiert (see *Einstellungen*→*Info*),
 laden Sie das [aktuelle Release](https://github.com/cmb69/plib_xh/releases/latest)
 herunter, und installieren Sie es.
+Für [E-Mail Benachrichtigungen](#e-mail-benachrichtigungen) wird
+[Phpmailer_XH](https://github.com/cmb69/phpmailer_xh) benötigt.
 
 ## Download
 
@@ -105,6 +108,15 @@ Der äußerst simplistische Spamschutz kann in den Spracheinstellungen unter
 Wörtern enthält, konfiguriert werden. Kommt eines dieser Wörter in der
 Nachricht vor (wobei Groß-/Kleinschreibung keine Rolle spielt), dann wird
 der Kommentar automatisch versteckt.
+
+### E-Mail Benachrichtigungen
+
+Ist in der Konfiguration eine E-Mail-Adresse hinterlegt
+(`Plugins` → `Twocents` → `Konfiguration` → `Email` → `Address`),
+wird eine Benachrichtigung per E-Mail versendet, wenn ein neuer Kommentar
+gepostet wurde (außer wenn dies durch den Admin geschah).
+Dies erfodert, dass
+[Phpmailer_XH installiert ist](https://github.com/cmb69/phpmailer_xh/releases).
 
 ### Comments und Gbook Daten
 

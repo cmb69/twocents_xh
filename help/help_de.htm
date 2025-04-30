@@ -1,5 +1,5 @@
 <!DOCTYPE html>
-<html xmlns="http://www.w3.org/1999/xhtml" lang="cs" xml:lang="cs">
+<html xmlns="http://www.w3.org/1999/xhtml" lang="de" xml:lang="de">
 <head>
   <meta charset="utf-8" />
   <meta name="generator" content="pandoc" />
@@ -39,6 +39,7 @@
 <li><a href="#einstellungen">Einstellungen</a></li>
 <li><a href="#verwendung">Verwendung</a>
 <ul>
+<li><a href="#e-mail-benachrichtigungen">E-Mail Benachrichtigungen</a></li>
 <li><a href="#comments-und-gbook-daten">Comments und Gbook Daten</a></li>
 <li><a href="#administration">Administration</a></li>
 </ul></li>
@@ -48,7 +49,7 @@
 <li><a href="#danksagung">Danksagung</a></li>
 </ul>
 <h2 id="voraussetzungen">Voraussetzungen</h2>
-<p>Twocents_XH ist ein Plugin für <a href="https://www.cmsimple-xh.org/de/">CMSimple_XH</a>. Es benötigt CMSimple_XH ≥ 1.7.0 und PHP ≥ 7.1.0. Twocents_XH benötigt weiterhin <a href="https://github.com/cmb69/plib_xh">Plib_XH</a> ≥ 1.7; ist dieses noch nicht installiert (see <em>Einstellungen</em>→<em>Info</em>), laden Sie das <a href="https://github.com/cmb69/plib_xh/releases/latest">aktuelle Release</a> herunter, und installieren Sie es.</p>
+<p>Twocents_XH ist ein Plugin für <a href="https://www.cmsimple-xh.org/de/">CMSimple_XH</a>. Es benötigt CMSimple_XH ≥ 1.7.0 und PHP ≥ 7.1.0. Twocents_XH benötigt weiterhin <a href="https://github.com/cmb69/plib_xh">Plib_XH</a> ≥ 1.7; ist dieses noch nicht installiert (see <em>Einstellungen</em>→<em>Info</em>), laden Sie das <a href="https://github.com/cmb69/plib_xh/releases/latest">aktuelle Release</a> herunter, und installieren Sie es. Für <a href="#e-mail-benachrichtigungen">E-Mail Benachrichtigungen</a> wird <a href="https://github.com/cmb69/phpmailer_xh">Phpmailer_XH</a> benötigt.</p>
 <h2 id="download">Download</h2>
 <p>Das <a href="https://github.com/cmb69/twocents_xh/releases/latest">aktuelle Release</a> kann von Github herunter geladen werden.</p>
 <h2 id="installation">Installation</h2>
@@ -76,6 +77,8 @@
 <pre><code>{{{twocents(&#39;archiviert&#39;, true}}}</code></pre>
 <p>Beachten Sie, dass höchstens ein Aufruf von <code>twocents</code> auf einer einzelnen Seite erfolgen darf.</p>
 <p>Der äußerst simplistische Spamschutz kann in den Spracheinstellungen unter <code>Spam</code> → <code>Words</code>, das eine durch Kommas getrennte Liste von Wörtern enthält, konfiguriert werden. Kommt eines dieser Wörter in der Nachricht vor (wobei Groß-/Kleinschreibung keine Rolle spielt), dann wird der Kommentar automatisch versteckt.</p>
+<h3 id="e-mail-benachrichtigungen">E-Mail Benachrichtigungen</h3>
+<p>Ist in der Konfiguration eine E-Mail-Adresse hinterlegt (<code>Plugins</code> → <code>Twocents</code> → <code>Konfiguration</code> → <code>Email</code> → <code>Address</code>), wird eine Benachrichtigung per E-Mail versendet, wenn ein neuer Kommentar gepostet wurde (außer wenn dies durch den Admin geschah). Dies erfodert, dass <a href="https://github.com/cmb69/phpmailer_xh/releases">Phpmailer_XH installiert ist</a>.</p>
 <h3 id="comments-und-gbook-daten">Comments und Gbook Daten</h3>
 <p>Es ist möglich die Datendateien des <a href="https://ge-webdesign.de/cmsimpleplugins/?Eigene_Plugins___Comments">Comments</a> und des GBook Plugin zu verwenden. Dazu müssen diese in den Datenordner von Twocents_XH (der der Unterordner <code>twocents/</code> des <code>content/</code> Ordner von CMSimple_XH ist) kopiert werden. Sind die Dateinamen ungültige Themennamen, dann können die Dateien passend umbenannt werden (die <code>.txt</code> Erweiterung muss aber beibehalten werden). Dann wird <a href="#verwendung">auf einer Seite ein Pluginaufruf wie üblich</a> eingetragen, und in den Ansichtsmodus umgeschaltet. Falls alles gut gegangen ist, sieht man die Kommentare, und es gibt nun entsprechende Dateien mit einer <code>.csv</code> Erweiterung, die die migrierten Daten enthalten. Danach können die alten <code>.txt</code> Dateien nach Belieben gelöscht werden. Beachten Sie, dass allerdings einige Informationen ignoriert werden, z.B. die IP-Adresse und das hoch geladene Bild, sowie die Formatierung, wenn Twocents_XH auf einfachen Text konfiguriert ist.</p>
 <h3 id="administration">Administration</h3>

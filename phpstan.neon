@@ -17,3 +17,4 @@ parameters:
     - ./htmlpurifier/HTMLPurifier.standalone.php
   scanDirectories:
     - ../plib/classes
+    - ../phpmailer/classes

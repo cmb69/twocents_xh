@@ -21,37 +21,37 @@
 
 namespace Twocents\Infra;
 
-use XH\Mail as XhMail;
+use PhpMailer\Mail;
 
 class FakeMailer extends Mailer
 {
     public $output = [];
     public $sent = false;
-    protected function xhMail(): XhMail
+    protected function xhMail(): Mail
     {
-        return new class($this) extends XhMail {
+        return new class($this) extends Mail {
             private $wrapper;
             public function __construct(FakeMailer $wrapper)
             {
                 $this->wrapper = $wrapper;
             }
-            public function setTo($to)
+            public function setTo($to): void
             {
                 $this->wrapper->output["to"] = $to;
             }
-            public function setSubject($subject)
+            public function setSubject($subject): void
             {
                 $this->wrapper->output["subject"] = $subject;
             }
-            public function setMessage($message)
+            public function setMessage($message): void
             {
                 $this->wrapper->output["message"] = $message;
             }
-            public function addHeader($name, $value)
+            public function addHeader($name, $value): void
             {
                 $this->wrapper->output["header"][$name] = $value;
             }
-            public function send()
+            public function send(): bool
             {
                 return $this->wrapper->sent = true;
             }
