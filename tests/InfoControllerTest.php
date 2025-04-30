@@ -43,7 +43,7 @@ class InfoControllerTest extends TestCase
         );
         $request = new FakeRequest();
         $response = $sut($request);
-        $this->assertEquals("Twocents 1.2-dev", $response->title());
+        $this->assertEquals("Twocents 1.2", $response->title());
         Approvals::verifyHtml($response->output());
     }
 }
