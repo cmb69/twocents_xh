@@ -32,6 +32,11 @@ jobs:
         with:
           repository: cmb69/plib_xh
           path: cmsimplexh/plugins/plib
+      - name: Checkout Phpmailer_XH
+        uses: actions/checkout@v4
+        with:
+          repository: cmb69/phpmailer_xh
+          path: cmsimplexh/plugins/phpmailer
       - name: Checkout Twocents_XH
         uses: actions/checkout@v4
         with:
