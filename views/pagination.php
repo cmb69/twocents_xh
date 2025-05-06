@@ -15,9 +15,9 @@ use Plib\View;
 <?  if (!isset($page)):?>
   <span class="twocents_pag_ellipsis">…</span>
 <?  elseif (!isset($url)):?>
-  <span class="twocents_pag_current"><?=$page?></span>
+  <span class="twocents_pag_current"><?=$this->esc($page)?></span>
 <?  else:?>
-  <a class="twocents_button" href="<?=$this->esc($url)?>"><?=$page?></a>
+  <a class="twocents_button" href="<?=$this->esc($url)?>"><?=$this->esc($page)?></a>
 <?  endif?>
 <?endforeach?>
 </div>

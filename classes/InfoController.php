@@ -72,7 +72,7 @@ class InfoController
         return array_filter([
             $this->checkPhpVersion('7.1.0'),
             $this->checkXhVersion('1.7.0'),
-            $this->checkPlibVersion("1.4"),
+            $this->checkPlibVersion("1.8"),
             $this->checkPhpmailerVersion("6.9.3"),
             $this->checkWritability($this->store->folder()),
             $this->checkWritability($this->pluginFolder . "config/"),
