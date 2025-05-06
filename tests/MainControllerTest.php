@@ -449,7 +449,7 @@ class MainControllerTest extends TestCase
     public function testReportsFailureToStoreWhenDeleting(): void
     {
         $this->csrfProtector->method("check")->willReturn(true);
-        $this->store($this->comment("123"));
+        $this->store($this->comment("1.4-dev"));
         $this->store($this->comment());
         vfsStream::setQuota(0);
         $request = new FakeRequest([
