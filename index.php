@@ -22,8 +22,6 @@
 use Plib\Request;
 use Twocents\Dic;
 
-const TWOCENTS_VERSION = "1.3-dev";
-
 /**
  * @param string $topicname
  * @param bool $readonly

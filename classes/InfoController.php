@@ -61,9 +61,9 @@ class InfoController
     public function __invoke(): Response
     {
         return Response::create($this->view->render("info", [
-            "version" => TWOCENTS_VERSION,
+            "version" => Dic::VERSION,
             "checks" => $this->getChecks(),
-        ]))->withTitle("Twocents " . TWOCENTS_VERSION);
+        ]))->withTitle("Twocents " . Dic::VERSION);
     }
 
     /** @return list<array{key:string,arg:string,class:string,state:string}> */

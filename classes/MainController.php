@@ -396,7 +396,7 @@ class MainController
         if (!is_file($js)) {
             $js = $this->pluginFolder . "twocents.js";
         }
-        return $request->url()->path($js)->with("v", TWOCENTS_VERSION)->relative();
+        return $request->url()->path($js)->with("v", Dic::VERSION)->relative();
     }
 
     /** @return array<string,scalar> */

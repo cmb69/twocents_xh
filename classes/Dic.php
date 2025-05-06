@@ -33,6 +33,8 @@ use Twocents\Infra\Mailer;
 
 class Dic
 {
+    public const VERSION = "1.3-dev";
+
     public static function makeMainController(): MainController
     {
         global $pth, $plugin_cf;
