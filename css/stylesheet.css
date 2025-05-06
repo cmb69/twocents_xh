@@ -86,3 +86,14 @@
 .twocents_write_button {
     margin: 1em 0;
 }
+
+/*
+ * Realblog_XH integration
+ */
+
+figure.twocents_realblog_comments {}
+figure.twocents_realblog_comments figcaption {
+    margin: 0.5em 0;
+    font-size: 1.5em;
+    font-weight: bold;
+}

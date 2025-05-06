@@ -42,15 +42,15 @@ class RealblogBridge implements CommentsBridge
      */
     public static function handle($topic)
     {
-        global $plugin_cf, $plugin_tx;
+        global $plugin_tx;
 
         $comments = Dic::makeMainController()(Request::current(), $topic, false)();
-        return '<div class="twocents_realblog_comments">'
-            . '<' . $plugin_cf['twocents']['realblog_heading'] . '>'
+        return '<figure class="twocents_realblog_comments">'
+            . '<figcaption>'
             .  $plugin_tx['twocents']['realblog_heading']
-            . '</' . $plugin_cf['twocents']['realblog_heading'] . '>'
+            . '</figcaption>'
             . $comments
-            . '</div>';
+            . '</figure>';
     }
 
     /**
