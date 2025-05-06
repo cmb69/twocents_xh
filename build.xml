@@ -116,9 +116,14 @@
       <fileset dir="dist/twocents">
         <include name="config/config.php"/>
         <include name="languages/??.php"/>
-        <include name="css/stylesheet.css"/>
       </fileset>
     </delete>
+    <if>
+      <available file="dist/twocents/css/stylesheet.css"/>
+      <then>
+        <move file="dist/twocents/css/stylesheet.css" tofile="dist/twocents/css/stylesheet-1.3-dev.css"/>
+      </then>
+    </if>
     <zip destfile="Twocents_XH-1.3-dev-update-from-1.x.zip" basedir="dist" includeemptydirs="false"/>
     <delete dir="patchee" quiet="true"/>
     <delete dir="current" quiet="true"/>
