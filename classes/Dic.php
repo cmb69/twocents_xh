@@ -33,7 +33,7 @@ use Twocents\Infra\Mailer;
 
 class Dic
 {
-    public const VERSION = "1.3-dev";
+    public const VERSION = "1.3";
 
     public static function makeMainController(): MainController
     {
